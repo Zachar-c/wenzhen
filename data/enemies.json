@@ -1,0 +1,2699 @@
+[
+  {
+    "id": "stone_armor_gu_master",
+    "theme": "neutral",
+    "grade": "cultivator",
+    "tier": "common",
+    "rank": 1,
+    "hp": 10,
+    "guLoadout": {
+      "required": [
+        "stone_shell_gu"
+      ],
+      "optionalPools": [],
+      "precast": "seeded_half"
+    }
+  },
+  {
+    "id": "neutral_stone_wanderer",
+    "origin": "adaptation",
+    "origin_ref": "L51260",
+    "theme": "neutral",
+    "grade": "cultivator",
+    "tier": "common",
+    "rank": 1,
+    "hp": 4,
+    "problemAxis": "info",
+    "problemLabel": "信息/反制",
+    "preferredMaterials": [
+      "moon_dew"
+    ],
+    "clues": [
+      "stone_dust",
+      "steady_stance"
+    ],
+    "intent": {
+      "id": "stone_palm",
+      "label": "掌势蓄而未发",
+      "damage": 1,
+      "true_qi_cost": 1,
+      "speed": 1,
+      "guRefs": [
+        "bone_atk_1_08_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "stone_shell",
+        "clue": "stone_dust",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "石甲护身"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "bone_atk_1_08_gu",
+      "stone_shell_gu"
+    ]
+  },
+  {
+    "id": "ridge_hound",
+    "origin": "adaptation",
+    "origin_ref": "L29094",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "common",
+    "rank": 1,
+    "hp": 3,
+    "problemAxis": "evasion",
+    "problemLabel": "高速/闪避",
+    "evasionBreakpoint": 2,
+    "preferredMaterials": [
+      "venom_sac"
+    ],
+    "clues": [
+      "lowered_shoulders",
+      "wet_fang"
+    ],
+    "intent": {
+      "id": "pounce",
+      "label": "伏肩扑咬",
+      "damage": 2,
+      "speed": 0
+    },
+    "reactions": [
+      {
+        "id": "counter_bite",
+        "clue": "lowered_shoulders",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "反口撕咬"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "ridge_elite_scout",
+    "origin": "original_game_content",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 2,
+    "hp": 6,
+    "clues": [
+      "high_ground",
+      "steady_breath"
+    ],
+    "intent": {
+      "id": "swift_crossbow",
+      "label": "弩箭上弦",
+      "damage": 2,
+      "true_qi_cost": 2,
+      "speed": 3,
+      "guRefs": [
+        "fire_atk_2_01_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "elusive_step",
+        "clue": "high_ground",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "高处闪避"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "fire_atk_2_01_gu",
+      "qi_rec_2_14_gu"
+    ]
+  },
+  {
+    "id": "miasma_vein_lord",
+    "origin": "adaptation",
+    "origin_ref": "L192232",
+    "theme": "anomaly",
+    "grade": "cultivator",
+    "tier": "boss",
+    "rank": 3,
+    "hp": 14,
+    "clues": [
+      "wilting_aura",
+      "slow_gaits"
+    ],
+    "intent": {
+      "id": "miasma_burst",
+      "label": "瘴气喷涌",
+      "damage": 1,
+      "true_qi_cost": 3,
+      "speed": 1,
+      "guRefs": [
+        "water_atk_1_08_gu"
+      ]
+    },
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "reactions": [
+      {
+        "id": "corrosive_mist",
+        "clue": "wilting_aura",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "蚀气反激"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "miasma_burst",
+            "label": "瘴气喷涌",
+            "damage": 1,
+            "true_qi_cost": 3,
+            "speed": 1,
+            "cooldown": 2,
+            "guRefs": [
+              "water_atk_1_08_gu"
+            ]
+          }
+        ],
+        "reactions": [
+          {
+            "id": "corrosive_mist",
+            "clue": "wilting_aura",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "蚀气反激"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "miasma_burst",
+            "label": "瘴气喷涌",
+            "damage": 1,
+            "true_qi_cost": 3,
+            "speed": 1,
+            "cooldown": 2,
+            "guRefs": [
+              "water_atk_1_08_gu"
+            ]
+          },
+          {
+            "id": "essence_scorch",
+            "label": "蚀脉扰元",
+            "damage": 0,
+            "true_qi_cost": 3,
+            "speed": 2,
+            "essence_burn": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "corrosive_mist",
+            "clue": "wilting_aura",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "蚀气反激"
+          }
+        ]
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "water_atk_1_08_gu",
+      "wood_atk_1_05_gu"
+    ]
+  },
+  {
+    "id": "iron_hide_boar",
+    "origin": "adaptation",
+    "origin_ref": "L2070",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "common",
+    "rank": 2,
+    "hp": 5,
+    "problemAxis": "armor",
+    "problemLabel": "重甲/防御",
+    "armorValue": 2,
+    "preferredMaterials": [
+      "beast_bone",
+      "beast_blood"
+    ],
+    "clues": [
+      "mud_caked",
+      "worn_tusks"
+    ],
+    "intent": {
+      "id": "tusk_drive",
+      "label": "獠牙冲撞",
+      "damage": 2,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "bristle_turn",
+        "clue": "mud_caked",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "厚皮硬受"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "thunder_crown_wolf",
+    "origin": "canon",
+    "origin_ref": "L4908",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "elite",
+    "rank": 3,
+    "hp": 7,
+    "clues": [
+      "crackling_fur",
+      "hunched_gait"
+    ],
+    "intent": {
+      "id": "thunder_bite",
+      "label": "雷冠撕咬",
+      "damage": 3,
+      "speed": 3
+    },
+    "reactions": [
+      {
+        "id": "thunder_reflex",
+        "clue": "crackling_fur",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "sparked",
+        "label": "雷光护甲"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "beast_swarm",
+    "origin": "canon",
+    "origin_ref": "L4708",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "common",
+    "rank": 1,
+    "hp": 4,
+    "clues": [
+      "droning_wings",
+      "swarming_shadows"
+    ],
+    "intent": {
+      "id": "swarm_bite",
+      "label": "蜂群撕缠",
+      "damage": 2,
+      "speed": 1
+    },
+    "reactions": [],
+    "attackSource": "innate"
+  },
+  {
+    "id": "faction_guard",
+    "origin": "adaptation",
+    "origin_ref": "L322",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 2,
+    "hp": 6,
+    "clues": [
+      "locked_shieldwall",
+      "even_line"
+    ],
+    "intent": {
+      "id": "shield_bash",
+      "label": "盾墙冲撞",
+      "damage": 2,
+      "true_qi_cost": 2,
+      "speed": 3,
+      "guRefs": [
+        "sword_atk_2_12_gu"
+      ]
+    },
+    "reactions": [],
+    "attackSource": "gu",
+    "guRefs": [
+      "sword_atk_2_12_gu",
+      "jade_skin_gu"
+    ]
+  },
+  {
+    "id": "crag_serpent_matriarch",
+    "origin": "adaptation",
+    "origin_ref": "L2504",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "boss",
+    "rank": 4,
+    "hp": 15,
+    "clues": [
+      "coiled_shadows",
+      "scraped_scale"
+    ],
+    "intent": {
+      "id": "crush_coil",
+      "label": "绞缠碾压",
+      "damage": 3,
+      "speed": 1
+    },
+    "reactions": [],
+    "attackSource": "innate"
+  },
+  {
+    "id": "marrow_gu_adept",
+    "origin": "adaptation",
+    "origin_ref": "L37456",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "boss",
+    "rank": 4,
+    "hp": 16,
+    "clues": [
+      "bone_charms",
+      "burnt_incense"
+    ],
+    "intent": {
+      "id": "marrow_lance",
+      "label": "蚀骨骨矛",
+      "damage": 2,
+      "true_qi_cost": 4,
+      "speed": 2,
+      "guRefs": [
+        "water_atk_3_05_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "bone_thorn_shield",
+        "clue": "bone_charms",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "骨棘反甲"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "water_atk_3_05_gu",
+      "bone_atk_1_08_gu"
+    ]
+  },
+  {
+    "id": "thunder_crown_sovereign",
+    "origin": "adaptation",
+    "origin_ref": "L4908",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "boss",
+    "rank": 5,
+    "hp": 18,
+    "clues": [
+      "charged_fur",
+      "crackling_air"
+    ],
+    "intent": {
+      "id": "crown_bolt",
+      "label": "雷冠贯落",
+      "damage": 4,
+      "speed": 2,
+      "cooldown": 1
+    },
+    "reactions": [],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "crown_bolt",
+            "label": "雷冠贯落",
+            "damage": 4,
+            "speed": 2,
+            "cooldown": 1
+          }
+        ],
+        "reactions": []
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "crown_bolt",
+            "label": "雷冠贯落",
+            "damage": 4,
+            "speed": 2,
+            "cooldown": 1
+          },
+          {
+            "id": "paralyzing_howl",
+            "label": "麻痹长嗥",
+            "damage": 0,
+            "speed": 2,
+            "essence_burn": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": []
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "blood_vein_bishop",
+    "origin": "original_game_content",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "boss",
+    "rank": 5,
+    "hp": 20,
+    "clues": [
+      "swollen_veins",
+      "beating_drum"
+    ],
+    "intent": {
+      "id": "vein_whip",
+      "label": "血络鞭挞",
+      "damage": 4,
+      "true_qi_cost": 1,
+      "speed": 3,
+      "cooldown": 1,
+      "guRefs": [
+        "blood_droplet_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "blood_siphon",
+        "clue": "swollen_veins",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "血络回吸"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "vein_whip",
+            "label": "血络鞭挞",
+            "damage": 4,
+            "true_qi_cost": 1,
+            "speed": 3,
+            "cooldown": 1,
+            "guRefs": [
+              "blood_droplet_gu"
+            ]
+          }
+        ],
+        "reactions": [
+          {
+            "id": "blood_siphon",
+            "clue": "swollen_veins",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "血络回吸"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "vein_whip",
+            "label": "血络鞭挞",
+            "damage": 4,
+            "true_qi_cost": 1,
+            "speed": 3,
+            "cooldown": 1,
+            "guRefs": [
+              "blood_droplet_gu"
+            ]
+          },
+          {
+            "id": "crimson_feast",
+            "label": "猩红盛餐",
+            "damage": 5,
+            "speed": 2,
+            "cooldown": 2,
+            "attackSource": "innate"
+          }
+        ],
+        "reactions": [
+          {
+            "id": "blood_siphon",
+            "clue": "swollen_veins",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "血络回吸"
+          }
+        ]
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "blood_droplet_gu",
+      "blood_heal_2_23_gu"
+    ]
+  },
+  {
+    "id": "iron_crown_eagle",
+    "origin": "canon",
+    "origin_ref": "L127802",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "common",
+    "rank": 2,
+    "hp": 4,
+    "clues": [
+      "feathered_wing",
+      "circling_shadow"
+    ],
+    "intent": {
+      "id": "eagle_feather_volley",
+      "label": "鹰羽利箭",
+      "damage": 2,
+      "speed": 3
+    },
+    "reactions": [
+      {
+        "id": "iron_talon_grip",
+        "clue": "feathered_wing",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "铁爪拿捏"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "venom_whisker_wolf_king",
+    "origin": "canon",
+    "origin_ref": "L78814",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "elite",
+    "rank": 3,
+    "hp": 7,
+    "clues": [
+      "drawn_out_howl",
+      "arrowlike_pack"
+    ],
+    "intent": {
+      "id": "pack_flank",
+      "label": "群狼包抄",
+      "damage": 3,
+      "speed": 2
+    },
+    "reactions": [
+      {
+        "id": "pack_echo",
+        "clue": "drawn_out_howl",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "狼群呼应"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "sand_lurker_spider",
+    "origin": "canon",
+    "origin_ref": "L152032",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "elite",
+    "rank": 3,
+    "hp": 8,
+    "clues": [
+      "oily_shell",
+      "sand_ripple"
+    ],
+    "intent": {
+      "id": "sand_bind",
+      "label": "缠沙缚足",
+      "kind": "seal",
+      "seal_turns": 1,
+      "damage": 0,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "burrow_away",
+        "clue": "sand_ripple",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "沙下潜行"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "blood_forest_wolf",
+    "origin": "canon",
+    "origin_ref": "L90496",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "elite",
+    "rank": 4,
+    "hp": 11,
+    "clues": [
+      "blood_soaked_hide",
+      "bone_grove"
+    ],
+    "intent": {
+      "id": "mountain_crush",
+      "label": "山岳碾压",
+      "damage": 4,
+      "speed": 0
+    },
+    "reactions": [
+      {
+        "id": "bone_grove_guard",
+        "clue": "bone_grove",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "骨林硬受"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "dragon_eagle",
+    "origin": "canon",
+    "origin_ref": "source/蛊真人-epub-canon.txt:63739",
+    "canon_note": "六转荒鹰之一。旧 rank=5 是游戏适配错误；rank=6 后不会进入普通 1–5 转新局敌池。",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "elite",
+    "rank": 6,
+    "hp": 10,
+    "clues": [
+      "vast_wing_shadow",
+      "scaled_nape"
+    ],
+    "intent": {
+      "id": "dragon_dive",
+      "label": "龙威俯击",
+      "damage": 4,
+      "speed": 3
+    },
+    "reactions": [
+      {
+        "id": "high_spiral",
+        "clue": "vast_wing_shadow",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "高空回旋"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "clan_warden",
+    "origin": "adaptation",
+    "origin_ref": "L322",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "common",
+    "rank": 1,
+    "hp": 4,
+    "clues": [
+      "barred_gate",
+      "braced_stance"
+    ],
+    "intent": {
+      "id": "gate_block",
+      "label": "山门横挡",
+      "damage": 1,
+      "true_qi_cost": 1,
+      "speed": 1,
+      "guRefs": [
+        "sword_atk_1_05_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "steady_line",
+        "clue": "braced_stance",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "阵脚不乱"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "sword_atk_1_05_gu",
+      "jade_skin_gu"
+    ]
+  },
+  {
+    "id": "school_elder",
+    "origin": "adaptation",
+    "origin_ref": "L1012",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 2,
+    "hp": 6,
+    "clues": [
+      "white_beard",
+      "jade_token"
+    ],
+    "intent": {
+      "id": "hall_interdict",
+      "label": "学堂禁令",
+      "kind": "seal",
+      "seal_turns": 2,
+      "damage": 0,
+      "true_qi_cost": 2,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "seasoned_deflect",
+        "clue": "white_beard",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "老练卸力"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "qi_rec_2_14_gu"
+    ]
+  },
+  {
+    "id": "clan_elder",
+    "origin": "adaptation",
+    "origin_ref": "L1012",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 4,
+    "hp": 9,
+    "clues": [
+      "white_ritual_robe",
+      "wielding_hand"
+    ],
+    "intent": {
+      "id": "clan_authority",
+      "label": "家族权柄",
+      "damage": 2,
+      "true_qi_cost": 2,
+      "speed": 2,
+      "guRefs": [
+        "moon_ray_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "clan_reserve",
+        "clue": "white_ritual_robe",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "家族底蕴"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "moon_ray_gu",
+      "white_jade_gu"
+    ]
+  },
+  {
+    "id": "clan_patriarch",
+    "origin": "adaptation",
+    "origin_ref": "L326",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "boss",
+    "rank": 5,
+    "hp": 19,
+    "clues": [
+      "frosted_temples",
+      "solemn_robe"
+    ],
+    "intent": {
+      "id": "clan_wrath",
+      "label": "一族之威",
+      "damage": 2,
+      "true_qi_cost": 2,
+      "speed": 2,
+      "cooldown": 1,
+      "guRefs": [
+        "moonlight_gu",
+        "sword_atk_1_06_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "ancestral_tablet",
+        "clue": "solemn_robe",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "祖宗牌位"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "clan_wrath",
+            "label": "一族之威",
+            "damage": 2,
+            "true_qi_cost": 2,
+            "speed": 2,
+            "cooldown": 1,
+            "guRefs": [
+              "moonlight_gu",
+              "sword_atk_1_06_gu"
+            ]
+          }
+        ],
+        "reactions": [
+          {
+            "id": "ancestral_tablet",
+            "clue": "solemn_robe",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "祖宗牌位"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "clan_wrath",
+            "label": "一族之威",
+            "damage": 2,
+            "true_qi_cost": 2,
+            "speed": 2,
+            "cooldown": 1,
+            "guRefs": [
+              "moonlight_gu",
+              "sword_atk_1_06_gu"
+            ]
+          },
+          {
+            "id": "clan_muster",
+            "label": "家族征召",
+            "kind": "seal",
+            "seal_turns": 2,
+            "damage": 0,
+            "true_qi_cost": 5,
+            "speed": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "ancestral_tablet",
+            "clue": "solemn_robe",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "祖宗牌位"
+          }
+        ]
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "moonlight_gu",
+      "sword_atk_1_06_gu",
+      "white_jade_gu",
+      "stone_shell_gu"
+    ]
+  },
+  {
+    "id": "rogue_cultivator",
+    "origin": "adaptation",
+    "origin_ref": "L51260",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "common",
+    "rank": 2,
+    "hp": 5,
+    "clues": [
+      "unschooled_form",
+      "lone_footsteps"
+    ],
+    "intent": {
+      "id": "wild_strike",
+      "label": "野路杀招",
+      "damage": 1,
+      "true_qi_cost": 2,
+      "speed": 2,
+      "guRefs": [
+        "sword_atk_1_05_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "road_hardened",
+        "clue": "lone_footsteps",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "江湖老手"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "sword_atk_1_05_gu"
+    ]
+  },
+  {
+    "id": "demon_path_adept",
+    "origin": "adaptation",
+    "origin_ref": "L11580",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 3,
+    "hp": 7,
+    "clues": [
+      "bloody_miasma",
+      "green_pupils"
+    ],
+    "intent": {
+      "id": "soul_gnaw",
+      "label": "噬魂魔功",
+      "kind": "soul_drain",
+      "soul_drain": 1,
+      "damage": 0,
+      "true_qi_cost": 3,
+      "speed": 2
+    },
+    "reactions": [
+      {
+        "id": "blood_shroud",
+        "clue": "bloody_miasma",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "血气护体"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "blood_heal_2_23_gu"
+    ]
+  },
+  {
+    "id": "slave_path_adept",
+    "origin": "adaptation",
+    "origin_ref": "L64294",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 4,
+    "hp": 9,
+    "clues": [
+      "commanding_gesture",
+      "docile_growl"
+    ],
+    "intent": {
+      "id": "thrall_lunge",
+      "label": "驱役扑击",
+      "damage": 2,
+      "true_qi_cost": 2,
+      "speed": 1,
+      "guRefs": [
+        "moon_ray_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "thrall_shield",
+        "clue": "docile_growl",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "奴仆代受"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "moon_ray_gu"
+    ]
+  },
+  {
+    "id": "straw_puppet",
+    "origin": "canon",
+    "origin_ref": "L3634",
+    "theme": "neutral",
+    "grade": "mortal",
+    "tier": "common",
+    "rank": 0,
+    "hp": 3,
+    "clues": [
+      "dry_straw_cut",
+      "thick_neck"
+    ],
+    "intent": {
+      "id": "straw_swing",
+      "label": "稻草挥击",
+      "damage": 1,
+      "speed": 0
+    },
+    "reactions": [
+      {
+        "id": "loose_straw",
+        "clue": "dry_straw_cut",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "草躯松散"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "fat_sand_scorpion",
+    "origin": "canon",
+    "origin_ref": "L124846",
+    "theme": "neutral",
+    "grade": "beast",
+    "tier": "common",
+    "rank": 1,
+    "hp": 3,
+    "clues": [
+      "fat_bulk",
+      "limp_pincers"
+    ],
+    "intent": {
+      "id": "pincer_feint",
+      "label": "螯足虚张",
+      "damage": 1,
+      "speed": 0
+    },
+    "reactions": [
+      {
+        "id": "harmless_pincers",
+        "clue": "limp_pincers",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "螯足无力"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "white_fur_jiangshi",
+    "origin": "canon",
+    "origin_ref": "L45600",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "common",
+    "rank": 0,
+    "hp": 3,
+    "clues": [
+      "white_fur",
+      "rigid_hop"
+    ],
+    "intent": {
+      "id": "corpse_hop",
+      "label": "僵直一扑",
+      "damage": 2,
+      "speed": 0
+    },
+    "reactions": [
+      {
+        "id": "corpse_poison",
+        "clue": "white_fur",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "尸毒沾染"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "black_fur_jiangshi",
+    "origin": "canon",
+    "origin_ref": "L45600",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "common",
+    "rank": 2,
+    "hp": 5,
+    "clues": [
+      "black_fur",
+      "gathered_horde"
+    ],
+    "intent": {
+      "id": "horde_press",
+      "label": "尸群压上",
+      "damage": 2,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "horde_shove",
+        "clue": "gathered_horde",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "尸群推挤"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "roaming_jiangshi",
+    "origin": "adaptation",
+    "origin_ref": "L20746",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "elite",
+    "rank": 3,
+    "hp": 8,
+    "clues": [
+      "green_glow_pupils",
+      "long_fangs"
+    ],
+    "intent": {
+      "id": "stiff_pounce",
+      "label": "僵躯扑噬",
+      "damage": 3,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "dead_flesh_guard",
+        "clue": "long_fangs",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "僵躯硬受"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "blue_fur_jiangshi",
+    "origin": "canon",
+    "origin_ref": "L45600",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "boss",
+    "rank": 5,
+    "hp": 20,
+    "clues": [
+      "blue_fur",
+      "corpse_army"
+    ],
+    "intent": {
+      "id": "corpse_tide",
+      "label": "尸潮掩杀",
+      "damage": 4,
+      "speed": 2,
+      "cooldown": 1
+    },
+    "reactions": [
+      {
+        "id": "corpse_barrier",
+        "clue": "corpse_army",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "尸群为障"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "corpse_tide",
+            "label": "尸潮掩杀",
+            "damage": 4,
+            "speed": 2,
+            "cooldown": 1
+          }
+        ],
+        "reactions": [
+          {
+            "id": "corpse_barrier",
+            "clue": "corpse_army",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "尸群为障"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "corpse_tide",
+            "label": "尸潮掩杀",
+            "damage": 4,
+            "speed": 2,
+            "cooldown": 1
+          },
+          {
+            "id": "raise_corpse",
+            "label": "起尸困敌",
+            "kind": "seal",
+            "seal_turns": 2,
+            "damage": 0,
+            "speed": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "corpse_barrier",
+            "clue": "corpse_army",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "尸群为障"
+          }
+        ]
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "mountain_boar",
+    "origin": "canon",
+    "origin_ref": "L664",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "common",
+    "rank": 0,
+    "hp": 4,
+    "clues": [
+      "coarse_bristles",
+      "tusking_earth"
+    ],
+    "intent": {
+      "id": "boar_charge",
+      "label": "野猪直撞",
+      "damage": 2,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "mud_shake",
+        "clue": "coarse_bristles",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "鬃毛乱抖"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "mountain_hunter",
+    "origin": "adaptation",
+    "origin_ref": "L10074",
+    "theme": "neutral",
+    "grade": "mortal",
+    "tier": "common",
+    "rank": 0,
+    "hp": 3,
+    "clues": [
+      "calloused_hands",
+      "snare_rope"
+    ],
+    "intent": {
+      "id": "hunter_staff",
+      "label": "木棍横扫",
+      "damage": 1,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "rope_trip",
+        "clue": "snare_rope",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "绳索绊足"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "mo_family_huntsman",
+    "origin": "adaptation",
+    "origin_ref": "L6013",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 2,
+    "hp": 5,
+    "problemAxis": "info",
+    "problemLabel": "情报/先手",
+    "clues": [
+      "hound_whistle",
+      "crossbow_glint"
+    ],
+    "intent": {
+      "id": "mo_hunt_fork",
+      "label": "漠家猎叉",
+      "damage": 1,
+      "true_qi_cost": 2,
+      "speed": 1,
+      "guRefs": [
+        "bone_atk_1_08_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "mo_crossguard",
+        "clue": "crossbow_glint",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "弩盾斜架"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "bone_atk_1_08_gu"
+    ]
+  },
+  {
+    "id": "bai_ice_warden",
+    "origin": "adaptation",
+    "origin_ref": "L22752",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 2,
+    "hp": 6,
+    "problemAxis": "armor",
+    "problemLabel": "护体/磨血",
+    "clues": [
+      "rime_shield",
+      "frost_breath"
+    ],
+    "intent": {
+      "id": "frost_javelin",
+      "label": "冰锥攒刺",
+      "damage": 1,
+      "speed": 2
+    },
+    "armorValue": 1,
+    "reactions": [
+      {
+        "id": "bai_frostguard",
+        "clue": "rime_shield",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "凝霜格挡"
+      }
+    ],
+    "attackSource": "innate",
+    "guRefs": [
+      "bing_ji_gu",
+      "shuang_yao_gu"
+    ],
+    "gu_note": "L0 裁决 2026-09-26 A'：登记持有冰道双蛊（身份）；冰道 Game Semantics（被动护甲/变身破防/自爆后置）实现前 frost_javelin 维持 innate，attackSource 改 gu 须过完成门禁（核心差异机制真实生效）"
+  },
+  {
+    "id": "xiong_bear_handler",
+    "origin": "adaptation",
+    "origin_ref": "L29058",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 2,
+    "hp": 5,
+    "problemAxis": "evasion",
+    "problemLabel": "机动/命中",
+    "clues": [
+      "chain_whistle",
+      "bear_breath"
+    ],
+    "intent": {
+      "id": "bear_pounce",
+      "label": "驱熊扑击",
+      "damage": 1,
+      "speed": 1,
+      "guRefs": [],
+      "attackSource": "innate",
+      "mechanism_note": "驱熊扑击是兽体攻击；白豕蛊用于战前永久力量投资，不在此招中直接造成伤害。伤害1沿用现有试玩参数。"
+    },
+    "evasionBreakpoint": 1,
+    "reactions": [
+      {
+        "id": "xiong_chainfence",
+        "clue": "chain_whistle",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "链栏横挡"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "white_boar_strength_gu",
+      "bear_strength_gu"
+    ]
+  },
+  {
+    "id": "blood_grave_thrall",
+    "origin": "adaptation",
+    "origin_ref": "L31458",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "boss",
+    "rank": 3,
+    "hp": 8,
+    "problemAxis": "info",
+    "problemLabel": "破绽/读招",
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "clues": [
+      "crimson_veins",
+      "grave_fog"
+    ],
+    "intent": {
+      "id": "blood_claw",
+      "label": "血爪撕扯",
+      "damage": 2,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "blood_tendril_bind",
+        "clue": "crimson_veins",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "血丝缠缚"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "blood_claw",
+            "label": "血爪撕扯",
+            "damage": 2,
+            "speed": 1,
+            "cooldown": 1
+          }
+        ],
+        "reactions": [
+          {
+            "id": "blood_tendril_bind",
+            "clue": "crimson_veins",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "bound",
+            "label": "血丝缠缚"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "blood_claw",
+            "label": "血爪撕扯",
+            "damage": 2,
+            "speed": 1,
+            "cooldown": 1
+          },
+          {
+            "id": "blood_seethe",
+            "label": "血沸蚀元",
+            "damage": 0,
+            "speed": 2,
+            "essence_burn": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "blood_tendril_bind",
+            "clue": "crimson_veins",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "bound",
+            "label": "血丝缠缚"
+          }
+        ]
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "bone_gun_marauder",
+    "origin": "adaptation",
+    "origin_ref": "L45140",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 3,
+    "hp": 7,
+    "problemAxis": "evasion",
+    "problemLabel": "机动/命中",
+    "clues": [
+      "bone_powder_trail",
+      "throwing_arc"
+    ],
+    "intent": {
+      "id": "bone_spear_barrage",
+      "label": "骨枪连掷",
+      "damage": 2,
+      "true_qi_cost": 3,
+      "speed": 2,
+      "guRefs": [
+        "water_atk_3_05_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "bone_tether",
+        "clue": "throwing_arc",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "缠骨锁足"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "water_atk_3_05_gu"
+    ]
+  },
+  {
+    "id": "jiangshi_handler_boss",
+    "origin": "adaptation",
+    "origin_ref": "L45572",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "boss",
+    "rank": 3,
+    "hp": 14,
+    "problemAxis": "info",
+    "problemLabel": "破绽/读招",
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "clues": [
+      "corpse_bells",
+      "paper_talismans"
+    ],
+    "intent": {
+      "id": "corpse_command",
+      "label": "驱僵号令",
+      "damage": 1,
+      "true_qi_cost": 3,
+      "speed": 1,
+      "guRefs": [
+        "bone_atk_1_08_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "talisman_guard",
+        "clue": "paper_talismans",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "黄符护身"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "corpse_command",
+            "label": "驱僵号令",
+            "damage": 1,
+            "true_qi_cost": 3,
+            "speed": 1,
+            "cooldown": 2,
+            "guRefs": [
+              "bone_atk_1_08_gu"
+            ]
+          }
+        ],
+        "reactions": [
+          {
+            "id": "talisman_guard",
+            "clue": "paper_talismans",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "黄符护身"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "corpse_command",
+            "label": "驱僵号令",
+            "damage": 1,
+            "true_qi_cost": 3,
+            "speed": 1,
+            "cooldown": 2,
+            "guRefs": [
+              "bone_atk_1_08_gu"
+            ]
+          },
+          {
+            "id": "talisman_ignite",
+            "label": "掷符引火",
+            "damage": 3,
+            "speed": 2,
+            "cooldown": 2,
+            "attackSource": "innate"
+          }
+        ],
+        "reactions": [
+          {
+            "id": "talisman_guard",
+            "clue": "paper_talismans",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "黄符护身"
+          }
+        ]
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "bone_atk_1_08_gu"
+    ]
+  },
+  {
+    "id": "merchant_hall_inquisitor",
+    "origin": "adaptation",
+    "origin_ref": "L46754",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 3,
+    "hp": 8,
+    "problemAxis": "info",
+    "problemLabel": "情报/先手",
+    "clues": [
+      "ledger_glance",
+      "seal_ring"
+    ],
+    "intent": {
+      "id": "arrest_chain",
+      "label": "缉拿铁链",
+      "damage": 1,
+      "true_qi_cost": 3,
+      "speed": 2,
+      "guRefs": [
+        "sword_atk_1_06_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "pact_lock",
+        "clue": "seal_ring",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "盟约锁"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "sword_atk_1_06_gu"
+    ]
+  },
+  {
+    "id": "slave_path_overseer",
+    "origin": "adaptation",
+    "origin_ref": "L113996",
+    "theme": "faction",
+    "grade": "cultivator",
+    "tier": "boss",
+    "rank": 4,
+    "hp": 12,
+    "problemAxis": "info",
+    "problemLabel": "破绽/读招",
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "clues": [
+      "whip_crack",
+      "chained_beasts"
+    ],
+    "intent": {
+      "id": "overseer_whip",
+      "label": "鞭笞驱兽",
+      "damage": 2,
+      "true_qi_cost": 2,
+      "speed": 1,
+      "guRefs": [
+        "moon_ray_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "iron_barricade",
+        "clue": "chained_beasts",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "铁栏横挡"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "overseer_whip",
+            "label": "鞭笞驱兽",
+            "damage": 2,
+            "true_qi_cost": 2,
+            "speed": 1,
+            "cooldown": 1,
+            "guRefs": [
+              "moon_ray_gu"
+            ]
+          }
+        ],
+        "reactions": [
+          {
+            "id": "iron_barricade",
+            "clue": "chained_beasts",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "铁栏横挡"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "overseer_whip",
+            "label": "鞭笞驱兽",
+            "damage": 2,
+            "true_qi_cost": 2,
+            "speed": 1,
+            "cooldown": 1,
+            "guRefs": [
+              "moon_ray_gu"
+            ]
+          },
+          {
+            "id": "slave_seal_burn",
+            "label": "奴印蚀元",
+            "damage": 0,
+            "true_qi_cost": 2,
+            "speed": 2,
+            "essence_burn": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "iron_barricade",
+            "clue": "chained_beasts",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "铁栏横挡"
+          }
+        ]
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "moon_ray_gu"
+    ]
+  },
+  {
+    "id": "formation_path_warden",
+    "origin": "adaptation",
+    "origin_ref": "L246656",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 4,
+    "hp": 10,
+    "problemAxis": "info",
+    "problemLabel": "情报/先手",
+    "clues": [
+      "hidden_stakes",
+      "shifting_mist"
+    ],
+    "intent": {
+      "id": "formation_strangle",
+      "label": "阵纹绞杀",
+      "damage": 2,
+      "true_qi_cost": 4,
+      "speed": 1,
+      "guRefs": [
+        "water_atk_3_05_gu"
+      ]
+    },
+    "armorValue": 1,
+    "reactions": [
+      {
+        "id": "formation_trap",
+        "clue": "hidden_stakes",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "困阵锁足"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "water_atk_3_05_gu",
+      "qi_rec_2_14_gu"
+    ]
+  },
+  {
+    "id": "soul_path_reaper",
+    "origin": "adaptation",
+    "origin_ref": "L201828",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "boss",
+    "rank": 5,
+    "hp": 16,
+    "problemAxis": "info",
+    "problemLabel": "破绽/读招",
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "clues": [
+      "soul_lantern_flicker",
+      "whisper_wind"
+    ],
+    "intent": {
+      "id": "soul_bell",
+      "label": "摄魂铃荡",
+      "damage": 4,
+      "speed": 2,
+      "guRefs": [
+        "blood_atk_5_02_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "soul_chain",
+        "clue": "soul_lantern_flicker",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "锁魂索"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "soul_bell",
+            "label": "摄魂铃荡",
+            "damage": 4,
+            "speed": 2,
+            "cooldown": 2,
+            "guRefs": [
+              "blood_atk_5_02_gu"
+            ]
+          }
+        ],
+        "reactions": [
+          {
+            "id": "soul_chain",
+            "clue": "soul_lantern_flicker",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "bound",
+            "label": "锁魂索"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "soul_bell",
+            "label": "摄魂铃荡",
+            "damage": 4,
+            "speed": 2,
+            "cooldown": 2,
+            "guRefs": [
+              "blood_atk_5_02_gu"
+            ]
+          },
+          {
+            "id": "soul_burst",
+            "label": "魂爆灭识",
+            "damage": 4,
+            "speed": 1,
+            "essence_burn": 2,
+            "cooldown": 2,
+            "guRefs": [
+              "blood_atk_5_02_gu"
+            ]
+          }
+        ],
+        "reactions": [
+          {
+            "id": "soul_chain",
+            "clue": "soul_lantern_flicker",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "bound",
+            "label": "锁魂索"
+          }
+        ]
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "blood_atk_5_02_gu"
+    ]
+  },
+  {
+    "id": "thousand_li_earth_tarantula",
+    "origin": "adaptation",
+    "origin_ref": "L7088",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "boss",
+    "rank": 5,
+    "hp": 20,
+    "problemAxis": "evasion",
+    "problemLabel": "机动/命中",
+    "evasionBreakpoint": 2,
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "clues": [
+      "tremor_lines",
+      "sand_breath"
+    ],
+    "intent": {
+      "id": "burrow_ambush",
+      "label": "地遁突袭",
+      "damage": 4,
+      "speed": 2
+    },
+    "reactions": [
+      {
+        "id": "spider_carapace",
+        "clue": "sand_breath",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "蛛甲横障"
+      },
+      {
+        "id": "web_binding",
+        "clue": "tremor_lines",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "蛛网黏缚"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "burrow_ambush",
+            "label": "地遁突袭",
+            "damage": 4,
+            "speed": 2,
+            "cooldown": 1
+          }
+        ],
+        "reactions": [
+          {
+            "id": "spider_carapace",
+            "clue": "sand_breath",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "蛛甲横障"
+          },
+          {
+            "id": "web_binding",
+            "clue": "tremor_lines",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "bound",
+            "label": "蛛网黏缚"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "burrow_ambush",
+            "label": "地遁突袭",
+            "damage": 4,
+            "speed": 2,
+            "cooldown": 1
+          },
+          {
+            "id": "web_seal",
+            "label": "蛛网封穴",
+            "damage": 0,
+            "speed": 2,
+            "essence_burn": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "spider_carapace",
+            "clue": "sand_breath",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "蛛甲横障"
+          },
+          {
+            "id": "web_binding",
+            "clue": "tremor_lines",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "bound",
+            "label": "蛛网黏缚"
+          }
+        ]
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "blood_god_larva",
+    "origin": "adaptation",
+    "origin_ref": "L28468",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "boss",
+    "rank": 5,
+    "hp": 18,
+    "problemAxis": "armor",
+    "problemLabel": "护体/磨血",
+    "armorValue": 1,
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "clues": [
+      "blood_moon_trace",
+      "splitting_swarm"
+    ],
+    "intent": {
+      "id": "blood_rain",
+      "label": "血雨漫天",
+      "damage": 4,
+      "speed": 1
+    },
+    "reactions": [
+      {
+        "id": "blood_film",
+        "clue": "blood_moon_trace",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "血膜凝甲"
+      },
+      {
+        "id": "blood_tendon_bind",
+        "clue": "splitting_swarm",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "血丝缚肢"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "blood_rain",
+            "label": "血雨漫天",
+            "damage": 4,
+            "speed": 1,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "blood_film",
+            "clue": "blood_moon_trace",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "血膜凝甲"
+          },
+          {
+            "id": "blood_tendon_bind",
+            "clue": "splitting_swarm",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "bound",
+            "label": "血丝缚肢"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "blood_rain",
+            "label": "血雨漫天",
+            "damage": 4,
+            "speed": 1,
+            "cooldown": 2
+          },
+          {
+            "id": "split_devour",
+            "label": "裂体分噬",
+            "damage": 4,
+            "speed": 1,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "blood_film",
+            "clue": "blood_moon_trace",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "血膜凝甲"
+          },
+          {
+            "id": "blood_tendon_bind",
+            "clue": "splitting_swarm",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "bound",
+            "label": "血丝缚肢"
+          }
+        ]
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "dream_wraith_echo",
+    "origin": "adaptation",
+    "origin_ref": "L247288",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "boss",
+    "rank": 5,
+    "hp": 15,
+    "problemAxis": "info",
+    "problemLabel": "情报/先手",
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "clues": [
+      "mirage_step",
+      "echoed_voice"
+    ],
+    "intent": {
+      "id": "nightmare_whisper",
+      "label": "梦魇低语",
+      "damage": 0,
+      "speed": 2,
+      "essence_burn": 2
+    },
+    "reactions": [
+      {
+        "id": "mirror_flower",
+        "clue": "mirage_step",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "镜花障"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "nightmare_whisper",
+            "label": "梦魇低语",
+            "damage": 0,
+            "speed": 2,
+            "essence_burn": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "mirror_flower",
+            "clue": "mirage_step",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "镜花障"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "nightmare_whisper",
+            "label": "梦魇低语",
+            "damage": 0,
+            "speed": 2,
+            "essence_burn": 2,
+            "cooldown": 2
+          },
+          {
+            "id": "phantom_pain",
+            "label": "幻痛反噬",
+            "damage": 4,
+            "speed": 1,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "mirror_flower",
+            "clue": "mirage_step",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "镜花障"
+          }
+        ]
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "haodian_wolf",
+    "origin": "canon",
+    "origin_ref": "E:V1-021860",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "common",
+    "rank": 4,
+    "hp": 8,
+    "clues": [
+      "fresh_blood_scent",
+      "crouching_stalk"
+    ],
+    "intent": {
+      "id": "lightning_pounce",
+      "label": "蹑电扑咬",
+      "damage": 3,
+      "speed": 2
+    },
+    "reactions": [
+      {
+        "id": "maul_counter",
+        "clue": "fresh_blood_scent",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "反口撕咬"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "force_path_adept",
+    "origin": "adaptation",
+    "origin_ref": "source/蛊真人-epub-canon.txt:29466-29471",
+    "canon_note": "四转苦力蛊按伤势增力、三转自力更生只能自疗的能力据Wiki。此蛊师的配蛊、HP10、疗伤决策、费用和每次恢复量是游戏适配，不对应原著具体人物。治疗血月伤口与强攻抢杀形成取舍。",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "common",
+    "rank": 4,
+    "hp": 10,
+    "guLoadout": {
+      "required": [
+        "force_atk_4_02_gu",
+        "force_heal_3_03_gu"
+      ],
+      "optionalPools": []
+    },
+    "clues": [
+      "calloused_grips",
+      "braced_stance"
+    ],
+    "reactions": [
+      {
+        "id": "braced_block",
+        "clue": "braced_stance",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "沉腰硬架"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "force_atk_4_02_gu",
+      "force_heal_3_03_gu"
+    ]
+  },
+  {
+    "id": "kuangdian_wolf",
+    "origin": "canon",
+    "origin_ref": "E:V1-023292",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "elite",
+    "rank": 4,
+    "hp": 9,
+    "problemAxis": "evasion",
+    "problemLabel": "高速/闪避",
+    "evasionBreakpoint": 2,
+    "clues": [
+      "arcing_fur",
+      "zigzag_pivots"
+    ],
+    "intent": {
+      "id": "frenzied_charge",
+      "label": "狂电突袭",
+      "damage": 4,
+      "speed": 0
+    },
+    "reactions": [
+      {
+        "id": "shock_guard",
+        "clue": "arcing_fur",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "电毛炸刺"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "sword_qi_adept",
+    "origin": "adaptation",
+    "origin_ref": "E:V5-190418",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "elite",
+    "rank": 4,
+    "hp": 9,
+    "clues": [
+      "pale_blade_hum",
+      "fencing_stance"
+    ],
+    "intent": {
+      "id": "sword_qi_thrust",
+      "label": "剑气贯刺",
+      "damage": 3,
+      "true_qi_cost": 4,
+      "speed": 3,
+      "guRefs": [
+        "sword_atk_4_01_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "riposte_slash",
+        "clue": "fencing_stance",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "剑气回斩"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "sword_atk_4_01_gu"
+    ]
+  },
+  {
+    "id": "blood_hand_adept",
+    "origin": "adaptation",
+    "origin_ref": "E:V2-050082",
+    "theme": "cultivator",
+    "grade": "cultivator",
+    "tier": "common",
+    "rank": 5,
+    "hp": 9,
+    "clues": [
+      "crimson_palm_callus",
+      "stale_blood_stench"
+    ],
+    "intent": {
+      "id": "blood_hand_seal",
+      "label": "血手印拍落",
+      "damage": 4,
+      "true_qi_cost": 5,
+      "speed": 2,
+      "guRefs": [
+        "blood_atk_5_02_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "blood_shroud_guard",
+        "clue": "crimson_palm_callus",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "血膜护体"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "blood_atk_5_02_gu",
+      "blood_heal_2_23_gu"
+    ]
+  },
+  {
+    "id": "blood_droplet_swarm",
+    "origin": "canon",
+    "origin_ref": "source/蛊真人-epub-canon.txt:14009-14020",
+    "canon_note": "五转血滴子虫群，强盛可灭村寨。精英分类、HP 与意图数值为游戏改编，不表示原著规定其遭遇等级。",
+    "theme": "anomaly",
+    "grade": "anomaly",
+    "tier": "elite",
+    "rank": 5,
+    "hp": 8,
+    "clues": [
+      "crimson_drone_hum",
+      "biting_mist"
+    ],
+    "intent": {
+      "id": "swarm_engulf",
+      "label": "虫云裹噬",
+      "damage": 4,
+      "speed": 1,
+      "guRefs": [
+        "blood_droplet_gu"
+      ]
+    },
+    "reactions": [
+      {
+        "id": "swarm_envelop",
+        "clue": "biting_mist",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "bound",
+        "label": "虫云扑落"
+      }
+    ],
+    "attackSource": "gu",
+    "guRefs": [
+      "blood_droplet_gu"
+    ]
+  },
+  {
+    "id": "wild_iron_crown_eagle",
+    "origin": "canon",
+    "origin_ref": "source/蛊真人-epub-canon.txt:63739",
+    "canon_note": "六转荒鹰之一。旧 rank=5 是游戏适配错误；rank=6 后不会进入普通 1–5 转新局敌池。",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "elite",
+    "rank": 6,
+    "hp": 11,
+    "clues": [
+      "iron_feather_glint",
+      "crushing_talons"
+    ],
+    "intent": {
+      "id": "feather_volley",
+      "label": "铁羽激射",
+      "damage": 4,
+      "speed": 3
+    },
+    "reactions": [
+      {
+        "id": "wing_sweep",
+        "clue": "iron_feather_glint",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "铁翼横掠"
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "jiaodian_bei",
+    "origin": "canon",
+    "origin_ref": "E:V1-029090",
+    "theme": "beast",
+    "grade": "beast",
+    "tier": "elite",
+    "rank": 5,
+    "hp": 12,
+    "problemAxis": "info",
+    "problemLabel": "情报/军师",
+    "clues": [
+      "hyena_frame",
+      "calculating_eyes"
+    ],
+    "intent": {
+      "id": "wolf_command",
+      "label": "军师驱狼",
+      "damage": 4,
+      "speed": 2
+    },
+    "_phases_note": "cooldown:n on an intent means fired at turn T, next selectable from turn T+n+1; while every intent of the active phase rests the boss shows cooldown_wait and attacks nothing that turn. Phase thresholds (until_hp_ratio) descend strictly in data order.",
+    "reactions": [
+      {
+        "id": "pack_response",
+        "clue": "calculating_eyes",
+        "window": "before_damage",
+        "trigger": "direct_strike",
+        "counter_status": "guarded",
+        "label": "狼群呼应"
+      }
+    ],
+    "phases": [
+      {
+        "until_hp_ratio": 1,
+        "intents": [
+          {
+            "id": "wolf_command",
+            "label": "军师驱狼",
+            "damage": 4,
+            "speed": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "pack_response",
+            "clue": "calculating_eyes",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "狼群呼应"
+          }
+        ]
+      },
+      {
+        "until_hp_ratio": 0.5,
+        "intents": [
+          {
+            "id": "wolf_command",
+            "label": "军师驱狼",
+            "damage": 4,
+            "speed": 2
+          },
+          {
+            "id": "commanding_seal",
+            "label": "号令封蛊",
+            "kind": "seal",
+            "seal_turns": 1,
+            "damage": 0,
+            "speed": 2,
+            "cooldown": 2
+          }
+        ],
+        "reactions": [
+          {
+            "id": "pack_response",
+            "clue": "calculating_eyes",
+            "window": "before_damage",
+            "trigger": "direct_strike",
+            "counter_status": "guarded",
+            "label": "狼群呼应"
+          }
+        ]
+      }
+    ],
+    "attackSource": "innate"
+  },
+  {
+    "id": "range_gate_guard",
+    "origin": "original_game_content",
+    "theme": "cultivator",
+    "grade": "ordinary",
+    "tier": "common",
+    "rank": 2,
+    "min_segment": 2,
+    "hp": 8,
+    "problemAxis": "range",
+    "problemLabel": "射程与逼近",
+    "attackSource": "innate",
+    "start_distance_meters": 20,
+    "attack_range_meters": 10,
+    "approach_meters": 5,
+    "intent": {
+      "id": "distant_blade",
+      "label": "短刃突进",
+      "damage": 2,
+      "speed": 1,
+      "range_meters": 10
+    },
+    "reactions": [],
+    "clues": [
+      "distant_gate"
+    ],
+    "mechanism_note": "原创遭遇：开场20米，短刃射程10米；超距用一回合逼近5米。距离与移动数值为游戏适配。"
+  }
+]

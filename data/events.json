@@ -1,0 +1,301 @@
+{
+  "events": [
+    {
+      "id": "echo_cave",
+      "kind": "delayed_cost",
+      "title": "残响叩穴",
+      "summary": "洞穴里有人敲出三短一长。墙上旧字已被磨平，只剩一行新刻：听见的人算一个。",
+      "flavor_gain": "收下回声允诺的机缘。",
+      "unknown_note": "应声后，一缕回音会留在魂魄里；下一段路未必安静。",
+      "health_cost": 1,
+      "delayed_soul_cost": 1,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 2
+    },
+    {
+      "id": "gu_rot_pact",
+      "kind": "curse_bargain",
+      "title": "腐朽蛊契",
+      "summary": "残契压在一枚虫蜕下，触碰时虫蜕先碎，朱痕却自己爬上掌心。",
+      "flavor_gain": "借腐蛊契文换得一线机缘。",
+      "unknown_note": "契文未写还期，元石滞胀的苦果可能稍后才显。",
+      "health_cost": 1,
+      "delayed_soul_cost": 1,
+      "delayed_trigger": "next_travel",
+      "curse_id": "essence_bloat"
+    },
+    {
+      "id": "huajiu_cache",
+      "title": "行者遗藏",
+      "summary": "旧酒葫芦卡在岩缝，晃动时传出石子声。葫口下压着一张空白遗言。",
+      "flavor_gain": "遗藏中的蛊虫归入蛊仓；未达对应转数时可保留或出售。",
+      "unknown_note": "遗藏内容与取得代价是本游戏原创，蛊虫转数与能力另据Wiki。",
+      "health_cost": 2,
+      "stone_gain": 5,
+      "gu_reward_id": "moon_glow_gu",
+      "gu_reward_name": "月芒蛊",
+      "gu_reward_rank": 2
+    },
+    {
+      "id": "tithing_cache",
+      "title": "献藏换赏",
+      "summary": "遗藏刚见光，山寨巡哨已摸到附近。报出位置只换一份现成赏钱，不必守到天黑。",
+      "flavor_gain": "领下山寨给出的赏钱。",
+      "unknown_note": "遗藏报上去后会落到谁手里，管事没有写进账册。",
+      "health_cost": 0,
+      "stone_gain": 2
+    },
+    {
+      "id": "small_beast_tide",
+      "title": "小兽潮",
+      "summary": "小兽潮压向寨墙，守夜人敲响木梆。你出手后能按约领赏，却还得接着赶路。",
+      "flavor_gain": "从兽尸与赏功中收下应得的元石。",
+      "unknown_note": "兽潮散去后，山道上的追随者会不会也散去，眼下无人说得准。",
+      "health_cost": 2,
+      "delayed_soul_cost": 1,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 3
+    },
+    {
+      "id": "tide_aftermath",
+      "title": "潮后拾骨",
+      "summary": "兽潮退去，尸骨嵌在泥里；石缝间散着未被啃碎的元石，兽尸已开始发热。",
+      "flavor_gain": "从尸骨与泥缝中拾回元石。",
+      "unknown_note": "低头拾取时，骨堆深处的动静始终没有停。",
+      "health_cost": 0,
+      "delayed_soul_cost": 2,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 3
+    },
+    {
+      "id": "duel_wager",
+      "title": "赌斗押注",
+      "summary": "赌斗台只摆着一张契纸和一枚筹码；对手不露面，围观者却都已押好。",
+      "flavor_gain": "拿走赌斗台上的注头。",
+      "unknown_note": "对手的底细与后手一概不知，台下的人也没有替你作证的意思。",
+      "health_cost": 1,
+      "stone_gain": 4
+    },
+    {
+      "id": "duel_loss",
+      "title": "斗蛊折戟",
+      "summary": "胜负已分，台上只剩碎蛊与几枚元石。输家仍跪着，掌纹里的封印尚未散去。",
+      "flavor_gain": "从散落的注头里捡回少许元石。",
+      "unknown_note": "封蛊何时松解没有定数，场边也没人肯替你担保。",
+      "health_cost": 2,
+      "curse_id": "meridian_seal",
+      "stone_gain": 1
+    },
+    {
+      "id": "weird_trade",
+      "title": "秘境换物",
+      "summary": "秘境只开一线，守门者不收元石，只把一盏暗灯推到你面前。",
+      "flavor_gain": "换回一份能继续上路的元石。",
+      "unknown_note": "灯里封着什么，守门者不答；你只觉魂魄像被轻轻拨了一下。",
+      "health_cost": 0,
+      "delayed_soul_cost": 1,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 2
+    },
+    {
+      "id": "contract_seal",
+      "title": "毒誓之契",
+      "summary": "契纸没有署名，酬劳却已摆上桌。墨里混着誓蛊的血，见证人不许追问条款。",
+      "flavor_gain": "先收下契约列明的酬劳。",
+      "unknown_note": "誓约会在何时收紧，只有走到那一天才知道。",
+      "health_cost": 1,
+      "delayed_soul_cost": 2,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 4
+    },
+    {
+      "id": "recognition_toll",
+      "title": "认主输诚",
+      "summary": "关卡前的印台只缺一个掌印。守关者把赏赐推近，另一只手始终按着封蛊。",
+      "flavor_gain": "收下对方许诺的赏赐。",
+      "unknown_note": "掌印留下的蛊蚀何时发作，仍由对方拿捏。",
+      "health_cost": 0,
+      "curse_id": "gu_erosion",
+      "stone_gain": 3
+    },
+    {
+      "id": "blood_vein_offering",
+      "title": "血脉献祭",
+      "summary": "地脉裂口边有人收买精血，祭坛旁的元石堆得很高，石面都染成暗红。",
+      "flavor_gain": "取走祭坛边堆积的元石。",
+      "unknown_note": "血祭留下的滞胀余患何时显形，无人敢断言。",
+      "health_cost": 2,
+      "curse_id": "essence_bloat",
+      "stone_gain": 4
+    },
+    {
+      "id": "broken_bridge_vow",
+      "title": "断桥余誓",
+      "summary": "断桥下挂着一只铜铃，铃舌系着未拆的契纸。桥另一头有人留下元石，却没有脚印。",
+      "flavor_gain": "收下铜铃旁留下的元石。",
+      "unknown_note": "应声后，一缕回音会留在魂魄里；下一段路未必安静。",
+      "kind": "delayed_cost",
+      "health_cost": 1,
+      "delayed_soul_cost": 1,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 2
+    },
+    {
+      "id": "cold_ash_pile",
+      "title": "冷灰拾遗",
+      "summary": "营火只剩冷灰，灰下压着整齐摆开的兽骨。最后一名拾荒者说，骨堆里有人数数。",
+      "flavor_gain": "从冷灰与兽骨间拾回元石。",
+      "unknown_note": "俯身拾取时，骨堆里的声音像隔着魂魄数你的脚步。",
+      "health_cost": 0,
+      "delayed_soul_cost": 2,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 3
+    },
+    {
+      "id": "sealed_silk_reliquary",
+      "title": "丝封遗匣",
+      "summary": "丝囊封死在岩壁上，拆取时细丝割开掌心。里面的元石没有受潮，囊口却缝了三层。",
+      "flavor_gain": "遗藏中的蛊虫归入蛊仓；未达对应转数时可保留或出售。",
+      "unknown_note": "遗藏内容与取得代价是本游戏原创，蛊虫转数与能力另据Wiki。",
+      "health_cost": 2,
+      "stone_gain": 5,
+      "gu_reward_id": "force_heal_3_03_gu",
+      "gu_reward_name": "自力更生蛊",
+      "gu_reward_rank": 3
+    },
+    {
+      "id": "unclaimed_waystone",
+      "title": "无主路钱",
+      "summary": "石堆夹着一小袋无人认领的元石，袋口沾着新泥。附近的脚印到此为止，又从另一侧折回。",
+      "flavor_gain": "拿走石堆里留下的元石。",
+      "unknown_note": "这笔路钱为何无人取走，留下脚印的人没有解释。",
+      "health_cost": 0,
+      "stone_gain": 2
+    },
+    {
+      "id": "cliffside_beast_bounty",
+      "title": "崖边悬赏",
+      "summary": "受伤的兽物把巡山人逼退到崖沿，赏格还贴在树上。血迹一路向上，没有往回走。",
+      "flavor_gain": "从兽尸与悬赏中收下元石。",
+      "unknown_note": "血腥味会留在身上，下一段路上是否还有追兵未可知。",
+      "health_cost": 2,
+      "delayed_soul_cost": 1,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 3
+    },
+    {
+      "id": "gravewatch_bones",
+      "title": "守骨人不眠",
+      "summary": "兽潮后的骨堆被人垒成一圈，圈心埋着元石。守骨人已经不在，地上却多了一双新脚印。",
+      "flavor_gain": "从骨圈中取回元石。",
+      "unknown_note": "拨开骨头后，那双脚印仍在你身后多出一步。",
+      "health_cost": 0,
+      "delayed_soul_cost": 2,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 3
+    },
+    {
+      "id": "ropewalk_wager",
+      "title": "索桥赌注",
+      "summary": "索桥两端各压着一份赌注，桥中央却只剩半张契纸。山风一过，桥板便互相撞响。",
+      "flavor_gain": "取走桥头留下的赌注。",
+      "unknown_note": "契纸缺掉的那一半记着谁先走上桥，无从查证。",
+      "health_cost": 1,
+      "stone_gain": 4
+    },
+    {
+      "id": "marrow_lock_duel",
+      "title": "封脉残局",
+      "summary": "斗蛊场已散，只留下一把断刃和一枚孤零零的元石。台下有人劝你别碰那张封脉符。",
+      "flavor_gain": "捡起残局里尚未被取走的元石。",
+      "unknown_note": "符印落在经脉上后何时松解，没人能替你定。",
+      "health_cost": 2,
+      "curse_id": "meridian_seal",
+      "stone_gain": 1
+    },
+    {
+      "id": "unlit_soul_lantern",
+      "title": "无火魂灯",
+      "summary": "一盏魂灯放在秘境门外，灯油早已干涸，灯芯却还留着温度。守门者让你自取灯旁的元石。",
+      "flavor_gain": "取走灯旁无人看守的元石。",
+      "unknown_note": "灯火未燃，魂魄却像被它认了出来。",
+      "health_cost": 0,
+      "delayed_soul_cost": 1,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 2
+    },
+    {
+      "id": "inked_promise",
+      "title": "墨债先偿",
+      "summary": "借贷的元石先摆到面前，契纸却要你以血印押下姓名。放贷人不问何时还，只问你敢不敢走远。",
+      "flavor_gain": "先收下契纸列出的酬劳。",
+      "unknown_note": "上路后，契文会从魂魄里取走利钱。",
+      "health_cost": 1,
+      "delayed_soul_cost": 2,
+      "delayed_trigger": "next_travel",
+      "stone_gain": 4
+    },
+    {
+      "id": "red_seal_submission",
+      "title": "朱印换路",
+      "summary": "关卡的朱印台旁堆着赏钱，守门人要的不是姓名，只要你按下掌印。",
+      "flavor_gain": "收下朱印台旁的赏钱。",
+      "unknown_note": "掌印化成蛊蚀后会如何发作，仍由掌印的势力拿捏。",
+      "health_cost": 0,
+      "curse_id": "gu_erosion",
+      "stone_gain": 3
+    },
+    {
+      "id": "bloodstone_cistern",
+      "title": "血池高价",
+      "summary": "地脉裂隙旁的石池收买精血，价钱高得反常。池沿刻满名字，最近一个还没有干。",
+      "flavor_gain": "取走石池边摆放的元石。",
+      "unknown_note": "精血换来的元石可能在体内滞胀，余患何时显现无人能断。",
+      "health_cost": 2,
+      "curse_id": "essence_bloat",
+      "stone_gain": 4
+    },
+    {
+      "id": "iron_feather_cache",
+      "title": "铁羽遗藏",
+      "summary": "一头荒兽残骸斜嵌在崖缝，完好的铁羽还能当成利箭。撬羽要下到风口，指掌都会被岩棱割破。",
+      "flavor_gain": "从荒兽残骸间撬取完好的铁羽和压在下面的元石。",
+      "unknown_note": "羽根裂口处还渗着血气，这家伙是不是真死透了，没人替你翻过。",
+      "health_cost": 3,
+      "stone_gain": 6
+    },
+    {
+      "id": "wolfden_relief_pack",
+      "title": "狼径遗囊",
+      "summary": "电狼巢径边缘挂着一只斥候遗囊，囊口用蜡封死，里面的元石没有散落。",
+      "flavor_gain": "取走遗囊里保存完好的元石。",
+      "unknown_note": "囊底压着半张没写完的绝笔，写遗书的人当时离狼群多远，无从知道。",
+      "health_cost": 2,
+      "stone_gain": 4
+    },
+    {
+      "id": "herbalist_escort",
+      "origin": "original_game_content",
+      "unknown_note": "事件、报酬与代价为游戏设计；魂债在本处整备结束、继续赶路时支付。",
+      "kind": "delayed_cost",
+      "title": "药师托运",
+      "summary": "药师请你沿瘴路护送药箱到前方落脚处。接下委托会损失气血、收取元石报酬，并在继续赶路时偿付魂债。",
+      "flavor_gain": "药箱送达后，药师按约付清报酬。",
+      "health_cost": 2,
+      "stone_gain": 10,
+      "delayed_soul_cost": 1,
+      "delayed_trigger": "next_travel"
+    },
+    {
+      "id": "miasma_meditation",
+      "origin": "original_game_content",
+      "unknown_note": "事件与资源数量为游戏设计。真元已满时不能收下，也不会扣除气血。",
+      "title": "瘴口调息",
+      "summary": "躲进石龛坐定调息，仍要承受瘴气侵蚀。接受可恢复真元并损失气血；离开则保留气血。",
+      "flavor_gain": "调息恢复真元。",
+      "health_cost": 2,
+      "essence_gain": 6,
+      "stone_gain": 0
+    }
+  ]
+}

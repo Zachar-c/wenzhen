@@ -1,0 +1,625 @@
+{
+ "aptitude_mult": {
+  "jia": 4,
+  "yi": 3,
+  "bing": 2,
+  "ding": 1
+ },
+ "_legacy_default_effect_by_role": {
+  "status": "legacy_godot_fallback_only",
+  "note_zh": "RUL-2026-09-25-001 Q2：role 曲线唯一真源已迁 balance.json effect_budget.default_amount_by_role。本表 amount 仅供 Godot v1_battle_resolver 参考实现（无 Godot 二进制环境、迁移批未至）继续消费，属待迁移 legacy 值（debt：docs/debt.md build_data role curve 行）；Web 自 2026-09-25 起改读 balance 真源 + projections 显式投影，不再消费本表 amount。kind 字段（role→semantic kind）仍为现行真源。Godot 迁移批删除 amount 后本表收敛为 role→kind。"
+ },
+ "default_effect_by_role": {
+  "attack": {
+   "kind": "strike",
+   "amount": 2
+  },
+  "defense": {
+   "kind": "shield",
+   "amount": 3
+  },
+  "healing": {
+   "kind": "heal",
+   "amount": 2
+  },
+  "movement": {
+   "kind": "shift",
+   "amount": 1
+  },
+  "recon": {
+   "kind": "status",
+   "name": "marked",
+   "amount": 1,
+   "support_school": "self",
+   "support_bonus": 1
+  },
+  "logistics": {
+   "kind": "heal",
+   "amount": 1
+  }
+ },
+ "regen_pct": {
+  "jia": 35,
+  "yi": 30,
+  "bing": 25,
+  "ding": 18
+ },
+ "stage_base": {
+  "one": 10,
+  "two": 30,
+  "three": 60,
+  "four": 100,
+  "five": 150
+ },
+ "boss_layer_mult": {
+  "one": {
+   "hp": 1.0,
+   "damage": 1.0
+  },
+  "two": {
+   "hp": 1.1,
+   "damage": 1.05
+  },
+  "three": {
+   "hp": 1.2,
+   "damage": 1.1
+  },
+  "four": {
+   "hp": 1.35,
+   "damage": 1.15
+  },
+  "five": {
+   "hp": 1.5,
+   "damage": 1.25
+  }
+ },
+ "thought_cost_default": 1,
+ "true_qi_cost_default": 1,
+ "fight_damage_base": 1,
+ "max_seal_turns": 3,
+ "mark_scratch_per_layer": 1,
+ "mark_scratch_cap": 10,
+  "sword_dao_marks_init": 5,
+  "sword_downgrade_every": 5,
+ "kill_moves": [
+  {
+   "id": "km_light_converge",
+     "origin": "original_game_content",
+   "label": "凝光",
+   "tag": "light",
+   "recipe": [
+    "moonlight_gu",
+    "small_light_gu"
+   ],
+   "true_qi_cost": 3,
+   "thought_cost": 1,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 5
+   }
+  },
+  {
+   "id": "km_light_bulwark",
+     "origin": "adaptation",
+     "origin_ref": "L130776",
+   "label": "明光壁",
+   "tag": "light",
+   "recipe": [
+    "stone_shell_gu",
+    "vitality_grass_gu"
+   ],
+   "true_qi_cost": 2,
+   "thought_cost": 1,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "shield",
+    "amount": 6
+   }
+  },
+  {
+   "id": "km_blood_ember",
+     "origin": "original_game_content",
+   "label": "血昙",
+   "tag": "blood",
+   "recipe": [
+    "blood_farewell_gu",
+    "blood_droplet_gu"
+   ],
+   "true_qi_cost": 3,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "heal_and_strike",
+    "heal": 2,
+    "amount": 3
+   }
+  },
+  {
+   "id": "km_force_avalanche",
+     "origin": "original_game_content",
+   "label": "崩山",
+   "tag": "force",
+   "recipe": [
+    "force_gu",
+    "bear_strength_gu"
+   ],
+   "true_qi_cost": 4,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 8,
+    "effect": { "kind": "strike", "amount": 8 },
+   "override_reason": "RUL-2026-09-21-010 Q1-B：declared 8 高于组件 v1_effect 和；保留声明值待组件化迁移，禁止用 coordination 伪造通过。"
+  },
+  {
+   "id": "km_sword_double_edge_1",
+     "origin": "original_game_content",
+   "label": "双锋引·一转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_1_05_gu",
+    "sword_atk_1_06_gu"
+   ],
+   "true_qi_cost": 3,
+   "thought_cost": 1,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 4
+   }
+  },
+  {
+   "id": "km_sword_double_edge_2",
+     "origin": "original_game_content",
+   "label": "双锋引·二转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu"
+   ],
+   "true_qi_cost": 3,
+   "thought_cost": 1,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 6
+   }
+  },
+  {
+   "id": "km_sword_double_edge_4",
+     "origin": "original_game_content",
+   "label": "双锋引·四转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_4_01_gu",
+    "sword_atk_2_19_gu"
+   ],
+   "true_qi_cost": 4,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 8
+   }
+  },
+  {
+   "id": "km_sword_double_edge_5",
+     "origin": "original_game_content",
+   "label": "双锋引·五转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_5_02_gu",
+    "sword_atk_5_04_gu"
+   ],
+   "true_qi_cost": 4,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 12
+   }
+  },
+  {
+   "id": "km_sword_qi_surge_1",
+     "origin": "original_game_content",
+   "label": "剑气冲霄·一转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_1_05_gu",
+    "sword_heal_1_09_gu"
+   ],
+   "true_qi_cost": 3,
+   "thought_cost": 1,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "heal_and_strike",
+    "heal": 2,
+    "amount": 2
+   }
+  },
+  {
+   "id": "km_sword_qi_surge_2",
+     "origin": "original_game_content",
+   "label": "剑气冲霄·二转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_2_12_gu",
+    "sword_heal_1_09_gu"
+   ],
+   "true_qi_cost": 3,
+   "thought_cost": 1,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "heal_and_strike",
+    "heal": 2,
+    "amount": 3
+   }
+  },
+  {
+   "id": "km_sword_qi_surge_4",
+     "origin": "original_game_content",
+   "label": "剑气冲霄·四转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_4_01_gu",
+    "sword_heal_4_16_gu"
+   ],
+   "true_qi_cost": 4,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "heal_and_strike",
+    "heal": 5,
+    "amount": 5
+   }
+  },
+  {
+   "id": "km_sword_qi_surge_5",
+     "origin": "original_game_content",
+   "label": "剑气冲霄·五转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_5_02_gu",
+    "sword_heal_4_16_gu"
+   ],
+   "true_qi_cost": 4,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "heal_and_strike",
+    "heal": 5,
+    "amount": 6
+   }
+  },
+  {
+   "id": "km_sword_myriad_shadows_2",
+     "origin": "original_game_content",
+   "label": "剑影万千·二转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu",
+    "sword_atk_2_19_gu",
+    "sword_mov_1_08_gu"
+   ],
+   "true_qi_cost": 5,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 9
+   }
+  },
+  {
+   "id": "km_sword_myriad_shadows_3",
+     "origin": "original_game_content",
+   "label": "剑影万千·三转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu",
+    "sword_atk_2_19_gu",
+    "sword_mov_3_15_gu"
+   ],
+   "true_qi_cost": 5,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 9
+   }
+  },
+  {
+   "id": "km_sword_myriad_shadows_4",
+     "origin": "original_game_content",
+   "label": "剑影万千·四转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_4_01_gu",
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu",
+    "sword_mov_1_08_gu"
+   ],
+   "true_qi_cost": 6,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 11
+   }
+  },
+  {
+   "id": "km_sword_myriad_shadows_5",
+     "origin": "original_game_content",
+   "label": "剑影万千·五转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_5_02_gu",
+    "sword_atk_5_03_gu",
+    "sword_atk_5_04_gu",
+    "sword_mov_1_08_gu"
+   ],
+   "true_qi_cost": 6,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 18
+   }
+  },
+  {
+   "id": "km_sword_mark_seek_1",
+     "origin": "canon",
+     "origin_ref": "L194470",
+   "label": "剑痕索命·一转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_1_05_gu",
+    "sword_rec_1_10_gu"
+   ],
+   "true_qi_cost": 3,
+   "thought_cost": 1,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 2
+   },
+    "source_class": "canon_driven_v1",
+    "canon_refs": ["KM-016"],
+    "canon_anchors": ["E:V5-194470", "E:V5-194498"],
+    "canon_note": "剑痕索命：剑道仙级杀招（原文 194470 起）；机制=永久耗费剑道仙蛊道痕刻印目标、道痕自寻弱点攻击。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_mark_seek_2",
+     "origin": "canon",
+     "origin_ref": "L194470",
+   "label": "剑痕索命·二转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_2_12_gu",
+    "sword_rec_1_10_gu"
+   ],
+   "true_qi_cost": 3,
+   "thought_cost": 1,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 3
+   },
+    "source_class": "canon_driven_v1",
+    "canon_refs": ["KM-016"],
+    "canon_anchors": ["E:V5-194470", "E:V5-194498"],
+    "canon_note": "剑痕索命：剑道仙级杀招（原文 194470 起）；机制=永久耗费剑道仙蛊道痕刻印目标、道痕自寻弱点攻击。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_mark_seek_4",
+     "origin": "canon",
+     "origin_ref": "L194470",
+   "label": "剑痕索命·四转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_4_01_gu",
+    "sword_rec_1_10_gu"
+   ],
+   "true_qi_cost": 4,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 5
+   },
+    "source_class": "canon_driven_v1",
+    "canon_refs": ["KM-016"],
+    "canon_anchors": ["E:V5-194470", "E:V5-194498"],
+    "canon_note": "剑痕索命：剑道仙级杀招（原文 194470 起）；机制=永久耗费剑道仙蛊道痕刻印目标、道痕自寻弱点攻击。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_mark_seek_5",
+     "origin": "canon",
+     "origin_ref": "L194470",
+   "label": "剑痕索命·五转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_5_02_gu",
+    "sword_rec_5_17_gu"
+   ],
+   "true_qi_cost": 4,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 6
+   },
+    "source_class": "canon_driven_v1",
+    "canon_refs": ["KM-016"],
+    "canon_anchors": ["E:V5-194470", "E:V5-194498"],
+    "canon_note": "剑痕索命：剑道仙级杀招（原文 194470 起）；机制=永久耗费剑道仙蛊道痕刻印目标、道痕自寻弱点攻击。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_five_fingers_2",
+     "origin": "canon",
+     "origin_ref": "L160024",
+   "label": "五指拳心剑·二转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu",
+    "sword_atk_2_19_gu",
+    "sword_atk_2_26_gu",
+    "sword_atk_2_27_gu"
+   ],
+   "true_qi_cost": 7,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 15
+   },
+    "source_class": "canon_driven_v1",
+    "canon_anchors": ["E:V4-160166"],
+    "canon_note": "五指拳心剑：剑仙薄青的剑道仙级杀招（原文 160166）。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_five_fingers_4",
+     "origin": "canon",
+     "origin_ref": "L160024",
+   "label": "五指拳心剑·四转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_4_01_gu",
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu",
+    "sword_atk_2_19_gu",
+    "sword_atk_2_26_gu"
+   ],
+   "true_qi_cost": 7,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 17
+   },
+    "source_class": "canon_driven_v1",
+    "canon_anchors": ["E:V4-160166"],
+    "canon_note": "五指拳心剑：剑仙薄青的剑道仙级杀招（原文 160166）。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_five_fingers_5",
+     "origin": "canon",
+     "origin_ref": "L160024",
+   "label": "五指拳心剑·五转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_5_02_gu",
+    "sword_atk_5_03_gu",
+    "sword_atk_5_04_gu",
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu"
+   ],
+   "true_qi_cost": 7,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 24
+   },
+    "source_class": "canon_driven_v1",
+    "canon_anchors": ["E:V4-160166"],
+    "canon_note": "五指拳心剑：剑仙薄青的剑道仙级杀招（原文 160166）。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_myriad_tribulation_2",
+     "origin": "canon",
+     "origin_ref": "L192506",
+   "label": "万剑劫·二转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu",
+    "sword_atk_2_19_gu",
+    "sword_rec_1_10_gu"
+   ],
+   "true_qi_cost": 5,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 9
+   },
+    "source_class": "canon_driven_v1",
+    "canon_anchors": ["E:V5-192506"],
+    "canon_note": "万剑劫：薄青所创仙道杀招，以飞剑仙蛊为核心、以一化万成剑雨攻势（原文 192506）。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_myriad_tribulation_4",
+     "origin": "canon",
+     "origin_ref": "L192506",
+   "label": "万剑劫·四转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_4_01_gu",
+    "sword_atk_2_12_gu",
+    "sword_atk_2_13_gu",
+    "sword_rec_1_10_gu"
+   ],
+   "true_qi_cost": 5,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 11
+   },
+    "source_class": "canon_driven_v1",
+    "canon_anchors": ["E:V5-192506"],
+    "canon_note": "万剑劫：薄青所创仙道杀招，以飞剑仙蛊为核心、以一化万成剑雨攻势（原文 192506）。游戏各转版本=品阶压缩适配"
+  },
+  {
+   "id": "km_sword_myriad_tribulation_5",
+     "origin": "canon",
+     "origin_ref": "L192506",
+   "label": "万剑劫·五转",
+   "tag": "sword",
+   "recipe": [
+    "sword_atk_5_02_gu",
+    "sword_atk_5_03_gu",
+    "sword_atk_5_04_gu",
+    "sword_rec_5_17_gu"
+   ],
+   "true_qi_cost": 5,
+   "thought_cost": 2,
+   "life_cost": 0,
+   "damage": 0,
+   "effect": {
+    "kind": "strike",
+    "amount": 18
+   },
+    "source_class": "canon_driven_v1",
+    "canon_anchors": ["E:V5-192506"],
+    "canon_note": "万剑劫：薄青所创仙道杀招，以飞剑仙蛊为核心、以一化万成剑雨攻势（原文 192506）。游戏各转版本=品阶压缩适配"
+  }
+ ]
+}

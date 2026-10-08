@@ -1,0 +1,124 @@
+{
+  "id": "PROJ-SET-LAB-PACING-V1",
+  "ruling": "RUL-2026-09-21-010",
+  "note": "禁投影 entity_id/rank/dao/canonical_refinement_composition/lore/provenance/frozen_ruling_semantics",
+  "items": [
+    {
+      "id": "PROJ-LAB-THOUGHT-001",
+      "childKey": "lab.thoughtsPerTurn",
+      "value": 2,
+      "parents": ["balance.thought_base_capacity"],
+      "policy": "pacing_projection_10min_lab",
+      "scope": "wenzhen_web_lab",
+      "rationale": "increase observe-vs-action opportunity cost",
+      "authority": "LAB_ONLY",
+      "validation": { "type": "explicit_value", "expectParent": 3 },
+      "forbidWriteBack": true,
+      "sourceRuling": null
+    },
+    {
+      "id": "PROJ-LAB-HP-001",
+      "childKey": "lab.playerHp",
+      "value": 24,
+      "parents": ["balance.human_base_health"],
+      "policy": "pacing_projection_10min_lab",
+      "scope": "wenzhen_web_lab",
+      "rationale": "compress attrition window for 10-minute proof",
+      "authority": "LAB_ONLY",
+      "validation": { "type": "explicit_value", "expectParent": 100 },
+      "forbidWriteBack": true,
+      "sourceRuling": "RUL-2026-09-19-009"
+    },
+    {
+      "id": "PROJ-LAB-QI-EX-001",
+      "childKey": "lab.LAB_EXCHANGE_RATE",
+      "value": { "stones": 1, "qi": 2 },
+      "parents": ["balance.stone_to_essence_per_stone"],
+      "policy": "pacing_projection_10min_lab",
+      "scope": "wenzhen_web_lab",
+      "rationale": "lab qi pool is percent-like 12; slower essence economy than world 1:5",
+      "authority": "LAB_ONLY",
+      "validation": { "type": "explicit_value", "expectParent": 5 },
+      "forbidWriteBack": true,
+      "sourceRuling": null
+    },
+    {
+      "id": "PROJ-LAB-BUDGET-001",
+      "childKey": "lab.LAB_BUDGET_PROJECTION",
+      "value": 20,
+      "parents": ["balance.rank_power_budget.rank1_budget"],
+      "policy": "budget_scale_projection_not_effect_formula",
+      "scope": "wenzhen_web_lab",
+      "rationale": "40/20=2 lab PP anchor; not P3 Effect→amount",
+      "authority": "LAB_ONLY",
+      "validation": { "type": "explicit_value", "expectParent": 40 },
+      "forbidWriteBack": true,
+      "sourceRuling": "RUL-2026-09-19-008"
+    },
+    {
+      "id": "PROJ-LAB-ROLE-CURVE-001",
+      "childKey": "lab.roleCurve",
+      "value": {
+        "attack": [1, 2, 2, 3, 4],
+        "defense": [1, 2, 2, 3, 4],
+        "healing": [1, 1, 2, 2, 3],
+        "logistics": [1, 1, 1, 2, 2],
+        "movement": [1, 1, 1, 1, 1],
+        "recon": [1, 1, 1, 1, 1]
+      },
+      "parents": ["balance.effect_budget.default_amount_by_role"],
+      "policy": "sqrt_budget_scalar_projection_v1",
+      "scope": "wenzhen_web_lab",
+      "rationale": "RUL-2026-09-26-001 Q1/Q2（adjudicated_via RESEARCH-REQUEST-2026-09-26-lab-role-curve-projection）：LAB role amounts are a one-way projection of the WORLD default role curves. WORLD rank power budget is projected to LAB at 1/20, while default primary effect scalars follow sqrt(Budget); therefore scalar amounts project by sqrt(1/20) = 1/sqrt(20). For each role and rank: raw = world_amount / sqrt(20); lab_amount = max(1, ceil(raw)). The projection never writes back to WORLD. LAB PP weights are validation/pricing weights applied after amount projection and are not an independent source for role curves. Movement and recon use the same formula; their flat LAB amounts are an intentional consequence of small-integer projection, with higher-rank differentiation expected from effect semantics rather than hidden scalar inflation. 旧基线 attack [2,3,4,5,6] 仅存于迁移前后报告（git 历史 ≤a1bff043），不参与任何 Runtime 消费。真实消费者=tools/build_data.mjs（写入生成物 DATA.projections.role_curve_lab，check_projection 按 parent 复算 30 值断言）",
+      "authority": "LAB_ONLY",
+      "validation": { "type": "formula_projection", "formula": "max(1, ceil(world_amount / sqrt(20)))", "path": "projections.role_curve_lab" },
+      "forbidWriteBack": true,
+      "sourceRuling": "RUL-2026-09-26-001"
+    },
+    {
+      "id": "PROJ-LAB-MVP-GU-EXCEPTION-001",
+      "childKey": "lab.mvpGuOverrides",
+      "value": {
+        "guRefs": [
+          "moonlight_gu",
+          "small_light_gu",
+          "moon_glow_gu",
+          "white_boar_strength_gu",
+          "stone_shell_gu",
+          "vitality_grass_gu",
+          "jade_skin_gu"
+        ],
+        "rulingNamedFour": ["moonlight_gu", "small_light_gu", "moon_glow_gu", "white_boar_strength_gu"]
+      },
+      "parents": ["balance.effect_budget.default_amount_by_role"],
+      "policy": "explicit_projection_exception",
+      "scope": "wenzhen_web_lab",
+      "rationale": "RUL-2026-09-25-001 Q2：MVP 实验蛊 lab 量纲覆写为显式例外——有父引用（role curve 真源）、有 overrideReason、forbidWriteBack=true，禁止反推全库。前四只为裁定点名；后三只为同机制现存覆写一并登记（mvp_content.js guRef+overrideReason 为真实消费者）",
+      "authority": "LAB_ONLY",
+      "validation": { "type": "mvp_override_refs" },
+      "forbidWriteBack": true,
+      "sourceRuling": "RUL-2026-09-25-001"
+    },
+    {
+      "id": "PROJ-LAB-ENEMY-ATTACK-001",
+      "childKey": "lab.enemyAttackAmountByGuRank",
+      "value": { "1": 1, "2": 2, "3": 2, "4": 3, "5": 4 },
+      "parents": ["balance.effect_budget.default_amount_by_role"],
+      "policy": "enemy_attack_identity_to_role_curve_v2",
+      "scope": "wenzhen_web_lab",
+      "rationale": "RUL-2026-09-26-001 Q3：敌方威胁是 encounter-level target（handleRate/survivalRate/targetTurns 约束 envelope），无固定 1/4 公式；数据方向=改伤随表（装备/能力 → projected effect → 敌人实际 action → intent.damage），不反向锚定。本表随新 LAB attack 曲线 [1,2,2,3,4] 重基为逐等值映射（identity to role curve：满足 ≤ 曲线、单调不减两条不变量的最小改动重基），旧表 {1:2,2:3,3:3,4:4,5:4} 属 legacy projection calibration 已解冻。蛊修/异动敌人的杀招伤害=装载主战蛊（kind=strike）按转投影之和，逐 intent 构建期校验 Σ==intent.damage（No Silent Fallback）；innate（兽/凡人/尸魔/凡兵符箓）intent 不参与合成、授权伤不变。敌方与玩家同蛊需要不同量纲时必须走显式 enemy projection policy，禁止另藏 Rank 表。真实消费者=tools/build_data.mjs（写入生成物并校验）+ js/mvp_logic.js（运行时同源解析）",
+      "authority": "LAB_ONLY",
+      "validation": { "type": "data_embedded", "path": "projections.enemy_attack_amount_by_gu_rank" },
+      "forbidWriteBack": true,
+      "sourceRuling": "RUL-2026-09-26-001"
+    }
+  ],
+  "forbidden_examples": [
+    {
+      "bad_childKey": "recipe.moon_glow.inputs",
+      "why": "canonical_refinement_composition 禁止 projection",
+      "canonical": ["moonlight_gu", "small_light_gu", "small_light_gu"],
+      "lab_shortcut_id": "experimental_scenario_recipe.moonlight_glow"
+    }
+  ]
+}

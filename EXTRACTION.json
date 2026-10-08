@@ -1,0 +1,631 @@
+{
+  "sourceRepository": "C:\\Users\\90877\\work_space\\gu-zhenren",
+  "sourceCommit": "c9314dd7cfbc5bd3e15e8469d0b992b821c24536",
+  "sourceState": "Includes current uncommitted main-game work; not a clean commit snapshot",
+  "files": [
+    {
+      "source": "game/wenzhen-web-lab/lab.html",
+      "destination": "lab.html",
+      "sourceSha256": "5b47ebc1f57020f7322271286290314a92a001dba122b61674680a9eb4ddf4f6",
+      "extractedSha256": "5b47ebc1f57020f7322271286290314a92a001dba122b61674680a9eb4ddf4f6"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/data.js",
+      "destination": "js/data.js",
+      "sourceSha256": "f75bdbc1aeeb5885d20561f4271c58aed1c44f86036dd1772da0e0ea6b72fc3c",
+      "extractedSha256": "87747943d5421c39b22f489127c1e9f17cd4aa3fe4cdb5106bbde786770cb0f6"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/canon.js",
+      "destination": "js/canon.js",
+      "sourceSha256": "8e83666a145b1a3e5bbbe9cbd7abb3a9edbc149d3dfab8542a1e70203c7c71dc",
+      "extractedSha256": "57b82852fd8146d9a16ca4dbf94eebb40684df7ca4fde9af5eb031dad6b2f426"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/balance.js",
+      "destination": "js/balance.js",
+      "sourceSha256": "c88b9d42a0f4cfa475abbb9243597f82539301193fefe34d7e1e2bb37f7fdbec",
+      "extractedSha256": "5a142d2a87b3680e6b2652d60b62bd9924cab84d5bf597c68c60d4203f864b7d"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/run_rules.js",
+      "destination": "js/run_rules.js",
+      "sourceSha256": "c2bb1365bffe8c540b313171dee5527ecb51d1e5ec1a827467aa7c1aa5eec515",
+      "extractedSha256": "cdd079ae61cc4b567d0d39575e3dbed15ce96d4d76ce13748d9d8a954697edde"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/run_flow.js",
+      "destination": "js/run_flow.js",
+      "sourceSha256": "b90c20589d2aab779af5a720cd602bf29d8f1460f0f536c3bfc2271787690996",
+      "extractedSha256": "bf3ddf97e36a0a03e3575caf3b7745cf54db5234fb205ed004a10fee083f154b"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/gu_rules.js",
+      "destination": "js/gu_rules.js",
+      "sourceSha256": "a5fcfc47996ac74b782b31d00b403c15fa677dbc82dddc24b962f79604a1ea48",
+      "extractedSha256": "c5c7445694bddedb13a9aa386cbabab7909e009c8afbc8dbfc8df1730773f9bd"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/human_rules.js",
+      "destination": "js/human_rules.js",
+      "sourceSha256": "8d250741a2d64071606c4d4e6a0ef0f4e3e8756d47d9437bbe4e63bcd1e5c77f",
+      "extractedSha256": "3b527f8b881213112c3fc2c0abafa80456a7a049d0c19dfd0b13471da252ec41"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/loot_rules.js",
+      "destination": "js/loot_rules.js",
+      "sourceSha256": "7d8c5d9f3213a14807a1f7b23b2ca1b7e1e8fdc4125c3419eeec171f76ae75c3",
+      "extractedSha256": "3dd7948a96deae29797ab2f7a0cb4ce944621d5f6c95c52bdbff87e9e8a26f40"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/shop_rules.js",
+      "destination": "js/shop_rules.js",
+      "sourceSha256": "bb7dcc019f2aac59ca80804d198ec9395946c695f66eb35d008bfc99bc4a07db",
+      "extractedSha256": "0f849a211794cde56fa387b43aa17f9469356587956bbb63aedc7d5c0bb6b6aa"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/node_action_rules.js",
+      "destination": "js/node_action_rules.js",
+      "sourceSha256": "ba2c85208f8ef0aebc208811426e12eaf0ba8034a7372ba50c80a727d71298e7",
+      "extractedSha256": "bb09434666267be326dd9f22c7c3d37de530d7c25fcf312cb8fad87d8dbcb551"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/mvp_content.js",
+      "destination": "js/mvp_content.js",
+      "sourceSha256": "210c625389e97979dc8a9d3afed087fe0ce493e87a44d407d151c86288a4021f",
+      "extractedSha256": "9d9a685aab3c24ce18917466fdb0a5b172326ae9115ddd286f4506aacc77f956"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/mvp_logic.js",
+      "destination": "js/mvp_logic.js",
+      "sourceSha256": "e0ac3d108979f5ff687ae21f9e9d788895d434d9f81267d69ae4919750c38a8d",
+      "extractedSha256": "e0ac3d108979f5ff687ae21f9e9d788895d434d9f81267d69ae4919750c38a8d"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/combat_core.js",
+      "destination": "js/combat_core.js",
+      "sourceSha256": "e1de966981c7e4018c1c43ab9ae61abc57f03c10cd06f6274979ec85990190f2",
+      "extractedSha256": "428040730f3ce9a7347b7aa9659cd51b93925524e148038bf9f9ce28a88b7aa6"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/audio.js",
+      "destination": "js/audio.js",
+      "sourceSha256": "ed764d0197e84fd450ba3ab22ccddca5ccdfd88a2c4e52226638c594cbd8f11e",
+      "extractedSha256": "b0271063f3f94a0f5d6ce745180259830e0d29a362701ec78c4dfd058d096894"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/describe.js",
+      "destination": "js/describe.js",
+      "sourceSha256": "4bef46eff939a79b2d9c8bc576d7d4e35bcc8facbc6ba19254c5c376399494cd",
+      "extractedSha256": "d1166badcc24024b5d3456ae94b965d25a3ab2f11ee80208e77462ba4360b68b"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/rules.js",
+      "destination": "js/rules.js",
+      "sourceSha256": "2b9f0b9d34b4cfd13551647cc44f2b51333a913697fd2b60cf91845fcc89acef",
+      "extractedSha256": "72906b9038c060be3b6734e34aa330190af20e9a4d81395d481156391d9bd7a1"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/alchemy.js",
+      "destination": "js/alchemy.js",
+      "sourceSha256": "9d2d178fa509e6705cc8848ee7e3df7880bfe103b71e0441cd1b9010a48621f1",
+      "extractedSha256": "0480c0e1fc4f7c2c6edd3ae9c0c64d1bb144037667a0a495fcda6fd87a1a9208"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/killmove.js",
+      "destination": "js/killmove.js",
+      "sourceSha256": "3ad827e80065dec1b7ddcf791c7711472e0e9eba29ee35068d1534987e9bc136",
+      "extractedSha256": "6ee2be5fda591b13c874649c092d2aa308079513d0f2e0eb5897ecd87ee18223"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/battle.js",
+      "destination": "js/battle.js",
+      "sourceSha256": "42258a6e8bf8fd92345ab40c681d76fc1fc8b115967c0e4f714a8530b8b5a2e3",
+      "extractedSha256": "1a647b9c91b83cb0f972adeeef381f1c81b434f45fe6278f8a50f25ae6134c2d"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/journey.js",
+      "destination": "js/journey.js",
+      "sourceSha256": "e4c58c5b69ea904d6c386e4fe4beae8e703b5abe680f6e1f392fdcffe322b231",
+      "extractedSha256": "ee61855a7272f224c24e0e8879e2869c5d5c55f9ea852c480885f4464646ae39"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/lab_save.js",
+      "destination": "js/lab_save.js",
+      "sourceSha256": "b4d895a46c2cfd228acfaf1c7c8c0c5c463f960f03c35e02b76215427cb1ea2d",
+      "extractedSha256": "71488f0a30e74919ed797d251ed72c9cf3594430f2d40635aac460b32a8953c9"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/vendor/gsap.min.js",
+      "destination": "js/vendor/gsap.min.js",
+      "sourceSha256": "96c01b81f44a3290e2b4532f55e2c9534b2adc43273a19f3756b2cb41f0fd0b6",
+      "extractedSha256": "b9a1a5278724d88e1ce51ef057dd14ba54eaf108cf997dce1c6c9b9f0e234635"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/motion.js",
+      "destination": "js/motion.js",
+      "sourceSha256": "3e55ea37d400105eaf7d3a1b11c176ddbaf97b22baee425bd1a35c25fdc15a89",
+      "extractedSha256": "4c40f7d3b213dda33a948ab99d3a248329fc1716a4bc74d8d31a27b0fafd0bba"
+    },
+    {
+      "source": "game/wenzhen-web-lab/js/main.js",
+      "destination": "js/main.js",
+      "sourceSha256": "01000c5e877d37deff8d41a9e215506d430ba4bd578ab323a9ff4bbda52c573f",
+      "extractedSha256": "b79b4304b454ff510d3d29124ccd2be7f1d79cc887c4485ad3808bccb37883bb"
+    },
+    {
+      "source": "game/wenzhen-web-lab/css/lab.css",
+      "destination": "css/lab.css",
+      "sourceSha256": "4f2fc740c724db127e1d3854b2ad8249c66e93fb8ddef4da6a57ba49df528fc5",
+      "extractedSha256": "c72a2d953524305065aa9d1a018d10250b3dae0ce82fff582e36aaa49714418f"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_beast_swarm.png",
+      "destination": "assets/enemies/enemy_beast_swarm.png",
+      "sourceSha256": "d38138d55ae44fca1a5770c73458f35e3ccdd10f29e22780870ad9e5d1a34df0",
+      "extractedSha256": "d38138d55ae44fca1a5770c73458f35e3ccdd10f29e22780870ad9e5d1a34df0"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_crag_serpent_matriarch.png",
+      "destination": "assets/enemies/enemy_crag_serpent_matriarch.png",
+      "sourceSha256": "b3c153f62e85499db6a84921e87dca7683ff8c55fb41a1dfb2f22a10279f064b",
+      "extractedSha256": "b3c153f62e85499db6a84921e87dca7683ff8c55fb41a1dfb2f22a10279f064b"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_iron_hide_boar.png",
+      "destination": "assets/enemies/enemy_iron_hide_boar.png",
+      "sourceSha256": "3b7833c870699b88c1f5e0ca5e4280bd87a5b170bd9e7da4f5b3169d89969c21",
+      "extractedSha256": "3b7833c870699b88c1f5e0ca5e4280bd87a5b170bd9e7da4f5b3169d89969c21"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_ridge_hound.png",
+      "destination": "assets/enemies/enemy_ridge_hound.png",
+      "sourceSha256": "1bff97d66c7f9a511e527e608dcb4bca9af430885e395b0f4415d382856a2218",
+      "extractedSha256": "1bff97d66c7f9a511e527e608dcb4bca9af430885e395b0f4415d382856a2218"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_sanxiu.png",
+      "destination": "assets/enemies/enemy_sanxiu.png",
+      "sourceSha256": "ba1e6363d36946264a11ecdf9465856aa9bd08f2ffd3589d6d538c66a22d0fe0",
+      "extractedSha256": "ba1e6363d36946264a11ecdf9465856aa9bd08f2ffd3589d6d538c66a22d0fe0"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_stone_wanderer.png",
+      "destination": "assets/enemies/enemy_stone_wanderer.png",
+      "sourceSha256": "ee4317349d625641db2a40aad6ea2ae662a24a8c6edf9a73ff48555ea3162370",
+      "extractedSha256": "ee4317349d625641db2a40aad6ea2ae662a24a8c6edf9a73ff48555ea3162370"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_thunder_crown_sovereign.png",
+      "destination": "assets/enemies/enemy_thunder_crown_sovereign.png",
+      "sourceSha256": "5ba76925ec0a233f11151163f60d69ab7c40b6aaee80968b5736c50233588442",
+      "extractedSha256": "5ba76925ec0a233f11151163f60d69ab7c40b6aaee80968b5736c50233588442"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_thunder_crown_wolf.png",
+      "destination": "assets/enemies/enemy_thunder_crown_wolf.png",
+      "sourceSha256": "6a0e0eb85a7ecbe47e3ebd5c752076085f5fb673f078874194a51514931c45b2",
+      "extractedSha256": "6a0e0eb85a7ecbe47e3ebd5c752076085f5fb673f078874194a51514931c45b2"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/enemy_toad.png",
+      "destination": "assets/enemies/enemy_toad.png",
+      "sourceSha256": "2a683d5c1c2e5df5944c91bf888573b059b1f06667ec5962e28d555504075863",
+      "extractedSha256": "2a683d5c1c2e5df5944c91bf888573b059b1f06667ec5962e28d555504075863"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/web_boss_blood_vein_bishop.jpg",
+      "destination": "assets/enemies/web_boss_blood_vein_bishop.jpg",
+      "sourceSha256": "9ecf7818e3106c1402f8106829343e5924843aa5a1a4c2088701f811cbabcce0",
+      "extractedSha256": "9ecf7818e3106c1402f8106829343e5924843aa5a1a4c2088701f811cbabcce0"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/web_boss_blue_fur_jiangshi.jpg",
+      "destination": "assets/enemies/web_boss_blue_fur_jiangshi.jpg",
+      "sourceSha256": "a3de1f44a8b43d2193a2616b5bf68ea8d7594ef263e8fb550bb3f40caad7ba0b",
+      "extractedSha256": "a3de1f44a8b43d2193a2616b5bf68ea8d7594ef263e8fb550bb3f40caad7ba0b"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/web_boss_clan_patriarch.jpg",
+      "destination": "assets/enemies/web_boss_clan_patriarch.jpg",
+      "sourceSha256": "89508e72683c28767684b9ece721e4b07a0444f79174cc8ae3fc6e2c67e89da3",
+      "extractedSha256": "89508e72683c28767684b9ece721e4b07a0444f79174cc8ae3fc6e2c67e89da3"
+    },
+    {
+      "source": "game/assets/wenzhen/enemies/web_boss_miasma_vein_lord.jpg",
+      "destination": "assets/enemies/web_boss_miasma_vein_lord.jpg",
+      "sourceSha256": "a1fac081367dab263134b8d8ecc5aae82454c5473d1f2382ac6039f8bda78110",
+      "extractedSha256": "a1fac081367dab263134b8d8ecc5aae82454c5473d1f2382ac6039f8bda78110"
+    },
+    {
+      "source": "game/assets/wenzhen/fonts/LXGWZhiSongCL-Regular.ttf",
+      "destination": "assets/fonts/LXGWZhiSongCL-Regular.ttf",
+      "sourceSha256": "8c507bbed3668558632f013de7a6ed185ee5b21298d47274c2eb3a1dbe71ac6f",
+      "extractedSha256": "8c507bbed3668558632f013de7a6ed185ee5b21298d47274c2eb3a1dbe71ac6f"
+    },
+    {
+      "source": "game/assets/wenzhen/fonts/MaShanZheng-Regular.ttf",
+      "destination": "assets/fonts/MaShanZheng-Regular.ttf",
+      "sourceSha256": "6d2546bb189c732a8ca29af9e22457b152387d158aa459e4ac2ce1e51788b7fb",
+      "extractedSha256": "6d2546bb189c732a8ca29af9e22457b152387d158aa459e4ac2ce1e51788b7fb"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_blood.png",
+      "destination": "assets/gu/gu_blood.png",
+      "sourceSha256": "911d615e17ef1ab058e6f2b79bb6cd648eea5967f386fcb9eaa92e223adbc991",
+      "extractedSha256": "911d615e17ef1ab058e6f2b79bb6cd648eea5967f386fcb9eaa92e223adbc991"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_earth.png",
+      "destination": "assets/gu/gu_earth.png",
+      "sourceSha256": "e78c75846898a3e83c2b1353a0f7404e86e5d68a9c1a4b5d3c3d9bbdcadf8b13",
+      "extractedSha256": "e78c75846898a3e83c2b1353a0f7404e86e5d68a9c1a4b5d3c3d9bbdcadf8b13"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_fire.png",
+      "destination": "assets/gu/gu_fire.png",
+      "sourceSha256": "f338671289380815c630c4dcc0a06d69c40d881697106655be58ddbd777d4d3d",
+      "extractedSha256": "f338671289380815c630c4dcc0a06d69c40d881697106655be58ddbd777d4d3d"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_force.png",
+      "destination": "assets/gu/gu_force.png",
+      "sourceSha256": "117983560a60b321d8bdd6f07f92a61b4639bca6b8cb496cb04e9dc7716019a2",
+      "extractedSha256": "117983560a60b321d8bdd6f07f92a61b4639bca6b8cb496cb04e9dc7716019a2"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_light.png",
+      "destination": "assets/gu/gu_light.png",
+      "sourceSha256": "7e70bd782f5b4fccda2286220ad6683dbbc0f27095cb768be4d486f65e3a9966",
+      "extractedSha256": "7e70bd782f5b4fccda2286220ad6683dbbc0f27095cb768be4d486f65e3a9966"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_moon.png",
+      "destination": "assets/gu/gu_moon.png",
+      "sourceSha256": "d273bd21d4f6c95ca7dcf0ba0462cb19d5bb1613aeada97fcdb6400872584d11",
+      "extractedSha256": "d273bd21d4f6c95ca7dcf0ba0462cb19d5bb1613aeada97fcdb6400872584d11"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_qi.png",
+      "destination": "assets/gu/gu_qi.png",
+      "sourceSha256": "8779be98dd27bd5be7c5f4fab5e686f21ce0ae5ef3a1c1ef413fcf53fa2907e4",
+      "extractedSha256": "8779be98dd27bd5be7c5f4fab5e686f21ce0ae5ef3a1c1ef413fcf53fa2907e4"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_sword.png",
+      "destination": "assets/gu/gu_sword.png",
+      "sourceSha256": "2e531ad58f5283d02a138e57eb293c984cce30cca268c6ceb3bcfa5879789daa",
+      "extractedSha256": "2e531ad58f5283d02a138e57eb293c984cce30cca268c6ceb3bcfa5879789daa"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_water.png",
+      "destination": "assets/gu/gu_water.png",
+      "sourceSha256": "b22ce7833341965f4fd26d2c6dacefcdda7bb641b0865098af64ab78aa835d4e",
+      "extractedSha256": "b22ce7833341965f4fd26d2c6dacefcdda7bb641b0865098af64ab78aa835d4e"
+    },
+    {
+      "source": "game/assets/wenzhen/gu/gu_wind.png",
+      "destination": "assets/gu/gu_wind.png",
+      "sourceSha256": "a01bf162687bcb4c9b2067956d7ef57dc0653ac3730c138f7cd0c208294e5a16",
+      "extractedSha256": "a01bf162687bcb4c9b2067956d7ef57dc0653ac3730c138f7cd0c208294e5a16"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-01-battle-detail.png",
+      "destination": "assets/web/scene-01-battle-detail.png",
+      "sourceSha256": "8d56626f860601a085ee4055f884ba51919839cff34247eab476e02418486c93",
+      "extractedSha256": "8d56626f860601a085ee4055f884ba51919839cff34247eab476e02418486c93"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-01-battle.jpg",
+      "destination": "assets/web/scene-01-battle.jpg",
+      "sourceSha256": "b221568fb383c1b53cb9c31aa7ca3e4c7d3764562740157d0bf3551efa5c6cee",
+      "extractedSha256": "b221568fb383c1b53cb9c31aa7ca3e4c7d3764562740157d0bf3551efa5c6cee"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-01.jpg",
+      "destination": "assets/web/scene-01.jpg",
+      "sourceSha256": "e78d9f2de800184ba09163f056f4b91f4aa33a0fa1df4d0b1c6e4834ea2dbe09",
+      "extractedSha256": "e78d9f2de800184ba09163f056f4b91f4aa33a0fa1df4d0b1c6e4834ea2dbe09"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-02-battle-detail.png",
+      "destination": "assets/web/scene-02-battle-detail.png",
+      "sourceSha256": "55c7fb89a2ca08609278c02bc60ad118fccfc2f9c73572d150025af9f80ee94e",
+      "extractedSha256": "55c7fb89a2ca08609278c02bc60ad118fccfc2f9c73572d150025af9f80ee94e"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-02-battle.jpg",
+      "destination": "assets/web/scene-02-battle.jpg",
+      "sourceSha256": "cfe930b66324e341fb6f71a41d74d9ffebc2f45d7eb6fea49742f8a7bab936cd",
+      "extractedSha256": "cfe930b66324e341fb6f71a41d74d9ffebc2f45d7eb6fea49742f8a7bab936cd"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-02.jpg",
+      "destination": "assets/web/scene-02.jpg",
+      "sourceSha256": "7708879859b8a971f5d0178b1865102ada45a6828015c25bae2f24999003d1a9",
+      "extractedSha256": "7708879859b8a971f5d0178b1865102ada45a6828015c25bae2f24999003d1a9"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-03-battle-detail.png",
+      "destination": "assets/web/scene-03-battle-detail.png",
+      "sourceSha256": "cd895d59e8402b24a7f9f32636f308c9c725dd8656cc78711a09f8cbc274c9df",
+      "extractedSha256": "cd895d59e8402b24a7f9f32636f308c9c725dd8656cc78711a09f8cbc274c9df"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-03-battle.jpg",
+      "destination": "assets/web/scene-03-battle.jpg",
+      "sourceSha256": "22ad611fe8c9b1741174b81fea460731bdd18d7d7fa66e9e25c64f2b94e45ed7",
+      "extractedSha256": "22ad611fe8c9b1741174b81fea460731bdd18d7d7fa66e9e25c64f2b94e45ed7"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-03.jpg",
+      "destination": "assets/web/scene-03.jpg",
+      "sourceSha256": "a5a8649b30ff764a2120dca5b4e9dd18e7ec6ce6bed5b2b91ab286560af82bf9",
+      "extractedSha256": "a5a8649b30ff764a2120dca5b4e9dd18e7ec6ce6bed5b2b91ab286560af82bf9"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-04-battle-detail.png",
+      "destination": "assets/web/scene-04-battle-detail.png",
+      "sourceSha256": "2220a2bdd2a1c4a550df8cb77fa639d6cfc5f78412acf512058d5eec9796f527",
+      "extractedSha256": "2220a2bdd2a1c4a550df8cb77fa639d6cfc5f78412acf512058d5eec9796f527"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-04-battle.jpg",
+      "destination": "assets/web/scene-04-battle.jpg",
+      "sourceSha256": "2f5f12b2d11d8c3c458a15e277cf4e214e3fdb8452c8996c9a30ebdbdad75e10",
+      "extractedSha256": "2f5f12b2d11d8c3c458a15e277cf4e214e3fdb8452c8996c9a30ebdbdad75e10"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-04.jpg",
+      "destination": "assets/web/scene-04.jpg",
+      "sourceSha256": "414221732cc16b4f925d22c92233a4a107a8fb9521577aa532524cd4047f5837",
+      "extractedSha256": "414221732cc16b4f925d22c92233a4a107a8fb9521577aa532524cd4047f5837"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-05-battle-detail.png",
+      "destination": "assets/web/scene-05-battle-detail.png",
+      "sourceSha256": "6b2be012cd26b6b975d641a8dda3ff4772720a66fde3e1d044c4bf5e27e7cd62",
+      "extractedSha256": "6b2be012cd26b6b975d641a8dda3ff4772720a66fde3e1d044c4bf5e27e7cd62"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-05-battle.jpg",
+      "destination": "assets/web/scene-05-battle.jpg",
+      "sourceSha256": "365790d82822bbc63e668f316a5b729b0daaffbe6a1f55793896f1912f78e08f",
+      "extractedSha256": "365790d82822bbc63e668f316a5b729b0daaffbe6a1f55793896f1912f78e08f"
+    },
+    {
+      "source": "game/assets/wenzhen/web/scene-05.jpg",
+      "destination": "assets/web/scene-05.jpg",
+      "sourceSha256": "7918a0c242994db1d62297ad9ce98a2e325f883c1edfd0546e697b114311fc30",
+      "extractedSha256": "7918a0c242994db1d62297ad9ce98a2e325f883c1edfd0546e697b114311fc30"
+    },
+    {
+      "source": "game/assets/wenzhen/fonts/IPA_FONT_LICENSE.txt",
+      "destination": "assets/fonts/IPA_FONT_LICENSE.txt",
+      "sourceSha256": "ba9a398b4f2f1bd0eae0c404368613e3062efd80b805546d63284709237fbace",
+      "extractedSha256": "ba9a398b4f2f1bd0eae0c404368613e3062efd80b805546d63284709237fbace"
+    },
+    {
+      "source": "game/assets/wenzhen/fonts/OFL1.1_MaShanZheng.txt",
+      "destination": "assets/fonts/OFL1.1_MaShanZheng.txt",
+      "sourceSha256": "d7bdb1cee215b689e23c2f95672a6084c790542170648267a55114103d756a08",
+      "extractedSha256": "d7bdb1cee215b689e23c2f95672a6084c790542170648267a55114103d756a08"
+    },
+    {
+      "source": "game/data/gu.json",
+      "destination": "data/gu.json",
+      "sourceSha256": "cfb0c0b97fb142e9ec582a02b4814d2067f47269fd18a640f8d1afedf21fb205",
+      "extractedSha256": "cfb0c0b97fb142e9ec582a02b4814d2067f47269fd18a640f8d1afedf21fb205"
+    },
+    {
+      "source": "game/data/names.json",
+      "destination": "data/names.json",
+      "sourceSha256": "23938fad84ebcbb3951e3c0773f3e7ebdcca0cff0bfe2e6ca4b25c95ca57610a",
+      "extractedSha256": "23938fad84ebcbb3951e3c0773f3e7ebdcca0cff0bfe2e6ca4b25c95ca57610a"
+    },
+    {
+      "source": "game/data/refinement_recipes.json",
+      "destination": "data/refinement_recipes.json",
+      "sourceSha256": "2f33548470d769242e357705b1880c21f1fa8058205bc9f660f272cc9ffac11c",
+      "extractedSha256": "2f33548470d769242e357705b1880c21f1fa8058205bc9f660f272cc9ffac11c"
+    },
+    {
+      "source": "game/data/v1_battle.json",
+      "destination": "data/v1_battle.json",
+      "sourceSha256": "64f8b8f30737d42a1d7171cbbe6c623cd8f2be4f6a1b7a6f54e2876f008564b0",
+      "extractedSha256": "64f8b8f30737d42a1d7171cbbe6c623cd8f2be4f6a1b7a6f54e2876f008564b0"
+    },
+    {
+      "source": "game/data/balance.json",
+      "destination": "data/balance.json",
+      "sourceSha256": "c6991b93587c49e554d76d2f2ad9efe0519570645d67eff192d56ff4b6ae8620",
+      "extractedSha256": "c6991b93587c49e554d76d2f2ad9efe0519570645d67eff192d56ff4b6ae8620"
+    },
+    {
+      "source": "game/data/aptitude.json",
+      "destination": "data/aptitude.json",
+      "sourceSha256": "6672cac75497fc2bd65cd986874feac7b8f8ac1e5222704e0bc9b9d9224ab142",
+      "extractedSha256": "6672cac75497fc2bd65cd986874feac7b8f8ac1e5222704e0bc9b9d9224ab142"
+    },
+    {
+      "source": "game/data/loot_tables.json",
+      "destination": "data/loot_tables.json",
+      "sourceSha256": "3dad6914db5814a98a7a4df6e0d8bf3f8ffd8ed9ef65edbcc3cf440ec96548b7",
+      "extractedSha256": "3dad6914db5814a98a7a4df6e0d8bf3f8ffd8ed9ef65edbcc3cf440ec96548b7"
+    },
+    {
+      "source": "game/data/pacing.json",
+      "destination": "data/pacing.json",
+      "sourceSha256": "dddef2fc7e2cdfa9d49cf6401029aa77682f091ae59f72d35130ee5bd4d7cfed",
+      "extractedSha256": "dddef2fc7e2cdfa9d49cf6401029aa77682f091ae59f72d35130ee5bd4d7cfed"
+    },
+    {
+      "source": "game/data/school_pools.json",
+      "destination": "data/school_pools.json",
+      "sourceSha256": "dcfa39a742d57024d24e6a9fbabc2893a7a214879e5d31bebf8a102b860a8c09",
+      "extractedSha256": "dcfa39a742d57024d24e6a9fbabc2893a7a214879e5d31bebf8a102b860a8c09"
+    },
+    {
+      "source": "game/data/enemies.json",
+      "destination": "data/enemies.json",
+      "sourceSha256": "7dbffd311573051c50149e0d537ae4ff4f4daf9982a3f1260cec8c97d354607d",
+      "extractedSha256": "7dbffd311573051c50149e0d537ae4ff4f4daf9982a3f1260cec8c97d354607d"
+    },
+    {
+      "source": "game/data/first_run.json",
+      "destination": "data/first_run.json",
+      "sourceSha256": "c32d58f682e3e3da7b19871712119807c3502d22d6731311ebd447870e02708f",
+      "extractedSha256": "c32d58f682e3e3da7b19871712119807c3502d22d6731311ebd447870e02708f"
+    },
+    {
+      "source": "game/data/shops.json",
+      "destination": "data/shops.json",
+      "sourceSha256": "6037edf69effc8e37132bd47d2ed9d199065ad74cb732ac1f3dabd81c25345d3",
+      "extractedSha256": "6037edf69effc8e37132bd47d2ed9d199065ad74cb732ac1f3dabd81c25345d3"
+    },
+    {
+      "source": "game/data/nodes.json",
+      "destination": "data/nodes.json",
+      "sourceSha256": "f0d4bfc585da9bfe4bd0ab9e1b626f87e9c6dd78b5948f449a0e2ea5fc91861a",
+      "extractedSha256": "f0d4bfc585da9bfe4bd0ab9e1b626f87e9c6dd78b5948f449a0e2ea5fc91861a"
+    },
+    {
+      "source": "game/data/npcs.json",
+      "destination": "data/npcs.json",
+      "sourceSha256": "1f2fed6386bea854c47faae6f3fe2d1bab0ac27c6bd159dbcc5f85d2d6368062",
+      "extractedSha256": "1f2fed6386bea854c47faae6f3fe2d1bab0ac27c6bd159dbcc5f85d2d6368062"
+    },
+    {
+      "source": "game/data/events.json",
+      "destination": "data/events.json",
+      "sourceSha256": "913f7c52fd6ec465c709742591c2c964bc0ea875e6cac39417da5fafabd51bdd",
+      "extractedSha256": "913f7c52fd6ec465c709742591c2c964bc0ea875e6cac39417da5fafabd51bdd"
+    },
+    {
+      "source": "game/wenzhen-web-lab/data/projections.json",
+      "destination": "data/projections.json",
+      "sourceSha256": "591728921c8c897c3d314833ff0eb49dc2509e6ff9a90bef209e6ad3f2419667",
+      "extractedSha256": "591728921c8c897c3d314833ff0eb49dc2509e6ff9a90bef209e6ad3f2419667"
+    },
+    {
+      "source": "lore/runtime/entities.json",
+      "destination": "canon/entities.json",
+      "sourceSha256": "1d0508a7330fdaa0523f8ae53a55b32ab574175b8b7a4dc5076c12190d406ccd",
+      "extractedSha256": "1d0508a7330fdaa0523f8ae53a55b32ab574175b8b7a4dc5076c12190d406ccd"
+    },
+    {
+      "source": "lore/runtime/relations.json",
+      "destination": "canon/relations.json",
+      "sourceSha256": "57ac1d6e402b95456e06d5d3fb119b7ac98cb683f770dee34cbd09c23b0a02ab",
+      "extractedSha256": "57ac1d6e402b95456e06d5d3fb119b7ac98cb683f770dee34cbd09c23b0a02ab"
+    },
+    {
+      "source": "lore/runtime/manifest.json",
+      "destination": "canon/manifest.json",
+      "sourceSha256": "8646e2c1a2bee6ce5caeb6b59cf2b3f104638e153fdf90236870503dd2355d1e",
+      "extractedSha256": "8646e2c1a2bee6ce5caeb6b59cf2b3f104638e153fdf90236870503dd2355d1e"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tools/build_data.mjs",
+      "destination": "tools/build_data.mjs",
+      "sourceSha256": "2b73243fb4603ea3b932273081fb05ac6a852478f64f16464d5265b3b8ea8cbd",
+      "extractedSha256": "9c932eea72838253e2723ec354060a76ba2249a09ee526480c7421f7ad0050bd"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/lab_save.test.mjs",
+      "destination": "tests/lab_save.test.mjs",
+      "sourceSha256": "e2b0c5d6849dbd45343bc1a6f02803adcaae530d64e93a51d4e86f96a390df12",
+      "extractedSha256": "e2b0c5d6849dbd45343bc1a6f02803adcaae530d64e93a51d4e86f96a390df12"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/lab_transactions.test.mjs",
+      "destination": "tests/lab_transactions.test.mjs",
+      "sourceSha256": "669d12687d0c70be1d664ebfd454885be2a651c82319672e108c3d184f22c4d3",
+      "extractedSha256": "669d12687d0c70be1d664ebfd454885be2a651c82319672e108c3d184f22c4d3"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/shop_rules.test.mjs",
+      "destination": "tests/shop_rules.test.mjs",
+      "sourceSha256": "87f9ad598c1831d379d7f33a09080d7d1230c5efd13ac807afd379ad87002677",
+      "extractedSha256": "87f9ad598c1831d379d7f33a09080d7d1230c5efd13ac807afd379ad87002677"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/loot_rules.test.mjs",
+      "destination": "tests/loot_rules.test.mjs",
+      "sourceSha256": "fb5df2ef9401efc72cc03c28a34c7e71fca2119a5744e0c349bf0f30a778b5c8",
+      "extractedSha256": "fb5df2ef9401efc72cc03c28a34c7e71fca2119a5744e0c349bf0f30a778b5c8"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/lab_combat.test.mjs",
+      "destination": "tests/lab_combat.test.mjs",
+      "sourceSha256": "f5f4407db01b83106f47a8682d7f2b86602cdc446c90b4da9f78aac5dad96961",
+      "extractedSha256": "f5f4407db01b83106f47a8682d7f2b86602cdc446c90b4da9f78aac5dad96961"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/route_preview.test.mjs",
+      "destination": "tests/route_preview.test.mjs",
+      "sourceSha256": "113f39f7500bea34e50a58898dd098bfc91ff576a5bca2ab6c2ceaf640c7514c",
+      "extractedSha256": "113f39f7500bea34e50a58898dd098bfc91ff576a5bca2ab6c2ceaf640c7514c"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/lab_lifecycle.test.mjs",
+      "destination": "tests/lab_lifecycle.test.mjs",
+      "sourceSha256": "774852533b9ebd99306f9a94f720c47c0c3150039ee775c392852dc042a084c1",
+      "extractedSha256": "774852533b9ebd99306f9a94f720c47c0c3150039ee775c392852dc042a084c1"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/gu_rules.test.mjs",
+      "destination": "tests/gu_rules.test.mjs",
+      "sourceSha256": "b9cf03b00a435f86375ce6e67a9d66b12bcab85923b3b52966fb787d2417c0b6",
+      "extractedSha256": "b9cf03b00a435f86375ce6e67a9d66b12bcab85923b3b52966fb787d2417c0b6"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/run_flow.test.mjs",
+      "destination": "tests/run_flow.test.mjs",
+      "sourceSha256": "8389279e5b347aaf65d5c45ea01bf282130d5167443860b8467fde7a257bd734",
+      "extractedSha256": "8389279e5b347aaf65d5c45ea01bf282130d5167443860b8467fde7a257bd734"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/node_action_rules.test.mjs",
+      "destination": "tests/node_action_rules.test.mjs",
+      "sourceSha256": "abfd2545298941f32b48d0f95db6857b3bd5f88e392b416a4451ede61b731c6e",
+      "extractedSha256": "abfd2545298941f32b48d0f95db6857b3bd5f88e392b416a4451ede61b731c6e"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/human_rules.test.mjs",
+      "destination": "tests/human_rules.test.mjs",
+      "sourceSha256": "523839bd25b6ff8fde315631f72949d8ba6cc77653fa145e9e111ee519d49b68",
+      "extractedSha256": "523839bd25b6ff8fde315631f72949d8ba6cc77653fa145e9e111ee519d49b68"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tests/helpers/lab_browser.mjs",
+      "destination": "tests/helpers/lab_browser.mjs",
+      "sourceSha256": "b9e8989aaf07080a9cd8397e3efb605c101461305dc57cf82f8f06f2e9a9ce32",
+      "extractedSha256": "b9e8989aaf07080a9cd8397e3efb605c101461305dc57cf82f8f06f2e9a9ce32"
+    },
+    {
+      "source": "docs/PRODUCT_REQUIREMENTS_v1.0.md",
+      "destination": "docs/PRODUCT_REQUIREMENTS.md",
+      "sourceSha256": "95ef225786f4fc1e4782a056562cf4c6a8370ad0b6bc9b27a4de6646b9fc47f4",
+      "extractedSha256": "95ef225786f4fc1e4782a056562cf4c6a8370ad0b6bc9b27a4de6646b9fc47f4"
+    },
+    {
+      "source": "game/wenzhen-web-lab/docs/2026-10-04-L1-balance-verdict.md",
+      "destination": "docs/NUMERIC_RULING.md",
+      "sourceSha256": "60465b0125bfb6cd7700a1605cc460adc27f390b19245ce8de01ae08a781276b",
+      "extractedSha256": "60465b0125bfb6cd7700a1605cc460adc27f390b19245ce8de01ae08a781276b"
+    },
+    {
+      "source": "game/LICENSE",
+      "destination": "LICENSE",
+      "sourceSha256": "04dbd8193542a0785cdc3f09ff5a20dd8c2d9ac48017668cb37dbdb551820d3f",
+      "extractedSha256": "04dbd8193542a0785cdc3f09ff5a20dd8c2d9ac48017668cb37dbdb551820d3f"
+    },
+    {
+      "source": "game/wenzhen-web-lab/tools/package_lab.mjs",
+      "destination": "tools/package_lab.mjs",
+      "sourceSha256": "a3b2a490676b5edc83b47a44a0b1344e58fc23590d4e56da8bc37f1f81b21131",
+      "extractedSha256": "5c85aa614fffb51bc2501e3e56d3d3af3695e81c8a989898315729067d82f535"
+    }
+  ]
+}

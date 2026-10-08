@@ -1,0 +1,118 @@
+<!-- AI生成 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>问真</title>
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="css/lab.css?v=inkseal-3" />
+</head>
+<body data-page="hall" data-run-active="false">
+  <div id="bg"></div>
+  <div id="grain"></div>
+
+  <!-- 惯性布局：状态条（常在顶）→ 行程脊（我在哪）→ 场景舞台（一事）→ 行动坞（下一步永远同一位置） -->
+  <header id="hud">
+    <div class="who">
+      <span class="app">问真</span>
+      <span class="tag" id="hud-talent">丙等 · 一转初阶</span>
+    </div>
+    <div class="pools">
+      <div class="pool qi">
+        <label>真元</label>
+        <div class="bar" id="hud-qi-meter" role="meter" aria-label="真元" aria-valuemin="0" aria-valuemax="20" aria-valuenow="20"><i id="hud-qi"></i></div>
+        <span class="num" id="hud-qi-num">20/20</span>
+      </div>
+      <div class="pool thought">
+        <label title="每回合重新可用；持续灌元会占用部分余量">操控</label><span class="num" id="hud-thought">3</span>
+      </div>
+      <div class="pool">
+        <label>元石</label><span class="num" id="hud-stone">3</span>
+      </div>
+      <div class="pool blood">
+        <label>气血</label><span class="num" id="hud-blood">12</span>
+      </div>
+      <div class="pool life">
+        <label>寿元</label><span class="num" id="hud-life">60</span>
+      </div>
+      <div class="pool soul">
+        <label>魂魄</label><span class="num" id="hud-soul">1/4</span>
+      </div>
+    </div>
+    <button id="reset" class="ghost" aria-label="放弃当前局并重新开始">放弃并重开</button>
+  </header>
+
+  <!-- 行程脊：位置与进度只读；切换场景走场景内链接，不靠猜页签 -->
+  <div id="spine" role="region" aria-label="行程位置">
+    <nav id="tabs" aria-label="场景视图">
+      <button data-tab="hall" class="on">大厅</button>
+      <button data-tab="map">行程</button>
+      <button data-tab="battle">战斗</button>
+      <button data-tab="prep">整备</button>
+      <button data-tab="cover" hidden data-dev-only>覆盖</button>
+    </nav>
+    <div class="nav-context" aria-live="polite">
+      <span id="run-context">尚未开始修行</span>
+      <span id="run-progress">五境修行</span>
+    </div>
+  </div>
+
+  <main id="stage">
+    <section id="panel-hall" class="panel on"></section>
+    <section id="panel-map" class="panel"></section>
+    <section id="panel-node-action" class="panel"></section>
+    <section id="panel-battle" class="panel"></section>
+    <section id="panel-prep" class="panel"></section>
+    <section id="panel-reward" class="panel"></section>
+    <section id="panel-cover" class="panel"></section>
+    <section id="panel-ending" class="panel"></section>
+  </main>
+
+  <!-- 主行动坞：下一步永远在底部同一位置；内容由当前场景主按钮提升/镜像 -->
+  <footer id="dock" aria-label="主行动">
+    <div class="dock-hint" id="dock-hint">选择难度，开始修行</div>
+    <div class="dock-slot" id="dock-slot"></div>
+  </footer>
+
+  <div id="toast"></div>
+  <!-- 普通脚本按顺序加载，不用 ES module：这样直接双击 lab.html 也能跑（file:// 下 module 会被 CORS 拦）。 -->
+  <!-- 合并：样式=lab.css，逻辑=MVP（mvp_logic = CombatCore）。禁止双引擎。 -->
+  <script src="js/data.js"></script>
+  <script src="js/canon.js"></script>
+  <script src="js/balance.js"></script>
+  <script src="js/run_rules.js"></script>
+  <script src="js/run_flow.js"></script>
+  <script src="js/gu_rules.js"></script>
+  <script src="js/human_rules.js"></script>
+  <script src="js/loot_rules.js"></script>
+  <script src="js/shop_rules.js"></script>
+  <script src="js/node_action_rules.js"></script>
+  <script src="js/mvp_content.js"></script>
+  <script src="js/mvp_logic.js"></script>
+  <script src="js/combat_core.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/describe.js"></script>
+  <script src="js/rules.js"></script>
+  <script src="js/battle.js?v=battle-prep-1"></script>
+  <script src="js/journey.js"></script>
+  <script src="js/lab_save.js"></script>
+  <!-- 动效层：GSAP 本地 vendor（file:// 离线可用，非 ES module）+ 表现层 motion.js。
+       两者缺席时全部静默回退 lab.css 原生 CSS 动画，不影响玩法与走盘。 -->
+  <script src="js/vendor/gsap.min.js"></script>
+  <script src="js/motion.js?v=motion-2"></script>
+  <script src="js/main.js"></script>
+  <!-- 内联脚本不会被 CORS 拦，可靠地兜底：外部脚本若没执行（旧缓存 / 路径错 / 版本不匹配），
+       页面会明确报错，而不是留一个 HUD 看着正常、按钮却没反应的空壳。 -->
+  <script>
+    setTimeout(function () {
+      if (document.documentElement.dataset.ready === '1') return;
+      var d = document.createElement('div');
+      d.id = 'bootfail';
+      d.innerHTML = '<b>游戏资源没有完整载入</b>'
+        + '<p>请刷新页面后重试。若仍无法进入，可能是离线副本缺少文件。</p>';
+      document.body.appendChild(d);
+    }, 1200);
+  </script>
+</body>
+</html>
