@@ -71,6 +71,20 @@ test('insufficient essence skips every intent effect but still regenerates once'
   assert.equal(enemy.lastFired.seal_and_drain, undefined);
 });
 
+test('damage reports retain pre-hit blood and actual damage after blocking', () => {
+  for (const [blood, block, taken] of [[10, 4, 0], [10, 2, 2], [2, 0, 4]]) {
+    const enemy = { id: 'beast', name: '兽', rank: 1, attackSource: 'innate',
+      enemyIntent: { id: 'claw', label: '爪击', damage: 4 }, hp: 10, statuses: {}, flags: {}, lastFired: {} };
+    const { context, state, battle } = battleFixture(enemy);
+    state.blood = blood;
+    battle.block = block;
+    context.__enemyTurn(battle);
+    assert.equal(battle.lastBlow.damage, taken);
+    assert.equal(battle.lastBlow.bloodBefore, blood);
+    assert.equal(state.blood, Math.max(0, blood - taken));
+  }
+});
+
 test('innate intents do not spend essence; suppression caps rank-three and rank-four recovery', () => {
   const innate = { id: 'innate', name: '兽', grade: 'cultivator', rank: 3, essence: 6,
     attackSource: 'innate', enemyIntent: { id: 'claw', label: '爪击', damage: 1, true_qi_cost: 4 },

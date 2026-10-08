@@ -13,13 +13,15 @@ const edge = option('--edge') || process.env.WENZHEN_EDGE;
 const seed = Number(option('--seed') || 3);
 const style = option('--style') || 'moon';
 if (!['moon', 'blood', 'force'].includes(style)) throw new Error('--style must be moon, blood, or force');
-const lab = await openLab({ ...(entry ? { entry } : {}), ...(edge ? { edge } : {}), seed });
+const lab = await openLab({ ...(entry ? { entry } : {}), ...(edge ? { edge } : {}), seed, offline: args.includes('--offline') });
 const phaseRows = [];
 const guUsed = new Set();
 const guGained = new Set();
 const failures = [];
 const prepHealing = [];
 const breakthroughs = [];
+const humanPreviews = [];
+const purchases = [];
 let priorCultivation = null;
 let priorQiMax = null;
 let archiveReview = '';
@@ -47,6 +49,11 @@ async function fight() {
       || alive.find(e => e.id === s.battle.targetId) || alive[0];
     if (s.battle.targetId !== target.id) await click(`[data-target="${target.id}"]`);
     s = await lab.snapshot();
+    const humanPreview = target.human ? {
+      node: s.journey.nodeId, enemy: target.id, turn: s.battle.turn,
+      intent: await lab.text('.target-intent'),
+      before: { hp: target.hp, essence: target.human.essence, bleeding: target.statuses?.bleeding || 0 },
+    } : null;
     let moved = false;
     const have = id => Number(s.owned?.[id] || 0) > 0
       && s.battle.playerHuman?.guInstances?.some(g => g.instanceId === `${id}::1` && !g.sealed);
@@ -112,6 +119,13 @@ async function fight() {
     if (!moved && basicWorks) moved = await click('[data-basic-attack]');
     if (!moved) moved = await click('[data-end-turn]');
     if (!moved) return s;
+    if (humanPreview) {
+      const after = await lab.snapshot();
+      humanPreviews.push({ ...humanPreview,
+        log: after.battle?.log?.slice(s.battle.log.length) || [],
+        events: after.eventLog?.slice(s.eventLog?.length || 0) || [],
+      });
+    }
     await new Promise(r => setTimeout(r, 15));
   }
   return await lab.snapshot();
@@ -137,14 +151,17 @@ async function prepare(s) {
   const offerId = guId => DATA.shopOffers.find(offer => offer.gu_id === guId)?.id;
   const displayedPrice = async offerId => {
     const text = await lab.text(`article:has(button[data-buy-offer="${offerId}"]) .so-foot`);
-    const match = text.match(/(\d+) 元石/);
-    return !match || /本店未上架|已购入|已售罄/.test(text) ? null : Number(match[1]);
+    const amount = await lab.text(`article:has(button[data-buy-offer="${offerId}"]) .so-foot .visual-value b`);
+    return !amount || /本店未上架|已购入|已售罄/.test(text) ? null : Number(amount);
   };
   const buy = async id => {
     const cost = await displayedPrice(id);
-    if (cost == null || s.stones < cost || !await click(`[data-buy-offer="${id}"]`)) return false;
+    if (cost == null || s.stones < cost) return false;
+    const preview = await lab.text(`article:has(button[data-buy-offer="${id}"])`);
     const stonesBefore = s.stones;
+    if (!await click(`[data-buy-offer="${id}"]`)) return false;
     s = await lab.snapshot();
+    if (s.stones < stonesBefore) purchases.push({ id, rank: s.cultivation, preview, cost: stonesBefore - s.stones, stonesAfter: s.stones });
     return s.stones < stonesBefore;
   };
   const sellDuplicates = async needed => {
@@ -320,7 +337,7 @@ try {
         ? (s.cultivation >= 3 && !s.owned?.force_heal_3_03_gu || s.cultivation >= 4 && !s.owned?.force_atk_4_02_gu)
         : style === 'blood' && s.cultivation >= 3 && !s.owned?.blood_atk_3_11_gu;
       const needsForceGu = style === 'force' && s.cultivation >= 3 && !s.owned?.force_atk_4_02_gu;
-      const node = (needsForceGu && nodes.find(n => n.type === 'elite'))
+      const node = (needsForceGu && nodes.find(n => (n.enemyIds || []).includes('force_path_adept')))
         || nodes.find(n => n.event?.gu_reward_id === 'force_heal_3_03_gu' && s.blood > Number(n.event.health_cost || 0))
         || (needsStyleGu && nodes.find(n => n.type === 'market'))
         || (s.cultivation >= 4 && s.cultivation < 5 && s.stones < 60
@@ -365,7 +382,7 @@ try {
   }
   const exceptions = lab.logs().filter(line => line.includes('[exception]'));
   console.log(JSON.stringify({ seed, style, entry: lab.url(), result: phaseRows, breakthroughs, gainedGu: [...guGained], usedGu: [...guUsed], actionCounts, prepHealing, archiveReview, recap: final?.ending?.recap,
-    ending: final?.ending?.outcome || final?.ending?.kind || null, laterReload,
+    ending: final?.ending?.outcome || final?.ending?.kind || null, laterReload, humanPreviews, purchases,
     failure: failures, browserExceptions: exceptions }, null, 2));
   await lab.close();
 }

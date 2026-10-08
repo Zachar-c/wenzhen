@@ -340,7 +340,9 @@ test('legacy save without custom recipe field clears orphan custom equipment and
   vm.runInContext(readSource('lab_save'), runtime);
   const state = sampleState({ equipped: ['km_custom_orphan'] });
   delete state.customMoveRecipes;
-  state.equipped.unshift(JSON.parse(vm.runInContext('JSON.stringify(DATA.killMoves[0].id)', runtime)));
+  // The current release has no fixed killer moves; supply one historical definition for this migration check.
+  vm.runInContext("DATA.killMoves = [{ id: 'km_legacy_fixed' }];", runtime);
+  state.equipped.unshift('km_legacy_fixed');
   const envelope = JSON.stringify({ schemaVersion: 1, contentVersion: CONTENT, state });
   const result = JSON.parse(vm.runInContext(`JSON.stringify(LabSave.decode(${JSON.stringify(envelope)}, ${JSON.stringify(CONTENT)}))`, runtime));
   assert.equal(result.ok, true);

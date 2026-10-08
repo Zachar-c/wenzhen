@@ -89,6 +89,7 @@ function assertRunMutable() {
 }
 
 function confirmAbandon(message) {
+  if (typeof UI !== 'undefined' && UI.confirmed) return true;
   if (!isInProgressRun()) return true;
   try {
     return globalThis.confirm(message || '放弃当前局？') === true;
@@ -118,6 +119,7 @@ function persistSave() {
   if (!result.ok && result.reason === 'storage_error') {
     bootSaveIssue = bootSaveIssue || 'storage_error';
   }
+  UI.sync();
 }
 
 // 存档 JSON + localStorage.setItem 是同步长任务，放在点击帧会把 1% low 打穿。
@@ -126,6 +128,7 @@ let persistScheduled = false;
 function schedulePersistSave() {
   if (persistScheduled) return;
   persistScheduled = true;
+  document.getElementById('save-indicator').textContent = '正在保存';
   setTimeout(() => {
     persistScheduled = false;
     persistSave();
@@ -412,9 +415,6 @@ const $ = (s) => document.querySelector(s);
 
 function toast(msg, kind = '') {
   const t = $('#toast');
-  // CSS 里的 top 是常量估算；HUD/行程脊在窄屏会换行变高，按实际底边定位才不压页签。
-  const spineBottom = $('#spine')?.getBoundingClientRect().bottom;
-  if (Number.isFinite(spineBottom) && spineBottom > 0) t.style.top = `${Math.round(spineBottom + 12)}px`;
   t.textContent = msg;
   t.className = 'on ' + kind;
   clearTimeout(toast._t);
@@ -595,17 +595,36 @@ function enemyNeedsApproach(enemy) {
   return hostile && Number(enemy.distanceMeters || 0) > Number(intent?.range_meters ?? enemy.attackRangeMeters ?? 0);
 }
 
+function humanBasicIntentText(enemy) {
+  const strike = HumanRules.basicStrikePlan(enemy.human, { hp: enemy.hp, hpMax: enemy.hpMax });
+  const turn = state.battle?.turn || 1;
+  const pending = enemy.pendingBasicAttack;
+  if (pending && pending.dueTurn <= turn) return `拳脚 · 伤 ${pending.damage} · 本回合落下`;
+  if (strike.delayTurns > 0) return `拳脚蓄势 · 第 ${pending?.dueTurn || turn + strike.delayTurns} 回合落下 · 本回合不造成拳脚伤害`;
+  return `拳脚 · 伤 ${strike.damage}`;
+}
+
 function rangedIntentText(enemy) {
   if (enemy.human && enemy.plannedAction?.kind === 'gu' && humanGuActionReason(enemy, enemy.plannedAction)) {
     const fallback = Number(enemy.distanceMeters || 0) > 0
       ? `逼近 ${Math.min(enemy.distanceMeters, enemy.approachMeters || 10)} 米 · 本回合不攻击`
-      : `改为拳脚 · 伤 ${HumanRules.basicStrikePlan(enemy.human, { hp: enemy.hp, hpMax: enemy.hpMax }).damage}`;
+      : `改为${humanBasicIntentText(enemy)}`;
     return `原定${enemy.plannedAction.label}失效 · ${fallback}`;
   }
   if (enemyNeedsApproach(enemy)) return `逼近 ${Math.min(enemy.distanceMeters, enemy.approachMeters || 10)} 米 · 本回合不攻击`;
   const essence = GuRules.enemyEssenceState(enemy);
   if (!enemy.human && essence && GuRules.enemyIntentCost(enemy, enemy.enemyIntent, GU_BY_ID) > essence.current) return `${enemy.enemyIntent.label} · 真元不足，无法催动`;
-  return enemy.human ? (enemy.plannedAction?.kind === 'gu' ? `催动 ${enemy.plannedAction.label}` : enemy.plannedAction?.label || '准备行动') : intentText(enemy.enemyIntent);
+  if (!enemy.human) return intentText(enemy.enemyIntent);
+  if (enemy.plannedAction?.kind !== 'gu') return humanBasicIntentText(enemy);
+  const gu = GU_BY_ID[enemy.plannedAction.guId];
+  const effect = gu.battleEffect;
+  const cost = `真元 ${gu.trueQiCost} · 操控 ${gu.thoughtCost}`;
+  if (effect.kind === 'heal') {
+    const strengthBonus = HumanRules.basicStrikePlan(enemy.human, { hp: enemy.hp, hpMax: enemy.hpMax }).personalStrength - enemy.human.baseline.attack;
+    const healed = Math.min(GuRules.effectPlan(effect, { strengthBonus }).heal, enemy.hpMax - enemy.hp);
+    return `催动 ${gu.name} · 按当前伤势预计恢复气血 ${healed}${enemy.statuses?.bleeding ? ' 并止血' : ''} · ${cost} · 本回合不攻击（行动时按伤势重算）`;
+  }
+  return `催动 ${gu.name} · ${cost} · ${effect.kind === 'maintained' ? '本回合不攻击；' : ''}${effectText(effect)}`;
 }
 
 function currentCombatRoster(usedInstances = {}, sealedInstances = {}) {
@@ -724,7 +743,7 @@ function hud() {
   $('#hud-qi-meter').setAttribute('aria-valuenow', String(Math.round(state.qi)));
   hudNumFx('hud-thought', String(state.thought));
   hudNumFx('hud-stone', String(state.stones));
-  hudNumFx('hud-blood', String(state.blood));
+  hudNumFx('hud-blood', `${state.blood}/${state.bloodMax}`);
   hudNumFx('hud-life', String(state.lifeTime));
   hudNumFx('hud-soul', `${state.soul}/${state.soulMax}`);
   const apt = { jia: '甲等', yi: '乙等', bing: '丙等', ding: '丁等' }[state.aptitude];
@@ -765,7 +784,8 @@ function draw() {
   if (state.page === 'battle') renderBattle($('#panel-battle'));
   else if (state.page === 'cover') renderCover($('#panel-cover'));
   updateNavigation();
-  syncDock();
+  if (state.page === 'battle') UI.decorate('battle', $('#panel-battle'));
+  UI.sync();
 }
 
 function updateSceneArt() {
@@ -809,7 +829,7 @@ function bodyTrainingPreview(gu) {
 
 function selfHealingPreview(gu) {
   if (gu?.effect?.kind !== 'heal' || !gu.effect.strength_scaling) return { ok: false, reason: 'gu_unavailable' };
-  if (state.page !== 'prep' || !state.prepFor || state.prepFor !== state.journey?.nodeId) return { ok: false, reason: 'not_preparing' };
+  if (!['prep', 'gu', 'cult'].includes(state.page) || !state.prepFor || state.prepFor !== state.journey?.nodeId) return { ok: false, reason: 'not_preparing' };
   if (!(Number(state.owned[gu.id] || 0) > 0)) return { ok: false, reason: 'gu_unavailable' };
   const reason = GuRules.activationReason(gu, { playerRank: state.cultivation, trueQi: state.qi,
     thought: state.thoughtMax, health: state.blood, healthMax: state.bloodMax });
@@ -984,7 +1004,7 @@ function resolvePluginHumanTurn(b, enemy) {
   const taken = damage - blocked;
   state.blood -= taken;
   b.log.push(`<b>${enemy.name}</b> · 拳脚攻击，<span class="dmg">伤 ${taken}</span>${absorbed ? `（护体挡下 ${absorbed}）` : ''}`);
-  b.lastBlow = { attacker: enemy.name, label: '拳脚攻击', damage: taken || damage, turn: b.turn, absorbed };
+  b.lastBlow = { attacker: enemy.name, label: '拳脚攻击', damage: taken, bloodBefore: state.blood + taken, turn: b.turn, absorbed };
   if (absorbed > 0) BattleFx.shieldHit(absorbed);
   if (taken > 0) BattleFx.selfDamage(taken);
 }
@@ -1086,7 +1106,8 @@ function enemyTurn(b) {
       b.lastBlow = {
         attacker: enemy.name,
         label: it.label,
-        damage: taken || damage,
+        damage: taken,
+        bloodBefore: state.blood + taken,
         turn: b.turn,
         absorbed,
       };
@@ -1229,12 +1250,13 @@ function buildDeathReport(b) {
       : `败因：未识破规则的反噬导致气血耗尽于第 ${b.turn || 0} 回合`);
   } else {
     parts.push(blow
-      ? `败因：${blow.attacker} · ${blow.label}（伤 ${blow.damage}${blow.absorbed ? `，护体挡下 ${blow.absorbed}` : ''}）`
+      ? `败因：${blow.attacker} · ${blow.label}（伤 ${blow.damage}${Number.isFinite(blow.bloodBefore) ? `，受击前气血 ${blow.bloodBefore}` : ''}${blow.absorbed ? `，护体挡下 ${blow.absorbed}` : ''}）`
       : `败因：资源耗尽于第 ${b.turn || 0} 回合`);
   }
   if (counter) parts.push(`战斗受阻：「${counter.label}」曾被「${counter.counterId}」反制吞掉（第 ${counter.turn} 回合）`);
+  const summary = parts.join('；');
   if (last3.length) parts.push(`最后三条战斗记录：${last3.join(' / ')}`);
-  return { lastBlow: blow, lastSelfBlow: b.lastSelfBlow || null, lastResourceBlow: resourceBlow, lastCounter: counter, last3, detail: parts.join('；') };
+  return { cause: b.deathCause || 'blood', summary, lastBlow: blow, lastSelfBlow: b.lastSelfBlow || null, lastResourceBlow: resourceBlow, lastCounter: counter, last3, detail: parts.join('；') };
 }
 
 function openBattleOutcome() {
@@ -1511,7 +1533,7 @@ function finishPlayerAction(b) {
 
 const act = {
   produceLeaf(guId) {
-    if (!assertRunMutable() || state.page !== 'prep' || !state.prepFor) return;
+    if (!assertRunMutable() || !['prep', 'gu', 'cult'].includes(state.page) || !state.prepFor) return;
     const gu = GU_BY_ID[guId];
     const result = leafProductionPreview(gu);
     if (!result.ok) return toast(guReasonLabel(result.reason), 'bad');
@@ -1526,7 +1548,7 @@ const act = {
   },
 
   useLeaf(guId) {
-    if (!assertRunMutable() || state.page !== 'prep') return;
+    if (!assertRunMutable() || !['prep', 'gu', 'cult'].includes(state.page)) return;
     const gu = GU_BY_ID[guId];
     const result = consumeLeaf(gu);
     if (!result.ok) return toast(guReasonLabel(result.reason), 'bad');
@@ -1546,7 +1568,7 @@ const act = {
     draw();
   },
   trainBody(guId) {
-    if (!assertRunMutable() || state.page !== 'prep' || !state.prepFor) return;
+    if (!assertRunMutable() || !['prep', 'gu', 'cult'].includes(state.page) || !state.prepFor) return;
     const gu = GU_BY_ID[guId];
     const preview = bodyTrainingPreview(gu);
     if (!preview.ok) return toast('当前不能锻体 · ' + ({
@@ -2694,6 +2716,9 @@ for (const actKey of Object.keys(act)) {
   const rawAct = act[actKey];
   if (typeof rawAct !== 'function') continue;
   act[actKey] = function wrappedAct(...args) {
+    if (['buyOffer', 'sellGu', 'breakthrough', 'useAptitudeGu', 'trainBody', 'produceLeaf', 'useLeaf', 'healSelf', 'leavePrep'].includes(actKey) && !isPreparing()) {
+      return toast('当前仅可查看，进入整备后可操作', 'bad');
+    }
     const result = rawAct.apply(this, args);
     commit();
     return result;
@@ -2721,7 +2746,7 @@ function renderCover(root) {
 
 // 面板切换。ending 没有常驻页签，由终局流程直接打开。
 function showPage(page) {
-  const panelIds = [...document.querySelectorAll('.panel')].map((p) => p.id);
+  const panelIds = [...document.querySelectorAll('#stage > .view')].map((p) => p.id);
   const next = typeof page === 'string' && panelIds.includes(`panel-${page}`) ? page : 'hall';
   state.page = next;
   document.body.dataset.page = next;
@@ -2730,79 +2755,12 @@ function showPage(page) {
   if (next === 'battle') renderBattle($('#panel-battle'));
   else if (next === 'cover') renderCover($('#panel-cover'));
   hud();
-  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === next));
-  document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('on', p.id === `panel-${next}`));
+  document.querySelectorAll('#tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === next || b.dataset.tab === 'map' && next === 'node-action'));
+  document.querySelectorAll('#stage > .view').forEach((p) => p.classList.toggle('on', p.id === `panel-${next}`));
   window.Motion?.pageEnter(document.getElementById(`panel-${next}`));
   updateNavigation();
-  syncDock();
-}
-
-// 主行动坞：当前场景的「下一步」提升到底部固定位置。
-// 克隆并转发点击到场景内原件，避免重绘丢监听。
-const DOCK_HINTS = {
-  hall: '选择难度后开始修行',
-  map: '从当前可走节点中择一；未选择前不预设路线',
-  battle: '先看敌方意图，再从可用行动中选择；不预设攻击',
-  prep: '整备完成后继续行程',
-  reward: '先比较战后收获；不替你预选蛊虫',
-  'node-action': '核对代价，再选择当前节点行动',
-  ending: '本局已写入旧录，可回大厅开新局',
-  cover: '开发覆盖页 · 非正式流程',
-};
-
-function syncDock() {
-  const slot = document.querySelector('#dock-slot');
-  const hint = document.querySelector('#dock-hint');
-  if (!slot || !hint) return;
-  const page = state.page;
-  const prevDock = slot.firstElementChild ? slot.firstElementChild.textContent : '';
-  hint.textContent = DOCK_HINTS[page] || '处理当前场景中的下一步';
-  slot.innerHTML = '';
-  const panel = document.querySelector(`#panel-${page}`);
-  if (!panel) return;
-  if (page === 'hall' && panel.querySelector('[data-continue-run]')) {
-    hint.textContent = '行程已保存，可继续修行或明确选择另起新局';
-  }
-  if (page === 'map' && panel.querySelector('.map-node.available')) {
-    hint.textContent = '选择一条可走道路；每个节点的后果以规则预览为准';
-  }
-  if (page === 'battle' && panel.querySelector('[data-basic-attack]')) {
-    hint.textContent = '观察意图后，自行选择攻击、御守或结束回合';
-  }
-  if (page === 'reward' && panel.querySelector('.reward-choices')) {
-    hint.textContent = '比较三只蛊虫，再选择收入蛊仓的那一只';
-  }
-  const preferredByPage = {
-    hall: '[data-continue-run], [data-start-run]',
-    map: '[data-return-node]',
-    battle: '[data-start-encounter]',
-    prep: '[data-prep-continue]',
-    reward: '[data-reward-continue]',
-    'node-action': null,
-    ending: '[data-ending-hall]',
-  };
-  const preferred = Object.prototype.hasOwnProperty.call(preferredByPage, page)
-    ? preferredByPage[page]
-    : 'button.primary:not(:disabled)';
-  if (!preferred) return;
-  const src = panel.querySelector(preferred);
-  if (!src) return;
-  const mirror = dockMirrorButton(src);
-  mirror.addEventListener('click', (ev) => {
-    ev.preventDefault();
-    src.click();
-  });
-  slot.appendChild(mirror);
-  if (mirror.textContent !== prevDock) window.Motion?.dockIn(mirror);
-}
-
-// 卡片式按钮（地图节点 / 战后三选一）不镜像进 dock：多选场景由玩家在场景内直接选择，
-// dock 保持「不替你预设路线 / 不替你预选蛊虫」的口径，slot 为空即隐藏。
-function dockMirrorButton(src) {
-  const clone = src.cloneNode(true);
-  clone.classList.add('primary');
-  clone.removeAttribute('id');
-  return clone;
+  if (next === 'battle') UI.decorate('battle', $('#panel-battle'));
+  UI.sync();
 }
 
 function updateNavigation() {
@@ -2811,7 +2769,11 @@ function updateNavigation() {
     hall: true,
     map: !!state.journey.started && !state.ending,
     battle: !!state.battle && !state.ending,
-    prep: !!node && state.prepFor === node.id && !state.ending,
+    prep: isPreparing(),
+    gu: !!state.journey.started,
+    cult: !!state.journey.started,
+    journal: !!state.journey.started,
+    records: true,
     cover: /(?:\?|&)debug=1(?:&|$)/.test(String(location.search || '')),
   };
   const reason = {
@@ -2842,7 +2804,6 @@ document.addEventListener('pointerdown', () => Sfx.click(), { once: true });
 
 draw();
 showPage(resumePage());
-syncDock();
 // 只读快照入口：供 tests/helpers/lab_browser.mjs 读取完整可序列化 state。
 // 不是改状态 / 调 act 的捷径。
 globalThis.__labSnapshot = function labSnapshot() {

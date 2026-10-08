@@ -43,6 +43,19 @@ function statName(s) {
   return { force_power: '力', speed: '速', guard: '御' }[s] || s;
 }
 
+// 只解释正式效果之间的配合，不把库存命名为已经成型的打法。
+function guPairingText(gu, owned = {}) {
+  const effect = gu.battleEffect || gu.effect || {};
+  if (effect.target_gu_id) return `${Number(owned[effect.target_gu_id] || 0) > 0 ? '可辅助已持有的' : '需要配合'}${GU_BY_ID[effect.target_gu_id]?.name || effect.target_gu_id}：先催辅助，再在同回合催目标蛊，×${effect.multiplier}；不能增幅其他攻击蛊，同类不叠加。`;
+  const support = Object.values(GU_BY_ID).find(item => item.battleEffect?.target_gu_id === gu.id);
+  if (support) return `${Number(owned[support.id] || 0) > 0 ? '可配合已持有的' : '可搭配'}${support.name}：先催辅助，再催${gu.name}，本回合下一击×${support.battleEffect.multiplier}；两次催蛊分别支付真元与操控。`;
+  if (effect.kind === 'body_training') return '整备锻体提高永久力量，提升拳脚伤害及自力更生的疗效；取得锻体蛊后仍需实际锻体。';
+  if (effect.strength_scaling) return '疗效随自身力量变化：永久锻体与战斗中苦力蛊的伤势增力均可提高回血；回血后苦力增力回落，石臂重量不计入疗效。';
+  if ((effect.modifiers || []).some(item => item.effect_id === 'injury_strength')) return '永久锻体可提高常备力量；受伤时催苦力增加拳脚与自力更生疗效，回血后增力回落。苦力不直接伤敌，不要为增力把气血耗尽。';
+  if (effect.bleeding) return '先命中并造成伤害才能留下伤口；被闪避、反击吞掉或未破防都不会造伤。面对闪避可保留标明无视闪避的攻击蛊应对；小光只增幅月光，不能增幅血月。';
+  return '';
+}
+
 function statusLabel(s) {
   return { marked: '刻痕', sealed: '封印' }[s] || s;
 }
@@ -150,6 +163,130 @@ const schoolLabel = (s) => ({
 const buildRoleLabel = (role) => ({
   attack: '攻击', healing: '治疗', defense: '防御', recon: '侦查',
   movement: '机动', support: '辅助', logistics: '后勤',
-  Core: '核心', Information: '情报', Support: '辅助', Transform: '蜕变',
+  Core: '核心', Defense: '防御', Information: '情报', Support: '辅助', Transform: '蜕变',
   Finisher: '终结', Resource: '资源',
 }[role] || role || '—');
+
+// 已有竖版卡牌按蛊虫 ID 对应；尚无专属卡面的道具保留原图。
+const GU_CARD_ART_IDS = new Set([
+  'moonlight_gu', 'small_light_gu', 'moon_glow_gu', 'moon_ray_gu',
+  'white_boar_strength_gu', 'jade_skin_gu', 'stone_shell_gu', 'white_jade_gu',
+  'vitality_grass_gu', 'moon_shadow_gu', 'gold_atk_2_11_gu', 'gold_atk_2_12_gu',
+  'force_atk_4_02_gu', 'force_heal_3_03_gu', 'blood_atk_3_11_gu',
+]);
+function guArt(gu, compact = false) {
+  const definition = GU_BY_ID[gu?.id] || gu;
+  if (!definition?.icon) return '';
+  const src = GU_CARD_ART_IDS.has(definition.id)
+    ? `assets/gu/cards/${definition.id}_card.png.webp`
+    : `assets/gu/${definition.icon}.png`;
+  return `<img class="gu-art${compact ? ' gu-art-compact' : ''}" data-gu-art="${definition.id}" src="${src}" alt="" decoding="async">`;
+}
+
+// 卡面只摘要规则；完整条件保留在可展开的详情中。
+function guEffectSummary(effect) {
+  const e = effect || {};
+  let parts;
+  switch (e.kind) {
+    case 'strike': parts = [`⚔ 伤害 ${e.amount}`, ...(e.range_meters ? [`射程 ${e.range_meters}m`] : []), ...(e.ignoreEvasion ? ['无视闪避'] : []), ...(e.bleeding ? ['流血 2/回合 · 上限4'] : [])]; break;
+    case 'support': parts = [`${GU_BY_ID[e.target_gu_id]?.name || e.support_school || '辅助'} ×${e.multiplier || e.support_bonus}`, '本回合 · 不叠加']; break;
+    case 'body_training': parts = [`力量 +${e.amount}`, `永久 · 上限 +${e.cap}`]; break;
+    case 'production': parts = [`生机叶 +${e.amount}`, '每处整备一次']; break;
+    case 'heal': parts = [`♡ 恢复 ${e.amount}${e.strength_scaling ? ' + 自身力量' : ''}`, ...(e.consumable ? ['消耗1片 · 每节点一次'] : [])]; break;
+    case 'maintained': {
+      const injury = (e.modifiers || []).some(m => m.effect_id === 'injury_strength');
+      const slow = (e.modifiers || []).some(m => m.attribute === 'attackDelay');
+      parts = injury ? ['受伤增力', '回血后回落 · 占操控1'] : [`◇ 防御 ${e.amount}`, ...(slow ? ['拳脚 +1 · 延迟1回合'] : [`维持真元 ${e.upkeep_qi || 0}/回合`, `承击真元 ${e.hit_qi || 0}/次`, `占操控 ${e.focus_cost || 0}`])];
+      break;
+    }
+    case 'essence_suppression': parts = ['压制敌方真元', '三转60% · 四转30% · 五转15%']; break;
+    case 'breakthrough_material': parts = ['小境界突破', '同转数使用']; break;
+    case 'aptitude_up': parts = ['资质 ↑ 一档', '原创机缘']; break;
+    default: parts = [effectText(e)];
+  }
+  if (e.delay) parts.push(`延迟 ${e.delay.turns || 1} 回合`);
+  if (e.condition?.type === 'self_hp_below') parts.push(`气血 < ${Math.round(Number(e.condition.threshold || .5) * 100)}%`);
+  return parts.map(part => {
+    const tokens = [
+      [/^⚔ 伤害 (.*)$/, 'battle'], [/^◇ 防御 (.*)$/, 'shield'], [/^♡ 恢复 (.*)$/, 'heart'],
+      [/^力量 (.*)$/, 'fist'], [/^射程 (.*)$/, 'route'], [/^占操控 (.*)$/, 'eye'],
+      [/^维持真元 (.*)$/, 'clock'], [/^承击真元 (.*)$/, 'shield'],
+    ];
+    for (const [pattern, icon] of tokens) {
+      const match = part.match(pattern);
+      if (match) return visualValue(icon, match[1].replace(' + 自身力量', ' + ✊'), part);
+    }
+    const symbolic = { '无视闪避': '🎯', '小境界突破': '↑', '同转数使用': '＝',
+      '每处整备一次': '1×', '受伤增力': '♡↓ → ✊↑', '回血后回落 · 占操控1': '♡↑ → ✊↓ · ◎1',
+      '压制敌方真元': '✦↓', '资质 ↑ 一档': '↑', '原创机缘': '◇',
+    }[part];
+    if (symbolic) return `<span title="${part}" aria-label="${part}">${symbolic}</span>`;
+    const target = e.kind === 'support' && e.target_gu_id && GU_BY_ID[e.target_gu_id];
+    if (target && part.includes('×')) return `<span class="effect-pairing" title="${part}" aria-label="${part}">${guArt(target, true)} ×${e.multiplier}</span>`;
+    return `<span>${part}</span>`;
+  }).join('');
+}
+
+function guFace(gu, compact = false) {
+  const definition = GU_BY_ID[gu.id] || gu;
+  const cost = gu.trueQiCost ?? definition.trueQiCost;
+  const thought = gu.thoughtCost ?? definition.thoughtCost;
+  return `<span class="gu-face${compact ? ' compact' : ''}">${guArt(gu, compact)}
+    <span class="card-rank">${definition.rank} 转</span>
+    <span class="card-caption"><strong>${definition.name}</strong><span class="card-cost">${visualValue('spark', cost || 0, '真元消耗')}${visualValue('eye', thought || 0, '操控消耗')}${Number(gu.lifeCost || definition.lifeCost || 0) > 0 ? `<span>寿元 −${gu.lifeCost || definition.lifeCost}</span>` : ''}</span></span>
+  </span>`;
+}
+
+function visualIcon(name, label = '') {
+  const extra = { next: 'M5 12h14 M12 5l7 7-7 7', play: 'M8 4l12 8-12 8z',
+    check: 'M4 12l5 5L20 6', clock: 'M12 3a9 9 0 110 18 9 9 0 010-18z M12 7v5l4 2',
+    fist: 'M5 12V7h3V4h3v3h3V5h3v4h3v6l-5 6H8L3 14z',
+    leaf: 'M4 20L18 6 M4 16C1 4 14 2 21 3c0 10-4 17-13 15',
+    crown: 'M3 7l5 5 4-8 4 8 5-5-2 13H5z', exit: 'M10 3H4v18h6 M9 12h12 M16 7l5 5-5 5',
+    skull: 'M7 16v5h10v-5c6-5 3-13-5-13S1 11 7 16z M7 10h2 M15 10h2 M10 17h4',
+    lock: 'M6 11h12v10H6z M8 11V7a4 4 0 018 0v4', target: 'M12 3a9 9 0 110 18 9 9 0 010-18z M12 8a4 4 0 110 8 4 4 0 010-8z',
+  };
+  const path = extra[name] || (typeof ICON !== 'undefined' ? ICON[name] : '') || extra.target;
+  return `<svg class="visual-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${path}"/></svg>`;
+}
+function visualValue(icon, value, label, danger = false) {
+  return `<span class="visual-value${danger ? ' danger' : ''}" title="${label}" aria-label="${label}">${visualIcon(icon)}<b>${value}</b></span>`;
+}
+
+function nodeChoiceVisual(node, option) {
+  const items = [];
+  const add = (icon, value, label, danger = false) => items.push(visualValue(icon, value, label, danger));
+  if (option.healthCost) add('heart', `−${option.healthCost}`, '立即气血代价', true);
+  if (option.essenceCost) add('spark', `−${option.essenceCost}`, '真元消耗', true);
+  if (option.stoneCost) add('coin', `−${option.stoneCost}`, '元石费用', true);
+  if (option.stoneGain) add('coin', `+${option.stoneGain}`, '元石收益');
+  if (option.recovery) {
+    add('heart', `+${option.recovery.healthGain}`, '气血恢复');
+    add('spark', `+${option.recovery.essenceGain}`, '真元恢复');
+  }
+  if (option.id === 'accept_event') {
+    const e = node.event || {};
+    if (e.gu_reward_id && GU_BY_ID[e.gu_reward_id]) items.push(`<span class="choice-gu-reward">${guArt(GU_BY_ID[e.gu_reward_id], true)}<b>+1</b></span>`);
+    if (e.essence_gain) add('spark', `+${(NodeActionRules.resolveEvent('accept_event', e, {health: state.blood, stones: state.stones, essence: state.qi, essenceMax: state.qiMax}).essenceAfter ?? state.qi) - state.qi}`, '真元恢复');
+    if (e.delayed_soul_cost) items.push(`${visualIcon('clock')}${visualValue('soul', `−${e.delayed_soul_cost}`, '继续行程时扣除魂魄', true)}${state.soul <= e.delayed_soul_cost ? visualValue('skull', '!', '未补养魂魄直接继续会败北', true) : ''}`);
+  }
+  if (['work', 'harvest', 'meditate'].includes(option.id)) {
+    const result = NodeActionRules.resolve(option.id, {stones: state.stones, essence: state.qi, essenceMax: state.qiMax});
+    if (result.stoneAfter > result.stoneBefore) add('coin', `+${result.stoneAfter - result.stoneBefore}`, '元石收益');
+    if (result.essenceAfter > result.essenceBefore) add('spark', `+${result.essenceAfter - result.essenceBefore}`, '真元收益');
+  }
+  if (['scout', 'buy_information'].includes(option.id)) add('eye', '→', '揭示前路情报');
+  if (option.id === 'collect_gu') {
+    const find = currentGuFind(node);
+    if (find?.guId && GU_BY_ID[find.guId]) items.push(`<span class="choice-gu-reward">${guArt(GU_BY_ID[find.guId], true)}<b>+1</b></span>`);
+    else add('gu', '+1', '取得蛊虫');
+  }
+  if (option.id === 'trade') items.push(`<span class="choice-gu-reward">${guArt(GU_BY_ID.vitality_leaf_gu, true)}<b>+1</b></span>`);
+  const hazard = NodeActionRules.hazardOutcome(node, option.id);
+  if (hazard.closes.length) add('route', '×', '失去一条后继路线', true);
+  if (hazard.loseNewIntel) add('eye', '×', '失去本处探查情报', true);
+  if (hazard.pressure) items.push(`${visualIcon('clock')}${visualValue('spark', '−1', '下次交锋真元代价', true)}`);
+  if (option.unknownNote) add('eye', '?', '尚有未明后果', true);
+  if (!items.length) add(['leave', 'withdraw', 'node.leave'].includes(option.id) ? 'next' : 'check', '→', '继续');
+  return `<div class="choice-visual" aria-label="选择后果">${items.join('')}</div>`;
+}

@@ -164,6 +164,17 @@ export async function openLab(options = {}) {
   };
 
   try {
+    if (options.storageScenario) {
+      const script = options.storageScenario === 'denied'
+        ? "Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Storage denied by browser', 'SecurityError'); } });"
+        : `localStorage.setItem('wenzhen.lab.run.v1', ${JSON.stringify(options.storageScenario === 'incompatible'
+          ? JSON.stringify({ schemaVersion: 1, contentVersion: 'incompatible-ui-test', state: {} }) : 'unreadable-ui-test')});`;
+      await S('Page.addScriptToEvaluateOnNewDocument', { source: script });
+    }
+    if (options.offline) {
+      await S('Network.enable');
+      await S('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 });
+    }
     await S('Page.navigate', { url: currentUrl });
     await waitForReady();
   } catch (error) {
@@ -176,6 +187,16 @@ export async function openLab(options = {}) {
   const api = {
     url: () => currentUrl,
     logs: () => cdp.logs.slice(),
+    async layoutInfo(selector = '#stage') {
+      return evalJs(`(() => {
+        const element = document.querySelector(${JSON.stringify(selector)});
+        const bounds = element?.getBoundingClientRect();
+        return { width: innerWidth, documentWidth: document.documentElement.scrollWidth,
+          visible: !!bounds && bounds.width > 0 && bounds.height > 0,
+          dialogOpen: !!document.querySelector('#ui-confirm')?.open,
+          page: document.body.dataset.page };
+      })()`);
+    },
     // Dispatch actual keyboard input; inspect focus without assigning it or writing game state.
     async key(key) {
       const codes = { Tab: 9, Enter: 13, Escape: 27 };
@@ -244,6 +265,12 @@ export async function openLab(options = {}) {
     // 只读可见界面文案，不调用领域操作或注入状态。
     async text(selector) {
       return evalJs(`document.querySelector(${JSON.stringify(selector)})?.innerText || ''`);
+    },
+    async images(selector) {
+      return evalJs(`[...document.querySelectorAll(${JSON.stringify(selector)})].map(img => ({id: img.dataset.guArt, src: img.getAttribute('src'), loaded: img.complete && img.naturalWidth > 0, width: img.getBoundingClientRect().width}))`);
+    },
+    async visualControls(selector) {
+      return evalJs(`[...document.querySelectorAll(${JSON.stringify(selector)})].filter(button => button.getBoundingClientRect().width > 0).map(button => ({disabled: button.disabled, pictures: button.querySelectorAll('svg,img').length}))`);
     },
     async bootInfo() {
       const value = await evalJs(`(typeof __labBootInfo === 'function') ? __labBootInfo() : null`);

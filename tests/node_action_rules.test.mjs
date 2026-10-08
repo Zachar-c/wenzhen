@@ -248,8 +248,8 @@ test('meditate adds one essence and never crosses the essence cap', () => {
     rules.options({ choices: ['meditate', 'leave'], stones: 0, essence: 3 })
       .map((option) => [option.id, option]),
   );
-  // action_preview_service.gd:1068-1069 的 gain 原文
-  assert.deepEqual(plain(card.meditate.gain), ['恢复 1 点真元。']);
+  // 正式预览说明上限截断，不把满真元时的静修写成保证增加。
+  assert.deepEqual(plain(card.meditate.gain), ['恢复最多 1 点真元，不超过当前上限。']);
   assert.equal(card.meditate.essenceCost, 0);
   assert.equal(card.meditate.stoneCost, 0);
   assert.equal(card.meditate.available, true);

@@ -4,13 +4,65 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 import { openLab } from './helpers/lab_browser.mjs';
 
+test('action route cards separate real gains, costs and gates without retired first-release steps', () => {
+  const ctx = vm.createContext({});
+  for (const file of ['data', 'run_rules', 'gu_rules', 'node_action_rules', 'journey'])
+    vm.runInContext(readFileSync(new URL(`../js/${file}.js`, import.meta.url), 'utf8'), ctx);
+  const main = readFileSync(new URL('../js/main.js', import.meta.url), 'utf8');
+  vm.runInContext(main.slice(main.indexOf('function currentTravelSupplies('), main.indexOf('function rollVictoryLoot(')), ctx);
+  Object.assign(ctx, { state: { stones: 3, qi: 6, blood: 10, owned: {}, wild: {}, knownFacts: [] }, nodeById: () => null });
+  vm.runInContext('const GU_BY_ID = Object.fromEntries(DATA.gu.map(gu => [gu.id, gu]));', ctx);
+  const rows = node => { ctx.node = node; return ctx.nodeRouteRows(node); };
+  const market = rows({ type: 'market', choices: ['work', 'trade', 'leave'] });
+  assert.match(market.find(([label]) => label === '可得')[1], /元石 3 枚[\s\S]*生机叶 ×1/);
+  assert.equal(market.find(([label]) => label === '需付')[1], '旅途补给 元石 -3');
+  ctx.state.stones = 2;
+  assert.match(rows({ type: 'market', choices: ['work', 'trade'] }).find(([label]) => label === '门槛')[1], /还差 1枚/);
+  const find = rows({ type: 'wild_gu', choices: ['collect_gu', 'harvest'], findGu: { guId: 'vitality_grass_gu', healthCost: 2 } });
+  assert.match(find.find(([label]) => label === '可得')[1], /直接收入蛊仓/);
+  assert.match(find.find(([label]) => label === '需付')[1], /气血 -2/);
+  assert.doesNotMatch(JSON.stringify([...market, ...find]), /待炼化|炼化后|口粮|花瓣|猪肉/);
+});
+
+test('NORMAL_RUN: hazard route cost agrees with crossing and the next fight rewards trained fists', async () => {
+  const lab = await openLab({ seed: 19 });
+  try {
+    await lab.click('[data-start-run]');
+    const before = await lab.snapshot();
+    const node = before.journey.graph.nodes.find(n => before.journey.availableNodeIds.includes(n.id) && n.type === 'hazard');
+    await lab.click(`.route-card:has([data-choose-node="${node.id}"]) .route-facts summary`);
+    const card = await lab.text(`.route-card:has([data-choose-node="${node.id}"])`);
+    assert.match(card, /可得[\s\S]*探查[\s\S]*需付[\s\S]*穿越 真元 -1/);
+    assert.doesNotMatch(card.split('需付')[0], /穿越 真元 -1/);
+    assert.doesNotMatch(card, /穿越：\s*需付/, 'empty gain text does not leave an unexplained action heading');
+    await lab.click(`[data-choose-node="${node.id}"]`);
+    await lab.click('[data-node-action="scout"]');
+    await lab.click('[data-node-action="cross"]');
+    assert.equal((await lab.snapshot()).qi, before.qi - 1);
+    await lab.click('[data-prep-tab="gu"]');
+    assert.match(await lab.text('#panel-prep'), /1 转[\s\S]*防御/);
+    assert.doesNotMatch(await lab.text('#panel-prep'), /Defense/);
+    await lab.click('[data-train-body="white_boar_strength_gu"]');
+    await lab.click('[data-prep-continue]');
+    const mapped = await lab.snapshot();
+    const fight = mapped.journey.graph.nodes.find(n => mapped.journey.availableNodeIds.includes(n.id) && n.type === 'battle');
+    await lab.click(`[data-choose-node="${fight.id}"]`);
+    assert.match(await lab.text('[data-basic-attack]'), /力量 4/);
+    await lab.click('[data-basic-attack]');
+    assert.match(await lab.text('[data-reaction-intel]'), /已失效/);
+    await lab.click('[data-basic-attack]');
+    assert.equal((await lab.snapshot()).page, 'reward');
+    assert.equal(lab.logs().filter(line => line.includes('[exception]')).length, 0);
+  } finally { await lab.close(); }
+});
+
 test('route choices use actual enemy reward tier and preserve hidden rank and exact rewards', () => {
   const ctx = vm.createContext({ state: { journey: { graph: { segmentCount: 5 } } },
     NodeActionRules: { nodeTypes: [], typeLabel: type => type }, nodeEnemyIds: node => node.enemyIds,
     enemyById: () => ({ name: '敌手', rank: 3 }),
     nodeTypeLabel: type => type, DATA: { enemies: ['a', 'b'].map(id => ({ id, name: '敌手', rank: 3, tier: 'elite' })), battle: { stoneRewards: { base_by_tier: { elite: 8 }, layer_step_pct: 25 } } },
   });
-  for (const file of ['run_rules', 'journey'])
+  for (const file of ['run_rules', 'describe', 'journey'])
     vm.runInContext(readFileSync(new URL(`../js/${file}.js`, import.meta.url), 'utf8'), ctx);
   const html = vm.runInContext("mapNodeCard({id:'n',type:'elite',name:'双敌',enemyIds:['a','b'],stage:'three',layer:3,segment:3,depth:0}, '', new Set(['n']), new Set())", ctx);
   assert.match(html, /胜后按精英档结算/);
@@ -27,7 +79,7 @@ test('route soul information requires scouting or previous encounter; unknown st
     DATA: { enemies: foes }, NodeActionRules: { nodeTypes: [], typeLabel: type => type },
     nodeTypeLabel: type => type,
   });
-  for (const file of ['run_rules', 'journey'])
+  for (const file of ['run_rules', 'describe', 'journey'])
     vm.runInContext(readFileSync(new URL(`../js/${file}.js`, import.meta.url), 'utf8'), ctx);
   const card = () => vm.runInContext("mapNodeCard({id:'n',type:'elite',name:'敌手',enemyIds:['soul'],segment:2,depth:0}, '', new Set(['n']), new Set())", ctx);
   assert.match(card(), /data-route-soul-risk="unknown"/);

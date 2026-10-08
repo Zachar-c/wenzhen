@@ -5,9 +5,12 @@ import { openLab } from './helpers/lab_browser.mjs';
 test('first release: normal first encounter opens a focused prep page and saves its progress', async () => {
   const lab = await openLab({ entry: process.env.WENZHEN_ENTRY, seed: 1, viewport: [1280, 800] });
   try {
+    await lab.click('.home-reference > summary');
+    assert.match(await lab.text('[data-resource-guide]'), /护体与回血不能抵消抽魂/);
     await lab.click('[data-start-run]');
     let state = await lab.snapshot();
     assert.equal(state.page, 'map');
+    await lab.click('#panel-map .visual-help:has(.guide-block)>summary');
     assert.ok((await lab.text('#panel-map .guide-block')).includes(`预计开场 ${state.qiMax}/${state.qiMax}`));
     const firstBattle = state.journey.graph.nodes.find(node =>
       state.journey.availableNodeIds.includes(node.id) && node.type === 'battle');
@@ -15,15 +18,44 @@ test('first release: normal first encounter opens a focused prep page and saves 
     await lab.click(`[data-choose-node="${firstBattle.id}"]`);
     state = await lab.snapshot();
     assert.equal(state.page, 'battle');
-    assert.match(await lab.text('[data-use-gu^="moonlight_gu::"]'), /无视闪避/);
+    const firstIntel = await lab.text('.target-intent');
+    assert.match(firstIntel, /伏肩扑咬（伤 2）/);
+    assert.equal((firstIntel.match(/伏肩扑咬/g) || []).length, 1, 'the actual intent is shown once');
+    assert.doesNotMatch(firstIntel, /预计 4 伤|迎击还是逐光/);
+    assert.match(firstIntel, /观察.*不会消除反击/);
+    await lab.click('.turn-help>summary');
+    assert.match(await lab.text('[data-turn-guide]'), /行动用尽会自动结束回合/);
+    await lab.click('.pick-group .combat-details>summary');
+    assert.match(await lab.text('.pick-group .combat-details'), /无视闪避/);
     const target = state.battle.enemies[0];
     if (target.problemLabel) assert.ok((await lab.text('.target-phase')).includes(target.problemLabel));
     await lab.click('[data-observe]');
+    state = await lab.snapshot();
+    assert.equal(state.battle.turn, 2, 'observation consumes the action and advances the enemy turn');
+    assert.equal(state.blood, 8, 'observation does not block the announced damage');
+    assert.match(await lab.text('[data-reaction-intel]'), /反口撕咬 · 生效中/);
+    assert.doesNotMatch(await lab.text('[data-reaction-intel]'), /尚未观察|未知/);
+    assert.match(await lab.text('.forewarn'), /拳脚触发/);
     await lab.click('.combat-details summary');
     const clues = await lab.text('[data-enemy-clues]');
     assert.ok(clues.length);
     for (const id of target.clues) assert.ok(!clues.includes(id),'observed clues show translated labels');
     state = await lab.snapshot();
+    const beforeTrigger = state;
+    await lab.click('[data-basic-attack]');
+    state = await lab.snapshot();
+    assert.equal(state.qi, beforeTrigger.qi, 'triggering the reaction with fists costs no essence');
+    assert.equal(state.battle.enemies[0].hp, beforeTrigger.battle.enemies[0].hp, 'reaction swallows this attack');
+    assert.match(await lab.text('[data-reaction-intel]'), /反口撕咬 · 已失效/);
+    assert.equal(await lab.text('.forewarn'), '', 'settled reaction no longer warns of swallowing');
+    const beforeSupport = state;
+    await lab.click('[data-use-gu="small_light_gu::1"]');
+    state = await lab.snapshot();
+    assert.equal(state.battle.turn, beforeSupport.battle.turn, 'Small Light leaves time to cast Moonlight');
+    assert.equal(state.battle.actionsUsed, beforeSupport.battle.actionsUsed);
+    assert.equal(state.qi, beforeSupport.qi - 1);
+    assert.equal(state.thought, beforeSupport.thought - 1);
+    assert.match(await lab.text('[data-use-gu="moonlight_gu::1"]'), /定向增幅已就绪/);
 
     for (let turn = 0; turn < 40 && state.page === 'battle'; turn += 1) {
       if (state.battle?.over) break;
@@ -68,6 +100,8 @@ test('first release: normal first encounter opens a focused prep page and saves 
 
     await lab.click('[data-prep-tab="gu"]');
     const beforeSell = await lab.snapshot();
+    await lab.click('.gu:has([data-gu-pairing]) .card-details>summary');
+    assert.match(await lab.text('[data-gu-pairing]'), /先催辅助/);
     let sold = false;
     try {
       await lab.click('[data-sell-gu]');
@@ -107,6 +141,7 @@ test('first release: normal first encounter opens a focused prep page and saves 
     await lab.click('[data-prep-continue]');
     const advanced=await lab.snapshot();
     assert.equal(advanced.page,'map');
+    await lab.click('#panel-map .visual-help:has(.guide-block)>summary');
     const mapGuide = await lab.text('#panel-map .guide-block');
     assert.ok(mapGuide.includes(`当前真元 ${advanced.qi}/${advanced.qiMax}`));
     assert.ok(mapGuide.includes(`预计开场 ${advanced.qiMax}/${advanced.qiMax}`));
@@ -137,13 +172,23 @@ test('dedicated market offers targeted purchases, keeps rank gates and persists 
     let state = await lab.snapshot();
     const market = state.journey.graph.nodes.find(node => state.journey.availableNodeIds.includes(node.id) && node.type === 'market');
     assert.ok(market);
-    assert.ok((await lab.text(`[data-choose-node="${market.id}"]`)).includes('本段已解锁的全部商品'));
+    await lab.click(`.route-card:has([data-choose-node="${market.id}"]) .route-facts summary`);
+    assert.ok((await lab.text(`.route-card:has([data-choose-node="${market.id}"])`)).includes('本段已解锁的全部商品'));
     await lab.click(`[data-choose-node="${market.id}"]`);
     await lab.click('[data-node-action="leave"]');
     assert.ok((await lab.text('.pane-note')).includes('本段已解锁的全部商品'));
+    for (const id of ['purchase_moonlight', 'lab_shop_gold_atk_2_12_gu', 'lab_shop_aptitude_gu', 'purchase_vitality_leaf']) await lab.click(`article.shop-offer:has([data-buy-offer="${id}"]) .card-details>summary`);
     const stock = await lab.text('.shop-grid');
     assert.ok(stock.includes('白豕蛊'));
     assert.ok(stock.includes('青铜舍利蛊'));
+    assert.match(await lab.text('article.shop-offer:has([data-buy-offer="purchase_moonlight"])'), /已持有的小光蛊/);
+    assert.doesNotMatch(stock, /推进：|只增加同名库存|不会自动装备/);
+    const sariCard = await lab.text('article.shop-offer:has([data-buy-offer="lab_shop_gold_atk_2_12_gu"])');
+    const growthCard = await lab.text('article.shop-offer:has([data-buy-offer="lab_shop_aptitude_gu"])');
+    assert.match(sariCard, /青铜舍利蛊/);
+    assert.match(growthCard, /提升至乙等/);
+    assert.doesNotMatch(sariCard + growthCard, /战斗催动另付/);
+    assert.match(await lab.text('article.shop-offer:has([data-buy-offer="purchase_vitality_leaf"])'), /购后元石 0[\s\S]*元石还差 2/);
     assert.equal(await lab.text('[data-buy-offer="purchase_blood_atk_3_11_gu"]'), '');
     state = await lab.snapshot();
     await lab.click('[data-buy-offer="purchase_vitality_leaf"]');

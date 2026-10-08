@@ -1,83 +1,37 @@
-<!-- AI生成 -->
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>问真</title>
-<link rel="icon" href="data:," />
-<link rel="stylesheet" href="css/lab.css?v=inkseal-3" />
-</head>
-<body data-page="hall" data-run-active="false">
-  <div id="bg"></div>
-  <div id="grain"></div>
-
-  <!-- 惯性布局：状态条（常在顶）→ 行程脊（我在哪）→ 场景舞台（一事）→ 行动坞（下一步永远同一位置） -->
-  <header id="hud">
-    <div class="who">
-      <span class="app">问真</span>
-      <span class="tag" id="hud-talent">丙等 · 一转初阶</span>
-    </div>
-    <div class="pools">
-      <div class="pool qi">
-        <label>真元</label>
-        <div class="bar" id="hud-qi-meter" role="meter" aria-label="真元" aria-valuemin="0" aria-valuemax="20" aria-valuenow="20"><i id="hud-qi"></i></div>
-        <span class="num" id="hud-qi-num">20/20</span>
-      </div>
-      <div class="pool thought">
-        <label title="每回合重新可用；持续灌元会占用部分余量">操控</label><span class="num" id="hud-thought">3</span>
-      </div>
-      <div class="pool">
-        <label>元石</label><span class="num" id="hud-stone">3</span>
-      </div>
-      <div class="pool blood">
-        <label>气血</label><span class="num" id="hud-blood">12</span>
-      </div>
-      <div class="pool life">
-        <label>寿元</label><span class="num" id="hud-life">60</span>
-      </div>
-      <div class="pool soul">
-        <label>魂魄</label><span class="num" id="hud-soul">1/4</span>
-      </div>
-    </div>
-    <button id="reset" class="ghost" aria-label="放弃当前局并重新开始">放弃并重开</button>
-  </header>
-
-  <!-- 行程脊：位置与进度只读；切换场景走场景内链接，不靠猜页签 -->
-  <div id="spine" role="region" aria-label="行程位置">
-    <nav id="tabs" aria-label="场景视图">
-      <button data-tab="hall" class="on">大厅</button>
-      <button data-tab="map">行程</button>
-      <button data-tab="battle">战斗</button>
-      <button data-tab="prep">整备</button>
-      <button data-tab="cover" hidden data-dev-only>覆盖</button>
-    </nav>
-    <div class="nav-context" aria-live="polite">
-      <span id="run-context">尚未开始修行</span>
-      <span id="run-progress">五境修行</span>
-    </div>
-  </div>
-
-  <main id="stage">
-    <section id="panel-hall" class="panel on"></section>
-    <section id="panel-map" class="panel"></section>
-    <section id="panel-node-action" class="panel"></section>
-    <section id="panel-battle" class="panel"></section>
-    <section id="panel-prep" class="panel"></section>
-    <section id="panel-reward" class="panel"></section>
-    <section id="panel-cover" class="panel"></section>
-    <section id="panel-ending" class="panel"></section>
-  </main>
-
-  <!-- 主行动坞：下一步永远在底部同一位置；内容由当前场景主按钮提升/镜像 -->
-  <footer id="dock" aria-label="主行动">
-    <div class="dock-hint" id="dock-hint">选择难度，开始修行</div>
-    <div class="dock-slot" id="dock-slot"></div>
-  </footer>
-
-  <div id="toast"></div>
-  <!-- 普通脚本按顺序加载，不用 ES module：这样直接双击 lab.html 也能跑（file:// 下 module 会被 CORS 拦）。 -->
-  <!-- 合并：样式=lab.css，逻辑=MVP（mvp_logic = CombatCore）。禁止双引擎。 -->
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101716"><meta name="color-scheme" content="dark"><title>问真</title><link rel="icon" href="data:,"><link rel="stylesheet" href="css/lab.css?v=integrated-1"></head>
+<body data-page="hall" data-run-active="false"><div class="shell">
+<aside class="sidebar"><div class="brand"><div class="seal">问</div><div><div class="brand-name song">问真</div><div class="brand-sub">一念 · 万般因果</div></div></div><div class="nav-heading">本局行程</div><nav id="tabs" aria-label="游戏导航"><button class="navitem" data-tab="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18l5-5 4 4 7-10 M3 5h5v5 M15 3h6v6"/></svg><span>命途</span><span class="key">1</span></button>
+<button class="navitem" data-tab="battle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5 M10 4l10 10 M4 10l10 10"/></svg><span>交锋</span><span class="key">2</span></button>
+<button class="navitem" data-tab="gu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 3 7 1 7 6 0 2-3 3-3 5 0 2 3 3 3 5-2 3-6 2-7-1-2 3-5 3-7 1 0-2 3-3 3-5 0-2-3-3-3-5 0-2 3-3 4-3 0-2-3-2-1-5z"/></svg><span>蛊藏</span><span class="key">3</span></button>
+<button class="navitem" data-tab="prep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h18l-2 11H5L3 9z M5 9l2-5h10l2 5 M9 13v4 M15 13v4"/></svg><span>整备与交易</span><span class="key">4</span></button>
+<button class="navitem" data-tab="cult"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2c-2 4-6 6-6 11a6 6 0 0012 0c0-4-4-7-6-11z M9 14c0 3 2 5 3 5"/></svg><span>修行</span><span class="key">5</span></button>
+<button class="navitem" data-tab="journal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z M8 8h8 M8 12h8 M8 16h5"/></svg><span>行记</span><span class="key">6</span></button>
+<button class="navitem" data-tab="records"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v4H3z M5 9v11h14V9 M10 13h4"/></svg><span>往昔行卷</span><span class="key"></span></button>
+<button class="navitem" data-tab="hall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11L12 4l8 7v9H4z"/></svg><span>返回首页</span><span class="key"></span></button><button class="navitem" data-tab="cover" hidden>开发覆盖</button></nav><div class="side-foot"><div id="side-position" class="small muted"></div><div id="save-indicator" class="status"></div><div id="side-seed" class="tiny faint"></div></div></aside>
+<div class="main"><header id="hud" class="topbar"><div class="crumb"><span class="part">问真</span><span class="faint">/</span><span id="view-title" class="now">首页</span><span id="hud-talent" class="chip"></span></div><div class="top-res">
+<div class="res pool blood"><span class="reslabel">气血</span><b id="hud-blood" class="number"></b></div>
+<div class="res pool qi"><span class="reslabel">真元</span><b id="hud-qi-num" class="number"></b><div id="hud-qi-meter" class="bar" role="meter" aria-label="真元"><i id="hud-qi"></i></div></div>
+<div class="res pool thought"><span class="reslabel">操控</span><b id="hud-thought" class="number"></b></div>
+<div class="res pool soul"><span class="reslabel">魂魄</span><b id="hud-soul" class="number"></b></div>
+<div class="res pool"><span class="reslabel">元石</span><b id="hud-stone" class="number"></b></div>
+<div class="res pool life"><span class="reslabel">寿元</span><b id="hud-life" class="number"></b></div></div></header>
+<div id="spine" class="nav-context"><span id="run-context"></span><span id="run-progress"></span><button id="reset" class="ghost">放弃并重开</button></div>
+<main id="stage" class="page" tabindex="-1"><section id="panel-hall" class="panel view on"></section>
+<section id="panel-map" class="panel view"></section>
+<section id="panel-node-action" class="panel view"></section>
+<section id="panel-battle" class="panel view"></section>
+<section id="panel-prep" class="panel view"></section>
+<section id="panel-reward" class="panel view"></section>
+<section id="panel-gu" class="panel view"></section>
+<section id="panel-cult" class="panel view"></section>
+<section id="panel-journal" class="panel view"></section>
+<section id="panel-records" class="panel view"></section>
+<section id="panel-cover" class="panel view"></section>
+<section id="panel-ending" class="panel view"></section></main>
+</div></div>
+<nav id="mobile-tabs" class="mobile-nav" aria-label="手机快捷导航"><button data-ui-page="map"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18l5-5 4 4 7-10 M3 5h5v5 M15 3h6v6"/></svg>命途</button><button data-ui-page="battle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19L19 5 M10 4l10 10 M4 10l10 10"/></svg>交锋</button><button data-ui-page="gu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c3 3 7 1 7 6 0 2-3 3-3 5 0 2 3 3 3 5-2 3-6 2-7-1-2 3-5 3-7 1 0-2 3-3 3-5 0-2-3-3-3-5 0-2 3-3 4-3 0-2-3-2-1-5z"/></svg>蛊藏</button><button data-ui-page="prep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h18l-2 11H5L3 9z M5 9l2-5h10l2 5 M9 13v4 M15 13v4"/></svg>整备与交易</button><button data-ui-page="cult"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2c-2 4-6 6-6 11a6 6 0 0012 0c0-4-4-7-6-11z M9 14c0 3 2 5 3 5"/></svg>修行</button><button data-ui-page="journal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z M8 8h8 M8 12h8 M8 16h5"/></svg>行记</button><button data-ui-page="records"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v4H3z M5 9v11h14V9 M10 13h4"/></svg>往昔行卷</button><button data-ui-page="hall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11L12 4l8 7v9H4z"/></svg>返回首页</button></nav>
+<div id="toast" role="status" aria-live="polite"></div><dialog id="ui-confirm" aria-labelledby="confirm-title"><div class="over">问真 · 抉择</div><h2 id="confirm-title"></h2><p id="confirm-description"></p><div class="modal-actions"><button data-confirm-cancel>取消</button><button class="primary" data-confirm-accept>确认</button></div></dialog>
   <script src="js/data.js"></script>
   <script src="js/canon.js"></script>
   <script src="js/balance.js"></script>
@@ -101,6 +55,7 @@
        两者缺席时全部静默回退 lab.css 原生 CSS 动画，不影响玩法与走盘。 -->
   <script src="js/vendor/gsap.min.js"></script>
   <script src="js/motion.js?v=motion-2"></script>
+  <script src="js/ui.js"></script>
   <script src="js/main.js"></script>
   <!-- 内联脚本不会被 CORS 拦，可靠地兜底：外部脚本若没执行（旧缓存 / 路径错 / 版本不匹配），
        页面会明确报错，而不是留一个 HUD 看着正常、按钮却没反应的空壳。 -->

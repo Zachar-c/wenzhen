@@ -121,6 +121,8 @@ function renderJourneyPage(page) {
   else if (page === 'prep') renderPrep(document.querySelector('#panel-prep'));
   else if (page === 'reward') renderReward(document.querySelector('#panel-reward'));
   else if (page === 'ending') renderEnding(document.querySelector('#panel-ending'));
+  else if (['gu', 'cult', 'journal', 'records'].includes(page)) renderReadView(page, document.querySelector(`#panel-${page}`));
+  UI.decorate(page, document.querySelector(`#panel-${page}`));
 }
 
 // ── 上下文引导（2026-10-03）────────────────────────────────────────────
@@ -180,10 +182,10 @@ function renderHall(root) {
   const archivedRuns = archiveResult.ok ? archiveResult.runs : [];
   const archiveWins = archivedRuns.filter((run) => run.outcome === 'victory').length;
   const recentRuns = archivedRuns.slice(0, 5);
-  const cannotRead = saveIssue === 'unreadable';
+  const cannotRead = saveIssue === 'unreadable' || saveIssue === 'outdated';
   const storageDown = saveIssue === 'storage_error' || saveStatus.ok === false;
   const saveLine = cannotRead
-    ? '<div class="hall-save bad">无法读取存档 · 原文已保留 · 请明确选择重新开局</div>'
+    ? `<div class="hall-save bad">${saveIssue === 'outdated' ? '存档版本不兼容' : '无法读取存档'} · 原文已保留 · 请明确选择重新开局</div>`
     : storageDown
       ? '<div class="hall-save bad">存储不可用 · 本局无法续玩 · 不会假称已保存</div>'
       : inProgress
@@ -233,6 +235,7 @@ function renderHall(root) {
         <div class="hall-loop" data-hall-loop>
           <div class="kicker">一局怎么走</div>
           <p>选难度开局 → 每段先走路途节点（战斗 / 精英 / 休整 / 市集 / 寻蛊 / 险地 / 异闻）→ 战后结算领蛊 → 整备（坊市买蛊、蛊仓锻体、修炼突破）→ 走满本段再挑战层主。五段走尽，本局结束。</p>
+          <p data-resource-guide>气血、魂魄或寿元归零都会败北。护体与回血不能抵消抽魂，魂伤可在坊市付费养魂；真元不足本身不会败北，可用拳脚或等待回合回复，但敌手也会行动。</p>
         </div>
         <div class="hall-starting-kit" data-starting-kit>
           <div class="kicker">新局行囊 · 六类开局工具</div>
@@ -480,7 +483,7 @@ function mapNodeCard(node, selected, available, completed) {
     : '';
   return `<${tag} class="map-node type-${node.type} ${stateClass}${isAvailable ? ' available' : ''}"${attrs}>
     <span class="rn-top"><span>${node.type === 'boss' ? '层主' : `L${node.segment} · ${node.depth + 1}`}</span><em>${nodeTypeLabel(node.type)}</em></span>
-    <span class="rn-name">${node.name}</span>
+    <span class="route-picture" aria-hidden="true">${combat && foes[0]?.portrait ? `<img src="${portrait(foes[0].portrait)}" alt="">` : visualIcon(({market: 'trade', rest: 'heart', event: 'spark', hazard: 'shield', wild_gu: 'gu', resource: 'coin', seclusion: 'cult'})[node.type] || 'route')}${combat ? `<span class="route-count">${visualIcon(node.type === 'boss' ? 'crown' : 'battle')}${foes.length}</span>` : ''}</span><span class="rn-name">${node.name}</span>
     ${summary ? `<span class="rn-summary">${summary}</span>` : ''}
     <dl class="rn-facts">${rows.map(([label, text]) => `<div><dt>${label}</dt><dd>${text}</dd></div>`).join('')}</dl>
     ${isAvailable ? `<span class="map-enter">进入</span>` : `<span class="rn-state">${isSelected ? '当前' : isDone ? '已过' : '未选'}</span>`}
@@ -515,16 +518,16 @@ function nodeRouteRows(node) {
     choices: node.choices, stones: state.stones, essence: state.qi, tradeSupply: currentTravelSupplies(), guFind: currentGuFind(node),
   })).filter((option) => NodeActionRules.actionIds.includes(String(option.id)) || option.id === 'leave');
   const doable = cards.filter((option) => option.available);
-  const priced = doable.filter((option) => option.stoneCost > 0 || option.essenceCost > 0);
+  const priced = cards.filter((option) => option.stoneCost > 0 || option.essenceCost > 0 || option.healthCost > 0);
+  const gains = cards.filter(option => !['leave', 'withdraw'].includes(option.id) && option.gain?.some(Boolean));
+  const risks = [...new Set(cards.flatMap(option => option.risk || []))];
   const blocked = cards.filter((option) => !option.available);
   return [
     ['内容', doable.map((option) => option.title || actionLabel(option.id)).join(' · ') || '只能离开'],
-    ['可得', priced.length
-      ? priced.map((option) => `${option.title || actionLabel(option.id)} ${nodeActionCostText(option)}`).join(' · ')
-      : '不耗资源的行动即可取得'],
-    ['需付', blocked.length
-      ? `${blocked.map((option) => option.title || actionLabel(option.id)).join('、')} 当前不可用`
-      : '全部行动当前可付'],
+    ['可得', gains.map(option => `${option.title || actionLabel(option.id)}：${option.gain.filter(Boolean).join(' ')}`).join('；') || '本处无已列明的资源收益'],
+    ['需付', priced.map(option => `${option.title || actionLabel(option.id)} ${nodeActionCostText(option)}`).join('；') || '无资源消耗'],
+    ...(blocked.length ? [['门槛', blocked.map(option => `${option.title || actionLabel(option.id)}：${option.blockReason || '当前不可用'}`).join('；')]] : []),
+    ...(risks.length ? [['风险', risks.join(' ')]] : []),
     ...(node.type === 'market' ? [['坊市', '整备供应本段已解锁的全部商品，可定向买蛊；仍需支付标价']] : []),
   ];
 }
@@ -578,13 +581,14 @@ function renderNodeActions(root) {
     </div>
     <div class="node-action-choices">${cards.map((option) => `
       <article class="node-action-choice ${isEvent ? 'event-choice' : ''} ${option.available ? 'ready' : ''}">
-        <div class="na-head"><b>${option.title || actionLabel(option.id)}</b><span>${nodeActionCostText(option)}</span></div>
-        ${option.summary || node.summary ? `<p class="na-summary">${option.summary || node.summary}</p>` : ''}
+        ${nodeChoiceVisual(node, option)}<div class="na-head"><b>${option.title || actionLabel(option.id)}</b><span>${nodeActionCostText(option)}</span></div>
+        <details class="card-details"><summary>故事与完整后果</summary>${option.summary || node.summary ? `<p class="na-summary">${option.summary || node.summary}</p>` : ''}
         ${(option.gain || []).map((line) => `<p>${line}</p>`).join('')}
         ${(option.risk || []).map((line) => `<p class="risk">${line}</p>`).join('')}
         ${option.unknownNote ? `<p class="na-unknown"><span>未明</span>${option.unknownNote}</p>` : ''}
         ${option.available ? '' : `<p class="blocked">${option.blockReason}</p>`}
-        ${(option.remedy || []).map((line) => `<p class="remedy">${line}</p>`).join('')}
+        ${(option.remedy || []).map((line) => `<p class="remedy">${line}</p>`).join('')}</details>
+        ${!option.available ? `<div class="visual-blocked">${visualIcon('lock')}${option.blockReason}</div>` : ''}
         <button class="${option.available ? 'primary' : ''}" ${option.available ? '' : 'disabled'} data-node-action="${option.id}">${option.available ? option.buttonLabel || '执行' : '不可用'}</button>
       </article>`).join('')}</div>
     <div class="map-help">${isRest ? REST_ACTION_HELP : isEvent ? '接下机缘先结算气血与元石；列明的赶路魂魄代价在整备后继续时支付，可在离开前养魂。不取则无此代价。事件与具体点数属于游戏适配。' : NODE_ACTION_HELP}</div>`;
@@ -685,15 +689,12 @@ function shopStock() {
   return [...goods, ...services];
 }
 
-// 购入或领取前复用现有构筑洞察；只读，不授予蛊或改写库存。
+// 购入或领取前展示实际用途与门槛；只读，不授予蛊或改写库存。
   // 三条轴不得混写：修为门槛、进战费用和局内一次性元石。
 function guChoicePreview(guId, purchaseCost = null) {
   const gu = guById(guId);
   if (!gu) return '';
   const owned = { ...state.owned, [guId]: Number(state.owned[guId] || 0) + 1 };
-  const insight = GuRules.gainInsight(guId, {
-    owned, recipes: [], killMoves: [], guById: GU_BY_ID,
-  });
   const purchase = purchaseCost !== null;
   const remaining = state.stones - Number(purchaseCost || 0);
   const rank = Number(gu.rank) || 1;
@@ -719,7 +720,6 @@ function guChoicePreview(guId, purchaseCost = null) {
       }
     }
   }
-  const decisions = insight.decisions.filter((d) => !['forge', 'keep', 'sell', 'killmove'].includes(d.kind)).slice(0, 2);
   const aptitudeOrder = DATA.flow.aptitudeOrder || [];
   const aptitudeIndex = aptitudeOrder.indexOf(state.aptitude);
   const raisedAptitude = aptitudeOrder[aptitudeIndex + 1];
@@ -746,15 +746,14 @@ function guChoicePreview(guId, purchaseCost = null) {
   const battleCost = [];
   if (Number(gu.trueQiCost || 0) > 0) battleCost.push(`真元 ${gu.trueQiCost}`);
   if (Number(gu.thoughtCost || 0) > 0) battleCost.push(`操控 ${gu.thoughtCost}`);
-  if (battleCost.length && gu.effect?.kind !== 'body_training' && gu.effect?.kind !== 'production') {
+  if (!growthOnly && battleCost.length && gu.effect?.kind !== 'body_training' && gu.effect?.kind !== 'production') {
     rows.push(`战斗催动另付 ${battleCost.join(' · ')}，与元石无关${gu.effect?.strength_scaling ? `；整备自疗仅扣真元 ${gu.trueQiCost}，不补回真元` : ''}`);
   }
-  const target = gu.battleEffect?.target_gu_id;
+  const pairing = guPairingText(gu, state.owned);
   const invested = (state.modifierLedger || []).filter(row => row.sourceGuDefinitionId === gu.id && row.sourceEffectId === 'body_training').reduce((total, row) => total + Number(row.amount || 0), 0);
-  const synergy = target ? `${Number(state.owned[target] || 0) > 0 ? '可辅助已持有的' : '需要配合'}${guById(target)?.name || target}：×${gu.battleEffect.multiplier}，同类不叠加`
-    : gu.effect?.kind === 'production' ? `本体保留；每节点整备真元${gu.trueQiCost}产叶${gu.effect.amount}。叶片可疗伤或卖出。`
+  const synergy = gu.effect?.kind === 'production' ? `本体保留；每节点整备真元${gu.trueQiCost}产叶${gu.effect.amount}。叶片可疗伤或卖出。`
       : gu.effect?.consumable ? '一片一次有效疗伤；自用消耗库存，也可出售。'
-        : gu.effect?.kind === 'body_training' ? `已得永久力量 +${invested}/${gu.effect.cap}（试玩参数）；多买同型不增加上限。` : '';
+        : gu.effect?.kind === 'body_training' ? `${pairing} 已得永久力量 +${invested}/${gu.effect.cap}（试玩参数）；多买同型不增加上限。` : pairing;
   // 一条事实一行，标签只在本组第一行出现：组内再用「·」相连会把两件事读成一件事。
   const rowsHtml = (label, lines) => lines.map((text, index) => `<div class="bf-row">`
     + `<span class="bf-k${index ? ' bf-cont' : ''}">${index ? '' : label}</span>`
@@ -764,9 +763,7 @@ function guChoicePreview(guId, purchaseCost = null) {
     ${rowsHtml(growthOnly ? '成长' : '催动', rows)}
     ${rowsHtml('资金', money)}
     ${rowsHtml('用法', synergy ? [synergy] : [])}
-    ${rowsHtml('其他', decisions.map((d) => d.detail))}
-    ${!synergy && !decisions.length
-      ? rowsHtml('说明', ['只增加同名库存；先确认当前是否用得上。']) : ''}
+    ${!growthOnly && !synergy ? rowsHtml('说明', ['无需装备；修为达标后按卡面条件使用，购买不会增加每回合行动数。']) : ''}
   </div>`;
 }
 
@@ -781,11 +778,13 @@ function shopOfferCard(offer) {
         ? `还差 ${offerCost(offer) - state.stones} 元石`
         : '';
   return `<article class="shop-offer ${can ? 'ready' : ''}">
+    ${offer.gu_id ? guFace(GU_BY_ID[offer.gu_id]) : ''}
     <div class="so-kind">${shopKindLabel(offer.kind)}</div>
-    <div class="so-name">${offerName(offer)}</div>
-    <div class="so-detail">${offerDetail(offer)}</div>
-    ${!sold && offer.kind === 'purchase' && offer.gu_id ? guChoicePreview(offer.gu_id, offerCost(offer)) : ''}
-    <div class="so-foot"><span>${offerCost(offer)} 元石</span><span>${reason}</span></div>
+    ${!offer.gu_id ? `<div class="so-name">${offerName(offer)}</div>` : ''}
+    <details class="card-details"><summary>详情与购买建议</summary><div class="so-detail">${offerDetail(offer)}</div>
+    ${!sold && offer.kind === 'purchase' && offer.gu_id ? guChoicePreview(offer.gu_id, offerCost(offer)) : ''}</details>
+    ${offer.gu_id ? `<div class="effect-chips">${guEffectSummary(GU_BY_ID[offer.gu_id].effect)}</div>` : ''}
+    <div class="so-foot">${visualValue('coin', offerCost(offer), '购买价格')}<span>${reason}</span></div>
     <button ${can ? '' : 'disabled'} data-buy-offer="${offer.id}">${sold ? '已售罄' : '购入'}</button>
   </article>`;
 }
@@ -797,7 +796,8 @@ function inventoryCard(gu) {
   const count = Number(state.owned[gu.id] || 0);
   if (count <= 0) return '';
   const price = RunFlow.sellValue(gu.value);
-  if (gu.playable === false) return `<article class="gu"><span class="cnt">×${count}</span><img src="assets/gu/${gu.icon}.png" alt=""><div class="gn">${gu.name}</div><div class="gm">旧存货 · 用途待核实</div><div class="ge">${gu.effectNote}</div><div class="gu-foot"><span>旧估价 · 卖 ${price}</span><button class="ghost" data-sell-gu="${gu.id}">卖出</button></div></article>`;
+  const pairing = guPairingText(gu, state.owned);
+  if (gu.playable === false) return `<article class="gu"><span class="cnt">×${count}</span>${guArt(gu)}<div class="gn">${gu.name}</div><div class="gm">旧存货 · 用途待核实</div><div class="ge">${gu.effectNote}</div><div class="gu-foot"><span>旧估价 · 卖 ${price}</span><button class="ghost" data-sell-gu="${gu.id}">卖出</button></div></article>`;
   const training = gu.effect?.kind === 'body_training' ? bodyTrainingPreview(gu) : null;
   const production = gu.effect?.kind === 'production' ? leafProductionPreview(gu) : null;
   const selfHealing = gu.effect?.kind === 'heal' && gu.effect.strength_scaling
@@ -805,49 +805,38 @@ function inventoryCard(gu) {
   const leafReason = gu.effect?.consumable ? GuRules.consumeHealingGu(gu, { owned: state.owned, health: state.blood, healthMax: state.bloodMax, healingLocked: state.leafRecoveryNodeId === state.journey.nodeId }) : null;
   // Canon 标注：canon 与游戏转数分叉/状态待核时显示原著口径（CanRuntime 投影，非游戏数值）。
   const canon = typeof Canon !== 'undefined' ? Canon.canonAlert(gu.id, gu.rank) : '';
-  // POC：月光蛊本体/收藏投影贴图挂载；非 POC 蛊回退原 icon，渲染路径不变。
-  const pocArt = typeof MOONLIGHT_POC !== 'undefined' ? MOONLIGHT_POC.cardArt(gu.id) : '';
-  const pocToggle = pocArt
-    ? `<button class="ghost poc-mode-btn" data-poc-moon-mode title="切换本体 / 收藏投影">${MOONLIGHT_POC.toggleLabel()}</button>`
-    : '';
-  return `<article class="gu ${gu.rank > 1 ? 'r2' : ''} ${pocArt ? 'poc-moon-card' : ''}">
+  return `<article class="gu ${gu.rank > 1 ? 'r2' : ''}">
     <span class="cnt">×${count}</span>
-    ${pocArt || `<img src="assets/gu/${gu.icon}.png" alt="">`}
-    <div class="gn">${gu.name}${pocToggle}</div>
-    <div class="gm">${gu.rank} 转 · ${buildRoleLabel(GuRules.buildRoleOf(gu, GU_BY_ID))} · ${schoolLabel(gu.school)} · 值 ${gu.value}</div>
+    ${guFace(gu)}
+    <div class="gm">${buildRoleLabel(GuRules.buildRoleOf(gu, GU_BY_ID))} · ${schoolLabel(gu.school)}</div><div class="effect-chips">${guEffectSummary(gu.effect)}</div><details class="card-details"><summary>用法与背景</summary>
     <div class="ge">${effectText(gu.effect)}</div>
-    ${gu.effectNote ? `<details class="gc"><summary>原著与试玩</summary>${gu.effectNote}</details>` : ''}
+    ${pairing ? `<div class="choice-insight" data-gu-pairing>${pairing}</div>` : ''}
+    ${gu.effectNote ? `<div class="gc">${gu.effectNote}</div>` : ''}
     ${gu.labOnly ? '<div class="gc">原创机缘道具 · 提升资质，不对应原著同名蛊虫</div>' : ''}
-    ${canon ? `<div class="gc">⟡ ${canon}</div>` : ''}
-    ${training ? `<div class="choice-insight">一猪之力进度 ${Math.round(training.current / gu.effect.cap * 100)}% · 已得力量保留</div><button data-train-body="${gu.id}" ${training.ok ? '' : 'disabled'}>${training.ok ? `锻体 · 真元 ${gu.trueQiCost} · 费用 ${gu.feedingCost}元石` : ({repeated_visit: '本次整备已锻体', cap_reached: '已达一猪之力上限', insufficient_essence: '真元不足', insufficient_stone: '锻体元石不足', not_preparing: '进入整备后可锻体', gu_unavailable: '未持有可用蛊虫', gu_hungry: '当前不可锻体'}[training.reason] || '暂不可锻体')}</button><div class="muted">试玩参数：每次整备力量 +${gu.effect.amount}，同型上限 +${gu.effect.cap}；原著未给出此数值。</div>` : ''}
-    ${production ? `<button data-produce-leaf="${gu.id}" ${production.ok ? '' : 'disabled'}>${production.ok ? `催生叶片 · 真元 ${production.cost} → 生机叶 ${production.produced}` : guReasonLabel(production.reason)}</button><div class="muted">每节点整备一次；耗真元并占用生产时间为试玩适配。</div>` : ''}
-    ${selfHealing ? `<div class="muted">${selfHealing.ok
-      ? `整备可自疗 · 气血 +${selfHealing.healed} · 真元 ${selfHealing.cost}`
-      : `暂不可自疗 · ${selfHealing.reason === 'not_preparing' ? '仅整备节点可用' : guReasonLabel(selfHealing.reason) || selfHealing.reason}`}</div><button data-heal-self="${gu.id}" ${selfHealing.ok ? '' : 'disabled'}>${selfHealing.ok ? `自疗 · 气血 +${selfHealing.healed} · 真元 ${selfHealing.cost}` : selfHealing.reason === 'not_preparing' ? '仅整备节点可用' : guReasonLabel(selfHealing.reason) || '暂不可自疗'}</button><div class="muted">战斗内也可自疗；整备自疗保留蛊虫，仅扣真元 ${gu.trueQiCost}（当前 ${state.qi}）。</div>` : ''}
-    ${leafReason ? `<button data-use-leaf="${gu.id}" ${leafReason.ok ? '' : 'disabled'}>${leafReason.ok ? `疗伤 · 气血 +${leafReason.healed} · 消耗1片` : guReasonLabel(leafReason.reason)}</button><div class="muted">留作自用，或出售换取元石。</div>` : ''}
-    <div class="gu-foot"><span>卖 ${price}</span><button class="ghost" data-sell-gu="${gu.id}">卖出</button></div>
+    ${canon ? `<div class="gc">⟡ ${canon}</div>` : ''}</details>
+    ${training ? `<div class="training-progress"><span>锻体 ${Math.round(training.current / gu.effect.cap * 100)}%</span><progress max="${gu.effect.cap}" value="${training.current}" aria-label="一猪之力进度"></progress></div><button data-train-body="${gu.id}" ${training.ok ? '' : 'disabled'}>${training.ok ? `锻体 · 真元 ${gu.trueQiCost} · 费用 ${gu.feedingCost}元石` : ({repeated_visit: '本次整备已锻体', cap_reached: '已达一猪之力上限', insufficient_essence: '真元不足', insufficient_stone: '锻体元石不足', not_preparing: '进入整备后可锻体', gu_unavailable: '未持有可用蛊虫', gu_hungry: '当前不可锻体'}[training.reason] || '暂不可锻体')}</button>` : ''}
+    ${production ? `<button data-produce-leaf="${gu.id}" ${production.ok ? '' : 'disabled'}>${production.ok ? `催生叶片 · 真元 ${production.cost} → 生机叶 ${production.produced}` : guReasonLabel(production.reason)}</button>` : ''}
+    ${selfHealing ? `<button data-heal-self="${gu.id}" ${selfHealing.ok ? '' : 'disabled'}>${selfHealing.ok ? `自疗 · 气血 +${selfHealing.healed} · 真元 ${selfHealing.cost}` : selfHealing.reason === 'not_preparing' ? '仅整备节点可用' : guReasonLabel(selfHealing.reason) || '暂不可自疗'}</button>` : ''}
+    ${leafReason ? `<button data-use-leaf="${gu.id}" ${leafReason.ok ? '' : 'disabled'}>${leafReason.ok ? `疗伤 · 气血 +${leafReason.healed} · 消耗1片` : guReasonLabel(leafReason.reason)}</button>` : ''}
+    <div class="gu-foot">${visualValue('coin', `+${price}`, '出售所得元石')}<button class="ghost" data-sell-gu="${gu.id}">卖出</button></div>
   </article>`;
 }
 
 function gainInsightPanel() {
   const insight = state.lastGainInsight;
   if (!insight || !insight.decisions?.length) return '';
-  const lines = insight.decisions.filter(d => !['forge', 'killmove'].includes(d.kind)).map((d) => `<li><b>${d.label}</b> · ${d.detail}</li>`).join('');
+  const lines = insight.decisions.filter(d => d.kind === 'sell').map((d) => `<li><b>${d.label}</b> · ${d.detail}</li>`).join('');
   return `
     <section class="insight-panel" style="margin:16px 0;padding:12px 14px;border:1px solid var(--line,#ccc);border-radius:8px">
-      <div class="kicker">构筑关联 · ${insight.name}（${insight.role}）</div>
+      <div class="kicker">新得蛊虫 · ${insight.name}（${buildRoleLabel(insight.role)}）</div>
       <ul style="margin:8px 0 0 18px">${lines}</ul>
-      <div class="gm" style="margin-top:6px">主动选择：保留或出售，不会自动装备。</div>
+      <div class="gm" style="margin-top:6px">可保留或出售；无需装备，修为达标后按用途使用。</div>
     </section>`;
 }
 
 function renderPrep(root) {
   if (!root) return;
-  const node = currentNode();
-  if (!node) {
-    root.innerHTML = '<div class="empty">当前没有待整备节点。</div>';
-    return;
-  }
+  const node = currentNode() || { name: '当前修行', segment: journeyProgress().activeSegment, type: 'rest' };
   const next = RunFlow.nextBreakthrough({
     rank: state.cultivation,
     stageIndex: state.cultivationStage,
@@ -913,7 +902,7 @@ function renderPrep(root) {
         <section class="rail-block">
           <div class="kicker">修炼突破</div>
           <h3>${next.kind === 'small' ? `冲击 ${next.targetLabel}` : next.kind === 'big' ? `冲击 ${next.targetRank} 转` : '五转巅峰'}</h3>
-          ${next.kind !== 'max' ? `<div class="prep-line" data-growth-benefit>突破收益 · 真元上限 ${state.qiMax} → ${nextQiMax}；当前真元不补满。</div>` : ''}
+          ${next.kind !== 'max' ? `<div class="growth-visual">${visualValue('coin', `−${next.stoneCost}`, '突破费用', true)} → ${visualValue('spark', `${state.qiMax} → ${nextQiMax}`, '真元上限收益')}</div><div class="prep-line" data-growth-benefit>突破收益 · 真元上限 ${state.qiMax} → ${nextQiMax}；当前真元不补满。</div>` : ''}
           ${next.kind === 'small' ? `
             <p>小突破消耗元石，或消耗 1 只当前转数同阶舍利蛊。</p>
             <div class="button-row">
@@ -967,6 +956,7 @@ function renderPrepPane(root, tab) {
     const ownedGu = Object.values(GU_BY_ID).filter((g) => Number(state.owned[g.id] || 0) > 0);
     gu.innerHTML = ownedGu.map(inventoryCard).join('') || '<div class="empty">蛊仓为空。</div>';
   }
+  UI.decorate('prep', root);
 }
 
 // 事件委托：整备页按钮多，innerHTML 后逐个 addListener 是 draw 热点。
@@ -976,14 +966,9 @@ function bindPrepEvents(root) {
   root.addEventListener('click', (ev) => {
     const t = ev.target.closest(
       '[data-prep-tab],[data-buy-offer],[data-sell-gu],[data-break],[data-use-aptitude],'
-      + '[data-produce-leaf],[data-use-leaf],[data-heal-self],[data-train-body],[data-prep-continue],[data-poc-moon-mode]',
+      + '[data-produce-leaf],[data-use-leaf],[data-heal-self],[data-train-body],[data-prep-continue]',
     );
     if (!t || !root.contains(t) || t.disabled) return;
-    if (t.dataset.pocMoonMode != null) {
-      MOONLIGHT_POC.setMode(MOONLIGHT_POC.mode() === 'projection' ? 'canonical' : 'projection');
-      renderPrepPane(root, prepTab);
-      return;
-    }
     if (t.dataset.prepTab) {
       prepTab = t.dataset.prepTab;
       root.querySelectorAll('[data-prep-tab]').forEach((tabButton) => tabButton.classList.toggle('on', tabButton === t));
@@ -1018,8 +1003,8 @@ function renderReward(root) {
       <div class="kicker">战后结算 · 自动奖励已到账</div>
       <h1>${node ? node.name : '遭遇'} · 伏诛</h1>
       <div class="reward-lines">
-        <div><span>元石</span><b>+${reward.stones}</b></div>
-        <div><span>气血</span><b>+${reward.healed || 0} · 真元回满</b></div>
+        <div>${visualValue('coin', `+${reward.stones}`, '自动到账元石')}</div>
+        <div>${visualValue('heart', `+${reward.healed || 0}`, '自动恢复气血')}${visualValue('spark', `${state.qi}/${state.qiMax}`, '真元回满')}</div>
         <div><span>战利方向</span><b>${!choices.length ? '元石与补给' : '蛊虫与成长'}</b></div>
         <div><span>回合</span><b>${reward.turn}</b></div>
       </div>
@@ -1027,19 +1012,20 @@ function renderReward(root) {
         ${guideBlock('领取与放弃', [
           '领取免费：点中一只即收入蛊仓，不扣元石，已到账的元石与补给不受影响。',
           '放弃的结果：点「放弃本次蛊虫，保留已到账资源」则本次不获得蛊虫，其余已入账资源照常保留；系统不会替你预选。',
-          '入仓的蛊不会自动装备；能否立刻催动看卡上写明的修为门槛。',
+          '入仓后无需装备；能否立刻催动看卡上写明的修为门槛与使用条件。',
         ])}
         <h2>战后出蛊 · 三选一</h2>
         <p class="muted">${tier === 'boss' ? '层主奖励 · 稀有蛊虫与成长' : tier === 'elite' ? '精英奖励 · 高品质蛊虫' : '普通战 · 稳定元石与蛊虫成长'}</p>
         <div class="reward-choices">${choices.map((gu) => `
-          <button data-reward-gu="${gu.id}">
-            <img src="assets/gu/${gu.icon}.png" alt="">
-            <b>${gu.name}</b>
-            <span>${gu.rank} 转 · ${buildRoleLabel(GuRules.buildRoleOf(gu, GU_BY_ID))} · ${schoolLabel(gu.school)}</span>
-            <em>${effectText(gu.effect)}</em>
-            ${guChoicePreview(gu.id)}
-          </button>`).join('')}</div>
-        <p class="muted" style="margin-top:10px">所选蛊虫会收入蛊仓，不会自动装备。进入整备后，可查看用途、使用条件或出售。</p>
+          <article class="reward-card">
+            <button data-reward-gu="${gu.id}" aria-label="领取${gu.name}">
+              ${guFace(gu)}
+              <span class="effect-chips">${guEffectSummary(gu.effect)}</span>
+              <span class="reward-claim">领取 →</span>
+            </button>
+            <details class="card-details"><summary>用法与选择建议</summary>${guChoicePreview(gu.id)}<div class="ge">${effectText(gu.effect)}</div></details>
+          </article>`).join('')}</div>
+        <p class="muted" style="margin-top:10px">所选蛊虫会收入蛊仓，无需装备。进入整备后，可查看用途、使用条件或出售。</p>
       ` : `
         ${guideBlock('领取与放弃', [
           '本次没有待选蛊虫：元石与补给已入账，直接进入整备即可。',
@@ -1054,6 +1040,22 @@ function renderReward(root) {
   });
   root.querySelector('[data-reward-skip]')?.addEventListener('click', () => act.continueReward(true));
   root.querySelector('[data-reward-continue]')?.addEventListener('click', () => act.continueReward());
+}
+
+function endingReviewLines(ending) {
+  if (ending.outcome === 'victory') return ['对照本局实际催蛊、锻体与购买记录，选一项下局想改变的取舍：更早购买主攻蛊、保留元石突破，或尝试拳脚与自疗。库存不代表这些蛊实际发挥过作用。'];
+  if (ending.outcome === 'retreat') return ['本局是主动止步；下局可先在市集补蛊、养魂或突破，再挑战层主。普通遭遇撤退可继续行程，层主撤退会结束本局。'];
+  if (ending.outcome !== 'defeat') return [];
+  const cause = ending.deathReport?.cause;
+  const lines = cause === 'soul' || String(ending.title || '').includes('魂魄')
+    ? ['下局先留元石在坊市养魂；已知抽魂威胁可考虑绕行或尽早击倒。护体与回血无法抵消抽魂，异闻的赶路魂魄代价也要在离开整备前核对。']
+    : cause === 'life_cost' || String(ending.title || '').includes('寿元')
+      ? ['下局先核对夺寿招式与自己催蛊的寿元代价；气血恢复不能补回寿元，寿元不足时考虑绕行或撤退。']
+      : cause === 'info_tax'
+        ? ['本局因未识破规则反噬耗尽气血；下次先观察，再决定是否出手。观察占行动，敌手仍会执行回合末意图。']
+        : ['下次交锋先比较当前气血与所有存活敌手的回合末意图，再决定抢攻、防护、疗伤或撤退；用尽行动后敌手会行动，等待也有代价。'];
+  if (ending.deathReport?.lastCounter) lines.push('本局记录过攻击被反击吞掉；下次观察后核对反击是否仍生效。观察不会消除反击，无视闪避本身也不能绕过反击。');
+  return lines;
 }
 
 function renderEnding(root) {
@@ -1072,7 +1074,8 @@ function renderEnding(root) {
     <div class="ending-sheet">
       <div class="kicker">终局摘要 · ${outcomeLabel}</div>
       <h1>${ending.title}</h1>
-      <p class="lead">${ending.detail}</p>
+      <p class="lead">${ending.deathReport?.summary || ending.detail}</p>
+      <div data-next-run>${guideBlock('下局可尝试的调整', endingReviewLines(ending))}</div>
       <div class="ending-death" data-run-recap><div class="kicker">此生修行</div><ul>${(ending.recap || buildRunRecap()).map(line => `<li>${safe(line)}</li>`).join('')}</ul></div>
       ${ending.deathReport?.last3?.length ? `<div class="ending-death"><div class="kicker">败因摘要</div><ul>${ending.deathReport.last3.map((line) => `<li>${line}</li>`).join('')}</ul></div>` : ''}
       <div class="ending-stats">

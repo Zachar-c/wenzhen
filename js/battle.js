@@ -59,23 +59,16 @@ function counterBadge(enemy) {
   return '<span class="chip">反制 未知</span>';
 }
 
-/** MVP 情报：公开意图 / 已知弱点 / 未察信息 */
+// 只读正式敌手的当前状态；旧 MVP 剧本不能作为实战情报。
 function intelBlock(enemy) {
-  const id = enemy?.id || '';
-  const intel = (typeof MVP_CONTENT !== 'undefined' && MVP_CONTENT.intel && MVP_CONTENT.intel[id]) || null;
   const revealed = !!(enemy?.revealed || enemy?.counterRevealed);
-  const intent = enemy?.enemyIntent || enemy?.currentIntent;
-  const preview = (globalThis.CombatCore?.previewEnemyDamage && intent)
-    ? globalThis.CombatCore.previewEnemyDamage(enemy, intent, { usedLight: false })
-    : null;
-  const dmgLine = preview
-    ? `${preview.base}${preview.projected !== preview.base ? ` → ${preview.projected}` : ''} 伤`
-    : (intent ? `${intent.damage || 0} 伤` : '冷却中');
+  const reactions = phaseView(enemy).reactions;
+  const reactionLine = !revealed ? '尚未观察；观察会揭示线索与反击，不会消除反击'
+    : reactions.length ? reactions.map(r => `${r.label} · ${reactionLive(enemy, r) ? '生效中' : reactionSettled(enemy, r) ? '已失效' : '当前不生效'}`).join('；')
+      : '当前阶段无反击';
   return `
     <div class="intel-lines">
-      <div><span class="il">预计伤害</span><span>${dmgLine}</span></div>
-      <div><span class="il">已知弱点</span><span>${(intel && intel.known) || '—'}</span></div>
-      <div><span class="il">未察信息</span><span>${(intel && intel.unknown) || (revealed ? '已全部识破' : '反制未识破')}</span></div>
+      <div data-reaction-intel><span class="il">反击情报</span><span>${reactionLine}</span></div>
     </div>`;
 }
 
@@ -162,10 +155,7 @@ function renderBattle(root) {
       <h2 style="margin-top:28px">可用蛊虫 · 无固定槽位上限</h2>
       <div class="moves">${guRoster.length
         ? guRoster.map((g) => `<div class="move ready">
-            ${(typeof MOONLIGHT_POC !== 'undefined' ? MOONLIGHT_POC.battleIcon(g.id) : '')}
-            <div class="ml">${g.name}</div>
-            <div class="me">${effectText(g.battleEffect)}</div>
-            <div class="mc">${g.rank} 转 · ${schoolLabel(g.school)} · 真元 ${g.trueQiCost} · 操控 ${g.thoughtCost}</div>
+            ${guFace(g, true)}<div class="effect-chips">${guEffectSummary(g.battleEffect)}</div><details class="card-details"><summary>详细用法</summary>${effectText(g.battleEffect)}</details>
           </div>`).join('')
         : '<div class="move"><div class="mr" style="font-size:13px">暂无可催动战斗蛊。</div></div>'}</div>`;
     bindBattleEvents(root, encounter);
@@ -195,15 +185,7 @@ function renderBattle(root) {
     ? `<span class="chip live">阶段 ${view.phase.index + 1}/${view.phase.total} · 血线 ≤${Math.round(view.phase.until * 100)}%</span>`
     : '<span class="chip none">无阶段</span>';
 
-  const humanStrike = target.human ? HumanRules.basicStrikePlan(target.human, { hp: target.hp, hpMax: target.hpMax }) : null;
-  const humanIntent = target.plannedAction?.kind === 'gu'
-    ? rangedIntentText(target)
-    : humanStrike ? `拳脚 · 伤 ${target.pendingBasicAttack?.damage ?? humanStrike.damage}${humanStrike.delayTurns > 0 && !target.pendingBasicAttack ? ' · 石臂迟缓，下回合落下' : ''}` : '';
-  const intentChip = enemyNeedsApproach(target)
-    ? `<span class="chip live">${rangedIntentText(target)}</span>`
-    : humanIntent
-    ? `<span class="chip live">${humanIntent}</span>`
-    : target.enemyIntent
+  const intentChip = target.human || target.enemyIntent
     ? `<span class="chip live">${rangedIntentText(target)}</span>`
     : '<span class="chip spent">冷却中 · 本回合不攻击</span>';
   // P5-B1 敌人持蛊化：展示装载蛊（伤害杀招按 PROJ-LAB-ENEMY-ATTACK-001 组件合成）；
@@ -251,7 +233,7 @@ function renderBattle(root) {
   const strengthBonus = playerStrike.personalStrength - (b.playerHuman?.baseline.attack ?? HumanRules.BASELINE.attack);
   const guButtons = guRoster.map((g) => {
     const active = b.playerHuman?.maintainedGu.find(item => item.instanceId === g.instanceId && item.active);
-    if (active) return `<button ${b.over ? 'disabled' : ''} data-stop-gu="${g.instanceId}"><span class="action-title">停止 ${g.name}</span><span class="cost">正在催动 · 停止不耗资源或行动</span><small>${effectText(g.battleEffect)}</small></button>`;
+    if (active) return `<button ${b.over ? 'disabled' : ''} data-stop-gu="${g.instanceId}">${guFace(g, true)}${visualIcon('cross')}<span class="action-title">停止 ${g.name}</span><span class="cost">正在催动 · 停止不耗资源或行动</span><span class="effect-chips">${guEffectSummary(g.battleEffect)}</span></button>`;
     const sameGuard = g.battleEffect?.defense_group && b.playerHuman?.maintainedGu.some(item => item.active && item.defenseGroup === g.battleEffect.defense_group);
     const used = !!b.guUsedThisTurn[g.instanceId];
     const reason = Number(target.distanceMeters || 0) > 0 && guTargetOutOfRange(g, target) ? 'target_out_of_range' : GuRules.activationReason(g, {
@@ -276,11 +258,10 @@ function renderBattle(root) {
     const label = g.effect?.consumable ? `${g.name} · 库存 ${g.count}` : g.count > 1 ? `${g.name} ${g.instanceIndex}/${g.count}` : g.name;
     const life = Number(g.lifeCost || 0) > 0 ? `寿元${g.lifeCost}` : '';
     const blockedLabel = battleReasonLabel(blocked);
-    const pocIcon = typeof MOONLIGHT_POC !== 'undefined' ? MOONLIGHT_POC.battleIcon(g.id) : '';
     const strengthHealing = g.battleEffect?.kind === 'heal' && g.battleEffect.strength_scaling;
     const healed = strengthHealing ? Math.min(GuRules.effectPlan(g.battleEffect, { strengthBonus }).heal, Math.max(0, state.bloodMax - state.blood)) : 0;
     const healingPreview = strengthHealing ? `<small>${g.sealed ? '解封后' : '当前'}按现有力量可恢复气血 ${healed}</small>` : '';
-    return `<button ${blocked ? 'disabled' : ''} data-use-gu="${g.instanceId}" class="${risky ? 'risky' : ''}" title="${blockedLabel || (life ? '寿元代价：归零将当场陨落' : '')}">${pocIcon}<span class="action-title">${label}${risky ? ' <span class="warnmark" aria-label="高风险">⚠</span>' : ''}</span><span class="cost">真元 ${g.trueQiCost} · 操控 ${g.thoughtCost}${life ? ` · ${life}` : ''}</span><small>${effectText(g.battleEffect)}</small>${healingPreview}${b.turnSupports.guTargets?.[g.id] ? '<small>定向增幅已就绪</small>' : ''}${blocked ? `<small class="action-blocked">${blockedLabel || '当前不可用'}</small>` : ''}</button>`;
+    return `<button ${blocked ? 'disabled' : ''} data-use-gu="${g.instanceId}" class="${risky ? 'risky' : ''}" title="${blockedLabel || (life ? '寿元代价：归零将当场陨落' : '')}">${guFace(g, true)}${g.count > 1 ? `<span class="cost">${label}</span>` : ''}${risky ? '<span class="warnmark" aria-label="高风险">⚠ 高风险</span>' : ''}<span class="effect-chips">${guEffectSummary(g.battleEffect)}</span>${healingPreview}${b.turnSupports.guTargets?.[g.id] ? '<small>定向增幅已就绪</small>' : ''}${blocked ? `<small class="action-blocked">${blockedLabel || '当前不可用'}</small>` : ''}</button>`;
   }).join('');
 
   root.innerHTML = `
@@ -312,7 +293,7 @@ function renderBattle(root) {
         </div>
         <div class="target-intent">
           <div class="target-intent-head"><span class="kicker">敌方意图 · 回合末</span><span>第 ${b.turn} 回合</span></div>
-          <div class="target-intent-chips">${intentChip}${carriedChip}${essenceChip}${counterChip}</div>
+          ${enemyIntentVisual(target)}<div class="target-intent-chips">${intentChip}${carriedChip}${essenceChip}${counterChip}</div>
           ${intelHtml}
         </div>
         <details class="combat-details">
@@ -332,17 +313,18 @@ function renderBattle(root) {
           <div class="pick-remaining"><b>${Math.max(0, b.actionLimit - b.actionsUsed)}</b><span>行动余量</span></div>
         </div>
         <p class="muted" data-control-budget>本回合操控余量 ${state.thought}/${state.thoughtMax} · 下回合重新可用${b.playerHuman && HumanRules.controlCapacity(b.playerHuman) < state.thoughtMax ? ` · 持续灌元占用 ${state.thoughtMax - HumanRules.controlCapacity(b.playerHuman)}` : ''}</p>
-        ${live.length ? `<div class="forewarn">⚠ 对当前目标直接攻击会被「${live.map((r) => r.label).join('、')}」吞掉（反击预警）</div>` : ''}
+        <details class="combat-details turn-help"><summary>回合规则</summary><p class="muted" data-turn-guide>行动用尽会自动结束回合，存活敌手执行意图；也可主动结束。观察占 1 次行动，不挡伤害；小光蛊不占行动，可先用它再催月光蛊。</p></details>
+        ${live.length ? `<div class="forewarn"><div class="counter-visual" aria-label="直接攻击会被反击吞掉">${visualIcon('shield')} ← ${visualIcon('battle')} ×</div>⚠ 对当前目标直接攻击会被「${live.map((r) => r.label).join('、')}」吞掉（反击预警）。${live.every(r => ['bound', 'guarded', 'sparked'].includes(r.counter_status)) ? '触发后该反击在本场不再生效；可用不耗真元的拳脚触发，但仍占行动，回合结束时敌手会行动。' : '观察不会消除反击；先核对反击条件与撤退代价。'}</div>` : ''}
         <section class="pick-group">
           <div class="pick-group-title">可催动蛊虫 <span>${guRoster.length}</span></div>
-          <div class="pick-actions">${guButtons || '<div class="pick-empty">暂无可用蛊虫</div>'}</div>
+          <div class="pick-actions">${guButtons || '<div class="pick-empty">暂无可用蛊虫</div>'}</div><details class="combat-details"><summary>蛊虫完整规则</summary>${guRoster.map(g => `<p><b>${g.name}</b> · ${effectText(g.battleEffect)}</p>`).join('')}</details>
         </section>
         <section class="pick-group">
           <div class="pick-group-title">基础行动</div>
           <div class="pick-actions pick-basics">
             ${target.distanceMeters > 0 ? `<button ${actionWhy ? 'disabled' : ''} data-approach="1"><span class="action-title">接近目标</span><span class="cost">前进最多10米 · 占1次行动 · 不耗真元</span></button>` : ''}
-            <button ${basicOk ? '' : 'disabled'} data-basic-attack="1" class="${live.length ? 'risky' : basicOk ? 'primary' : ''}" title="${basicWhy}"><span class="action-title">拳脚攻击${live.length ? ' <span class="warnmark" aria-label="高风险">⚠</span>' : ''}</span><span class="cost">力量 ${playerStrike.damage} · 不耗真元或操控${playerStrike.delayTurns > 0 ? ' · 石臂迟缓，敌人先行动' : ''}</span>${basicWhy ? `<small class="action-blocked">${basicWhy}</small>` : ''}</button>
-            ${!target.revealed && !b.over ? `<button ${observeWhy ? 'disabled' : ''} data-observe="1" title="${observeWhy}"><span class="action-title">观察敌手</span><span class="cost">操控 1 · 消耗本回合行动</span>${observeWhy ? `<small class="action-blocked">${observeWhy}</small>` : ''}</button>` : ''}
+            <button ${basicOk ? '' : 'disabled'} data-basic-attack="1" class="${live.length ? 'risky' : basicOk ? 'primary' : ''}" title="${basicWhy}"><span class="basic-value">${visualValue('battle', playerStrike.damage, '拳脚伤害')}</span><span class="action-title">拳脚攻击${live.length ? ' <span class="warnmark" aria-label="高风险">⚠</span>' : ''}</span><span class="cost">力量 ${playerStrike.damage} · 不耗真元或操控${playerStrike.delayTurns > 0 ? ' · 石臂迟缓，敌人先行动' : ''}</span>${basicWhy ? `<small class="action-blocked">${basicWhy}</small>` : ''}</button>
+            ${!target.revealed && !b.over ? `<button ${observeWhy ? 'disabled' : ''} data-observe="1" title="${observeWhy}"><span class="basic-value">${visualValue('eye', 1, '观察消耗操控')}</span><span class="action-title">观察敌手</span><span class="cost">操控 1 · 占 1 次行动 · 不消除反击</span>${observeWhy ? `<small class="action-blocked">${observeWhy}</small>` : ''}</button>` : ''}
         ${(() => {
           const roster = currentCombatRoster(b.guUsedThisTurn, b.guSealed);
           const damageGu = roster.filter((g) => g.battleEffect?.kind === 'strike' || Number(g.battleEffect?.amount || 0) > 0);
@@ -352,7 +334,7 @@ function renderBattle(root) {
             : b.exhaustCooldown > 0 ? `逆息冷却 ${b.exhaustCooldown} 回合`
             : !qiLocked ? '未陷入真元枯竭'
             : state.thought < 1 ? '操控不足' : '';
-          return `<button ${exhaustOk ? '' : 'disabled'} data-exhaust="1" title="${exhaustWhy}"><span class="action-title">逆息</span><span class="cost">操控 1 · 气血 −2 · 真元 +3</span>${exhaustWhy ? `<small class="action-blocked">${exhaustWhy}</small>` : ''}</button>`;
+          return `<button ${exhaustOk ? '' : 'disabled'} data-exhaust="1" title="${exhaustWhy}"><span class="basic-value">${visualValue('heart', '−2', '逆息气血代价', true)} → ${visualValue('spark', '+3', '逆息真元收益')}</span><span class="action-title">逆息</span><span class="cost">操控 1 · 气血 −2 · 真元 +3</span>${exhaustWhy ? `<small class="action-blocked">${exhaustWhy}</small>` : ''}</button>`;
         })()}
           </div>
         </section>
@@ -361,7 +343,7 @@ function renderBattle(root) {
           ${b.over === '胜' ? '' : `<button class="ghost" data-escape="1">查看路线</button>`}
           ${!b.over ? `<button class="ghost retreat" data-retreat="1">${encounter?.type === 'boss' || !(encounter?.nextIds || []).length ? '撤退并止步本局' : '撤退并继续行程'}</button>` : ''}
         </div>
-        ${!b.over ? `<p class="muted" data-retreat-cost>撤退没有战利，也不恢复气血或真元；已经支付的消耗不返还。${encounter?.type === 'boss' || !(encounter?.nextIds || []).length ? '放弃此关将结束本局，记为主动止步。' : '当前遭遇将被放弃，无法返回领取奖励。'}</p>` : ''}
+        ${!b.over ? `<details class="combat-details"><summary>撤退代价</summary><p class="muted" data-retreat-cost>撤退没有战利，也不恢复气血或真元；已经支付的消耗不返还。${encounter?.type === 'boss' || !(encounter?.nextIds || []).length ? '放弃此关将结束本局，记为主动止步。' : '当前遭遇将被放弃，无法返回领取奖励。'}</p></details>` : ''}
         ${b.over ? `<div class="battle-result ${b.over === '胜' ? 'won' : 'lost'}">本场战斗 · ${b.over}</div>` : ''}
       </section>
       <section class="battle-log-panel" aria-label="战报">
@@ -372,4 +354,30 @@ function renderBattle(root) {
 
   bindBattleEvents(root, encounter);
   restoreBattleView(root, prevOpen, prevFocusKey);
+}
+
+function enemyIntentVisual(enemy) {
+  if (enemyNeedsApproach(enemy)) return `<div class="intent-visual">${visualValue('next', `${Math.min(enemy.distanceMeters, enemy.approachMeters || 10)}m`, '敌人将接近目标')}</div>`;
+  const essence = GuRules.enemyEssenceState(enemy);
+  if (!enemy.human && essence && GuRules.enemyIntentCost(enemy, enemy.enemyIntent, GU_BY_ID) > essence.current) return `<div class="intent-visual">${visualValue('lock', '✦', '敌人真元不足，无法催动')}</div>`;
+  let items = '';
+  if (enemy.human) {
+    const plan = enemy.plannedAction;
+    if (plan?.kind === 'gu' && !humanGuActionReason(enemy, plan)) {
+      const gu = GU_BY_ID[plan.guId];
+      items = `<span class="choice-gu-reward">${guArt(gu, true)}</span><span class="effect-chips">${guEffectSummary(gu.battleEffect)}</span>`;
+    } else {
+      const strike = HumanRules.basicStrikePlan(enemy.human, {hp: enemy.hp, hpMax: enemy.hpMax});
+      const pending = enemy.pendingBasicAttack;
+      const lands = pending && pending.dueTurn <= (state.battle?.turn || 1);
+      items = lands || !strike.delayTurns ? visualValue('battle', lands ? pending.damage : strike.damage, '敌方拳脚伤害', true) : visualValue('clock', pending?.dueTurn || (state.battle?.turn || 1) + strike.delayTurns, '拳脚落下的回合');
+    }
+  } else {
+    const intent = enemy.enemyIntent || {};
+    for (const [field, icon, label] of [['damage','battle','敌方攻击'], ['heal','heart','敌方回血'], ['block','shield','敌方护体'], ['soul_drain','soul','抽魂'], ['life_cost','cult','寿元损失'], ['essence_burn','spark','真元损失']]) {
+      if (Number(intent[field]) > 0) items += visualValue(icon, intent[field], label, ['damage','soul_drain','life_cost','essence_burn'].includes(field));
+    }
+    if (!items) items = visualValue(enemy.enemyIntent ? 'eye' : 'clock', enemy.enemyIntent ? '?' : '0', '其他意图，展开查看');
+  }
+  return `<div class="intent-visual">${visualIcon('clock')} → ${items}</div>`;
 }

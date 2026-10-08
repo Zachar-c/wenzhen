@@ -85,7 +85,7 @@ test('ending recap aggregates recorded combat and cultivation actions without in
   assert.match(lines, /药师托运 · 接纳 1 次，放弃 0 次；已付气血 2/);
 });
 
-test('NORMAL_RUN: ordinary battle defeat attributes the real loss and survives reload in the archive', async () => {
+test('NORMAL_RUN: defeat review survives reload and a changed same-seed opening wins without erasing the loss', async () => {
   const lab = await openLab({ entry: process.env.WENZHEN_ENTRY, seed: 103 });
   try {
     await lab.click('[data-start-run]');
@@ -112,16 +112,51 @@ test('NORMAL_RUN: ordinary battle defeat attributes the real loss and survives r
     assert.match(s.ending.detail, /败因：.+ · .+（伤 \d+/);
     assert.ok(s.ending.deathReport?.lastBlow?.attacker, 'death report names the damaging enemy');
     assert.ok(s.ending.deathReport.lastBlow.damage > 0, 'death report records positive damage');
+    assert.ok(s.ending.deathReport.lastBlow.bloodBefore > 0);
+    assert.match(s.ending.detail, /受击前气血 \d+/);
+    assert.match(await lab.text('#panel-ending .lead'), /受击前气血 \d+/);
+    assert.doesNotMatch(await lab.text('#panel-ending .lead'), /最后三条战斗记录/);
+    await lab.click('[data-next-run] .visual-help>summary');
+    assert.match(await lab.text('[data-next-run]'), /下局可尝试的调整[\s\S]*当前气血/);
+    const guidance = await lab.text('[data-next-run]');
 
     const recap = s.ending.recap;
     await lab.reload();
     s = await lab.snapshot();
     assert.equal(s.ending.outcome, 'defeat');
     assert.deepEqual(s.ending.recap, recap);
+    await lab.click('[data-next-run] .visual-help>summary');
+    assert.equal(await lab.text('[data-next-run]'), guidance, 'review guidance survives a normal reload');
     await lab.click('[data-tab="hall"]');
     assert.match(await lab.text('.archive-run'), /败局/);
     await lab.click('.archive-run details:first-of-type summary');
     assert.match(await lab.text('.archive-run'), /小光蛊 1 次/);
+    const archive = await lab.text('.archive-run');
+    await lab.click('[data-run-seed="103"]');
+    s = await lab.snapshot();
+    assert.equal(s.seed, 103);
+    assert.ok(s.journey.availableNodeIds.includes(node.id));
+    await lab.click(`[data-choose-node="${node.id}"]`);
+    await lab.click('[data-observe]');
+    assert.match(await lab.text('.forewarn'), /拳脚触发/);
+    await lab.click('[data-basic-attack]');
+    assert.match(await lab.text('[data-reaction-intel]'), /厚皮硬受 · 已失效/);
+    await lab.click('.turn-help>summary');
+    assert.match(await lab.text('[data-turn-guide]'), /先用它再催月光蛊/);
+    assert.match(await lab.text('[data-use-gu="small_light_gu::1"] .effect-pairing'), /×2/);
+    assert.equal((await lab.images('[data-use-gu="small_light_gu::1"] .effect-pairing img'))[0].id, 'moonlight_gu');
+    await lab.click('[data-use-gu="small_light_gu::1"]');
+    await lab.click('[data-use-gu="moonlight_gu::1"]');
+    s = await lab.snapshot();
+    if (s.page === 'battle') await lab.click('[data-use-gu="moonlight_gu::1"]');
+    s = await lab.snapshot();
+    assert.equal(s.page, 'reward', 'reading the reaction and using the advertised support changes the same encounter from defeat to victory');
+    assert.ok(s.blood > 0);
+    await lab.reload();
+    assert.equal((await lab.snapshot()).page, 'reward');
+    await lab.click('[data-tab="hall"]');
+    await lab.click('.archive-run details:first-of-type summary');
+    assert.equal(await lab.text('.archive-run'), archive, 'the prior loss remains intact while the retry continues');
     assert.equal(lab.logs().filter(x => x.includes('[exception]')).length, 0);
   } finally { await lab.close(); }
 });
@@ -136,14 +171,18 @@ test('NORMAL_RUN: voluntary boss retreat retains its recap after reload and in t
       assert.ok(node);
       await lab.click(`[data-choose-node="${node.id}"]`);
       await lab.click('[data-retreat]');
+      await lab.click('[data-confirm-accept]');
     }
     const s = await lab.snapshot();
     const boss = s.journey.graph.nodes.find(n => s.journey.availableNodeIds.includes(n.id) && n.type === 'boss');
     assert.ok(boss);
     await lab.click(`[data-choose-node="${boss.id}"]`);
     await lab.click('[data-retreat]');
+    await lab.click('[data-confirm-accept]');
     const end = await lab.snapshot();
     assert.equal(end.ending.outcome, 'retreat');
+    await lab.click('[data-next-run] .visual-help>summary');
+    assert.match(await lab.text('[data-next-run]'), /主动止步[\s\S]*层主撤退会结束本局/);
     assert.match(await lab.text('[data-run-recap]'), /此生修行/);
     assert.equal(end.ending.recap.length, 4);
     await lab.reload();

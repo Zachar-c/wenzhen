@@ -135,7 +135,7 @@ globalThis.NodeActionRules = (() => {
       result: '你耗去真元，穿过了眼前险处。',                          // display_text.gd:228
     },
     meditate: {
-      gain: ['恢复 1 点真元。'],                                     // :1068-1069
+      gain: ['恢复最多 1 点真元，不超过当前上限。'],                   // :1068-1069，上限截断为游戏适配
       risk: [],
       result: '你静修片刻，恢复了一点真元。',                          // display_text.gd:234
     },
@@ -207,20 +207,20 @@ globalThis.NodeActionRules = (() => {
     const id = String(choiceId || '');
     if (id === 'collect_gu') {
       const valid = guFind && guFind.reason !== 'invalid_gu_find';
-      return { id, title: '搜查药圃', summary: '穿过危险药圃取得一只待炼化蛊；本次不取采药的元石。',
+      return { id, title: '搜查药圃', summary: '穿过危险药圃取得一只蛊虫，直接收入蛊仓；本次不取采药的元石。',
         available: !!guFind?.ok, stoneCost: 0, essenceCost: 0, healthCost: guFind?.healthCost || 0,
         reason: guFind?.reason || 'invalid_gu_find',
         blockReason: guFind?.ok ? '' : valid ? '气血不足以承担搜查代价。' : '此处没有可收取的蛊虫。',
-        remedy: [], gain: valid ? [`取得待炼化${guFind.guName || '蛊虫'}一只；炼化后可付真元催生生机叶，用于疗伤或卖出。`] : [],
-        risk: valid ? [`立即损失 ${guFind.healthCost} 点气血；所得蛊虫还不能直接使用。`] : [],
+        remedy: [], gain: valid ? [`取得${guFind.guName || '蛊虫'}一只，直接收入蛊仓；按修为与用途使用，也可出售。`] : [],
+        risk: valid ? [`立即损失 ${guFind.healthCost} 点气血；本次不取采药的元石。`] : [],
         buttonLabel: valid ? `搜查 · 气血 -${guFind.healthCost}` : '' };
     }
     if (id === 'trade' && tradeSupply) {
       const full = tradeSupply.reason === 'supply_full';
-      return { id, title: '旅途补给', summary: '按行囊余量购买花瓣和猪肉，直接交付口粮；不购买装不下的货物。',
+      return { id, title: '旅途补给', summary: '按卡面货物购买补给，直接收入蛊仓；达到库存上限后不可再购买。',
         available: tradeSupply.ok, stoneCost: tradeSupply.cost, essenceCost: 0,
         reason: tradeSupply.ok ? '' : tradeSupply.reason,
-        blockReason: tradeSupply.ok ? '' : full ? '花瓣与猪肉都已备足。' : `元石不足，还差 ${Math.max(0, tradeSupply.cost - stoneOf(stones))}枚。`,
+        blockReason: tradeSupply.ok ? '' : full ? '此项补给库存已达上限。' : `元石不足，还差 ${Math.max(0, tradeSupply.cost - stoneOf(stones))}枚。`,
         remedy: [], gain: tradeSupply.bought.map(item => `购入${item}。`), risk: [],
         buttonLabel: tradeSupply.ok ? `购入补给 · ${tradeSupply.cost}元石` : '', result: '补给已收入行囊。' };
     }

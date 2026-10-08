@@ -126,7 +126,7 @@ test('composite strike reach uses the shortest damaging component and ignores su
 });
 
 test('enemy approach recognizes resource damage and respects each human action range', () => {
-  const ctx = vm.createContext({ GU_BY_ID: {
+  const ctx = vm.createContext({ humanGuActionReason: () => '', GU_BY_ID: {
     defensive_gu: { battleEffect: { kind: 'maintained', amount: 3 } },
     ranged_gu: { battleEffect: { kind: 'strike', amount: 2, range_meters: 10 } },
   } });
