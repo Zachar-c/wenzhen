@@ -377,6 +377,45 @@ globalThis.GuRules = (() => {
     return (recipes || []).filter(isLiveRecipe);
   }
 
+  // Web炼蛊只结算经过验证的配方；失败概率尚无可靠的运行规则时不模拟掷骰。
+  function settleForge(recipe, { owned = {}, stones = 0, playerRank = 1 } = {}, guById = {}) {
+    const inputs = recipe?.inputs || recipe?.input_gu_ids;
+    const output = recipe?.output || recipe?.output_gu_id;
+    const cost = recipe?.stoneCost ?? recipe?.stone_cost;
+    const chance = recipe?.successRollMax ?? recipe?.success_roll_max;
+    const unchanged = { owned: { ...owned }, stones };
+    if (!recipe || recipe.retired || recipe.live === false || !recipe.id
+      || !Array.isArray(inputs) || !inputs.length || !inputs.every((id) => typeof id === 'string' && id)
+      || typeof output !== 'string' || !output
+      || !Number.isInteger(cost) || cost < 0 || chance !== 100
+      || !Number.isInteger(stones) || stones < 0
+      || !Number.isInteger(playerRank) || playerRank < 1) {
+      return { ok: false, reason: 'invalid_or_unavailable_recipe', ...unchanged };
+    }
+    if (!guById[output] || guById[output].playable === false
+      || inputs.some((id) => !guById[id] || guById[id].playable === false)) {
+      return { ok: false, reason: 'unknown_or_unreleased_gu', ...unchanged };
+    }
+    const outputRank = Number(guById[output].rank || 1);
+    if (!Number.isInteger(outputRank) || outputRank < 1 || outputRank > 5) {
+      return { ok: false, reason: 'invalid_output_rank', ...unchanged };
+    }
+    if (outputRank > playerRank) {
+      return { ok: false, reason: 'insufficient_rank', needRank: outputRank, ...unchanged };
+    }
+    if (stones < cost) return { ok: false, reason: 'insufficient_stones', ...unchanged };
+    const need = inputs.reduce((counts, id) => (counts[id] = (counts[id] || 0) + 1, counts), {});
+    if (Object.entries(need).some(([id, count]) => !Number.isInteger(owned[id] ?? 0)
+      || (owned[id] ?? 0) < count)
+      || !Number.isInteger(owned[output] ?? 0) || (owned[output] ?? 0) < 0) {
+      return { ok: false, reason: 'missing_ingredients', ...unchanged };
+    }
+    const nextOwned = { ...owned };
+    for (const [id, count] of Object.entries(need)) nextOwned[id] = (nextOwned[id] ?? 0) - count;
+    nextOwned[output] = (nextOwned[output] ?? 0) + 1;
+    return { ok: true, reason: 'forged', output, successRate: 100, owned: nextOwned, stones: stones - cost };
+  }
+
   function isLiveShopOffer(offer) {
     if (!offer || offer.retired || offer.live === false) return false;
     if (offer.mechanical === false) return false;
@@ -1167,6 +1206,7 @@ globalThis.GuRules = (() => {
     killMoveGateMissReason,
     isLiveRecipe,
     liveRecipes,
+    settleForge,
     isLiveShopOffer,
     liveShopOffers,
     effectPlan,

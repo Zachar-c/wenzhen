@@ -4,7 +4,13 @@
 
 新界面提供命途、交锋、蛊藏、整备与交易、修行、行记和往昔行卷。蛊藏与修行可独立查看；买卖、疗伤、锻体与突破在整备期间进行。保留原有玩法、自动存档与旧录。
 
-首版明确不做蛊虫食料、炼蛊合成和杀招系统。蛊虫通过敌人战利、商店买卖、奇遇与遗藏取得，直接进入蛊仓；单蛊催用、拳脚、锻体、疗伤和修为成长构成正式玩法。
+2026-10-12 起恢复炼蛊合成，作为战前构筑成长的一部分；食料和杀招仍不纳入。蛊虫通过战利、商店、奇遇与遗藏取得，直接进入蛊仓。正式入口 `lab.html` 已加入战前配蛊、自动交锋、付费刷新和阶段机缘。
+
+新局先选出战蛊与方针，再点击「按战前方案自动交锋」。每种战斗蛊占一个出战槽，初始3槽，以10/20/30元石扩至最多6槽；库存不受槽位限制，成长与整备蛊不占出战槽。自动交锋沿用单蛊、拳脚、距离、真元、操控与反击规则，可以暂停后手动接管；首步之后本场构筑与方针锁定。旧档沿用原有全量可用蛊，直到主动调整构筑。
+
+普通整备货架可刷新，节点内费用为2、4、6……元石；售罄记录保留，到下一节点才重置。专门市集已陈列全部解锁商品，不收费刷新。每三场胜利获得一次机缘三选一：气血上限+4并恢复4、真元上限+3并恢复3、或元石+18。
+
+整备的「炼蛊」页目前开放月光+两只小光→二转月芒、玉皮+白豕→二转白玉；要求修为达到成蛊转数，分别消耗10/15元石。投入蛊消耗，永久锻体所得力量保留；已出战组件耗尽时，成蛊在空出的槽位中替换。配方关系依据原著核验，费用、必成、槽位和机缘数值均为游戏适配。
 
 小突破与大突破均增加真元上限，突破前显示实际收益，不免费补满当前真元。点数折算可用储备，容量曲线属于游戏适配；四小境界与真元品质依据核验 Wiki，不能把点数视为原著元海比例。回复速度保持原值，活跃旧档重算敌我容量并保留当前资源，已结束局的旧录保持原记录。
 
@@ -15,7 +21,7 @@
 - 正式入口：`lab.html`、`js/`、`css/`、`assets/`。
 - 改 `data/` 后运行 `node tools/build_data.mjs`，生成 `js/data.js`。
 - 当前要求见 [产品需求](docs/PRODUCT_REQUIREMENTS.md)，历史数值和实施记录不覆盖最新首版范围。
-- 当前检查运行 `node --test tests/first_release.test.mjs tests/first_release_browser.test.mjs tests/ui_integration_browser.test.mjs tests/growth.test.mjs tests/bitter_save.test.mjs tests/enemy_essence.test.mjs`。旧食料、合炼、杀招测试是历史记录，不属于现版验收。
+- 当前检查运行 `node --test tests/build_rules.test.mjs tests/build_actions.test.mjs tests/build_browser.test.mjs tests/refinement.test.mjs tests/shop_refresh.test.mjs tests/first_release.test.mjs tests/first_release_browser.test.mjs tests/ui_integration_browser.test.mjs tests/growth.test.mjs tests/bitter_save.test.mjs tests/enemy_essence.test.mjs`。旧食料、历史广谱合炼、杀招测试不属于现版验收。
 - 发行包运行 `node tools/package_lab.mjs --out <不存在的新目录>`。
 
 已有库存与旧存档保留；旧未炼化库存迁入蛊仓，历史缺粮不再阻止催用。历史蛊虫保留仓库查看与出售，新掉落和商店只使用正式名单。

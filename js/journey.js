@@ -7,6 +7,7 @@ let prepTab = 'shop';
 const PREP_TABS = [
   { id: 'shop', label: '坊市' },
   { id: 'gu', label: '蛊仓' },
+  { id: 'alchemy', label: '炼蛊' },
 ];
 
 function guById(id) {
@@ -611,7 +612,7 @@ function currentShopContext() {
   const node = currentNode();
   return {
     seed: state.seed,
-    nodeKey: node?.id || 'free_shop',
+    nodeKey: `${node?.id || 'free_shop'}${state.shopRefreshCount > 0 ? `.refresh.${state.shopRefreshCount}` : ''}`,
     pacingLayers: DATA.loot.pacingLayers,
     layer: node?.segment || currentSegment(),
     school: state.school,
@@ -763,7 +764,7 @@ function guChoicePreview(guId, purchaseCost = null) {
     ${rowsHtml(growthOnly ? '成长' : '催动', rows)}
     ${rowsHtml('资金', money)}
     ${rowsHtml('用法', synergy ? [synergy] : [])}
-    ${!growthOnly && !synergy ? rowsHtml('说明', ['无需装备；修为达标后按卡面条件使用，购买不会增加每回合行动数。']) : ''}
+    ${!growthOnly && !synergy ? rowsHtml('说明', ['战斗蛊需加入出战构筑；成长与整备蛊按用途使用。']) : ''}
   </div>`;
 }
 
@@ -805,6 +806,9 @@ function inventoryCard(gu) {
   const leafReason = gu.effect?.consumable ? GuRules.consumeHealingGu(gu, { owned: state.owned, health: state.blood, healthMax: state.bloodMax, healingLocked: state.leafRecoveryNodeId === state.journey.nodeId }) : null;
   // Canon 标注：canon 与游戏转数分叉/状态待核时显示原著口径（CanRuntime 投影，非游戏数值）。
   const canon = typeof Canon !== 'undefined' ? Canon.canonAlert(gu.id, gu.rank) : '';
+  const combatEligible = gu.playable !== false && String(gu.combat || '') && String(gu.combat) !== 'none';
+  const legacyLoadout = state.combatLoadout == null;
+  const loadoutSelected = legacyLoadout || (state.combatLoadout || []).includes(gu.id);
   return `<article class="gu ${gu.rank > 1 ? 'r2' : ''}">
     <span class="cnt">×${count}</span>
     ${guFace(gu)}
@@ -818,8 +822,39 @@ function inventoryCard(gu) {
     ${production ? `<button data-produce-leaf="${gu.id}" ${production.ok ? '' : 'disabled'}>${production.ok ? `催生叶片 · 真元 ${production.cost} → 生机叶 ${production.produced}` : guReasonLabel(production.reason)}</button>` : ''}
     ${selfHealing ? `<button data-heal-self="${gu.id}" ${selfHealing.ok ? '' : 'disabled'}>${selfHealing.ok ? `自疗 · 气血 +${selfHealing.healed} · 真元 ${selfHealing.cost}` : selfHealing.reason === 'not_preparing' ? '仅整备节点可用' : guReasonLabel(selfHealing.reason) || '暂不可自疗'}</button>` : ''}
     ${leafReason ? `<button data-use-leaf="${gu.id}" ${leafReason.ok ? '' : 'disabled'}>${leafReason.ok ? `疗伤 · 气血 +${leafReason.healed} · 消耗1片` : guReasonLabel(leafReason.reason)}</button>` : ''}
+    ${combatEligible ? `<button data-toggle-combat-gu="${gu.id}" aria-pressed="${loadoutSelected}">${loadoutSelected ? '战前构筑 · 已选' : '战前构筑 · 加入'}</button>` : ''}
     <div class="gu-foot">${visualValue('coin', `+${price}`, '出售所得元石')}<button class="ghost" data-sell-gu="${gu.id}">卖出</button></div>
   </article>`;
+}
+
+function combatPreparationPanel() {
+  const owned = Object.values(GU_BY_ID).filter((gu) => Number(state.owned[gu.id] || 0) > 0);
+  const combatGu = owned.filter((gu) => gu.playable !== false && String(gu.combat || '') && String(gu.combat) !== 'none');
+  const selected = (gu) => state.combatLoadout == null || (state.combatLoadout || []).includes(gu.id);
+  const used = state.combatLoadout == null
+    ? combatGu.length
+    : combatGu.filter(selected).length;
+  const bonus = Math.max(0, Number(state.combatSlotBonus) || 0);
+  const capacity = BuildRules.slots(bonus);
+  const editable = typeof isCombatPlanning === 'function' ? isCombatPlanning() : !state.battle;
+  const slotCost = 10 * (bonus + 1);
+  const plans = [['balanced', '均衡'], ['aggressive', '进取'], ['guarded', '稳守']];
+  return `<section class="rail-block combat-loadout" data-combat-loadout>
+    <div class="kicker">战前构筑 · ${used}/${capacity} 槽</div>
+    <p>每种蛊占一个槽；买蛊只增加库存，不会丢弃或自动替换。槽位和扩槽价格属于游戏适配。</p>
+    ${state.combatLoadout == null ? '<p>旧存档沿用原有全部战斗蛊。</p>' : ''}
+    <div class="button-row"><button data-buy-combat-slot ${!editable || capacity >= 6 ? 'disabled' : ''}>扩槽 · 元石 ${slotCost}${capacity >= 6 ? ' · 已达上限' : ''}</button></div>
+    <div class="loadout-list">${combatGu.length ? combatGu.map((gu) => `<button data-toggle-combat-gu="${gu.id}" aria-pressed="${selected(gu)}" ${!editable || (!selected(gu) && used >= capacity) ? 'disabled' : ''}>${gu.name} ×${Number(state.owned[gu.id] || 0)} · ${selected(gu) ? '已选 · 1槽' : '加入 · 1槽'}</button>`).join('') : '<span class="muted">暂无可构筑的战斗蛊</span>'}</div>
+    <label>策略 <select data-battle-plan ${editable ? '' : 'disabled'}>${plans.map(([value, label]) => `<option value="${value}" ${state.battlePlan === value || (!state.battlePlan && value === 'balanced') ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
+  </section>`;
+}
+
+function combatPreparationAction(target) {
+  if (!target) return false;
+  if (target.matches?.('[data-battle-plan]')) { act.setBattlePlan(target.value); return true; }
+  if (target.dataset?.toggleCombatGu) { act.toggleCombatGu(target.dataset.toggleCombatGu); return true; }
+  if (target.dataset?.buyCombatSlot != null) { act.buyCombatSlot(); return true; }
+  return false;
 }
 
 function gainInsightPanel() {
@@ -830,7 +865,7 @@ function gainInsightPanel() {
     <section class="insight-panel" style="margin:16px 0;padding:12px 14px;border:1px solid var(--line,#ccc);border-radius:8px">
       <div class="kicker">新得蛊虫 · ${insight.name}（${buildRoleLabel(insight.role)}）</div>
       <ul style="margin:8px 0 0 18px">${lines}</ul>
-      <div class="gm" style="margin-top:6px">可保留或出售；无需装备，修为达标后按用途使用。</div>
+      <div class="gm" style="margin-top:6px">可保留或出售；战斗蛊需加入出战构筑，成长与整备蛊按用途使用。</div>
     </section>`;
 }
 
@@ -845,9 +880,10 @@ function renderPrep(root) {
     owned: state.owned,
   }, DATA.flow);
   const offers = shopStock();
+  const focusBonus = (state.buildBoons || []).filter((id) => id === 'focus').length * 3;
   const nextQiMax = next.kind === 'max' ? state.qiMax : RunRules.essenceMax(
     next.targetRank || state.cultivation, state.aptitude, undefined, 0,
-    next.kind === 'small' ? next.targetStageIndex : 0);
+    next.kind === 'small' ? next.targetStageIndex : 0) + focusBonus;
   const aptId = DATA.flow.aptitudeGuId;
   const sariName = next.sariId ? (guById(next.sariId) || {}).name : '同阶舍利蛊';
   // 界面必须区分「需求」与「持有」：早先这里直接把需求蛊写成 `名字 ×1`，
@@ -870,6 +906,7 @@ function renderPrep(root) {
   const tabCount = {
     shop: offers.length,
     gu: ownedGu.length,
+    alchemy: '',
   };
   const prepSteps = [
     next.kind === 'max'
@@ -887,7 +924,8 @@ function renderPrep(root) {
       <div class="prep-orient"><b>整备自由进行</b><span>查看蛊仓与资源，完成后继续行程</span></div>
       ${state.travelSoulDebt ? `<p class="prep-debt-warning">${state.travelSoulDebt.title} · 继续行程扣魂魄 ${state.travelSoulDebt.cost}；当前 ${state.soul}。${state.soul <= state.travelSoulDebt.cost ? '直接赶路将魂魄耗尽败北，可先在坊市养魂。' : `直接赶路后余 ${state.soul - state.travelSoulDebt.cost}。`}</p>` : ''}
       ${(state.knownFacts || []).some(fact => String(fact).startsWith('hazard_pressure:')) ? `<p class="prep-debt-warning" data-travel-pressure>绕行追赶 · 下次交锋开场真元少 ${(state.knownFacts || []).filter(fact => String(fact).startsWith('hazard_pressure:')).length}；支付后清除，继续经过非战节点不会提前结算。</p>` : ''}
-      <button class="primary prep-leave" data-prep-continue>完成整备 · 继续行程${state.travelSoulDebt ? ` · 魂魄 -${state.travelSoulDebt.cost}` : ''}</button>
+      ${state.pendingBuildBoon ? `<section class="build-boon-choice"><b>连胜机缘 · 选择一项再继续</b><div class="button-row"><button data-build-boon="vigor">强健 · 气血上限 +4，并恢复 4</button><button data-build-boon="focus">凝神 · 真元上限 +3，并恢复 3</button><button data-build-boon="fortune">横财 · 元石 +18</button></div></section>` : ''}
+      <button class="primary prep-leave" data-prep-continue ${state.pendingBuildBoon ? 'disabled title="先选择一项连胜机缘"' : ''}>${state.pendingBuildBoon ? '先选择连胜机缘' : `完成整备 · 继续行程${state.travelSoulDebt ? ` · 魂魄 -${state.travelSoulDebt.cost}` : ''}`}</button>
     </div>
     ${gainInsightPanel()}
     <div class="prep-guides">
@@ -928,17 +966,20 @@ function renderPrep(root) {
         </section>
       </aside>
       <div class="prep-work">
+        ${combatPreparationPanel()}
         <nav class="prep-tabs">
           ${PREP_TABS.map((entry) => `<button data-prep-tab="${entry.id}" class="${entry.id === tab ? 'on' : ''}">${entry.label}<span class="tab-count">${tabCount[entry.id]}</span></button>`).join('')}
         </nav>
         <div class="prep-pane${tab === 'shop' ? ' on' : ''}" data-pane="shop">
-          <div class="pane-note">${node.type === 'market' ? '市集供应本段已解锁的全部商品，可定向买蛊。' : '旅途整备随机上架部分商品。'}本页买完即售罄，进入下一节点后刷新。</div>
+          <div class="pane-note">${node.type === 'market' ? '市集供应本段已解锁的全部商品，可定向买蛊。' : '旅途整备随机上架部分商品。'}本页买完即售罄，进入下一节点后刷新。售罄商品不会因刷新补货。</div>
+          <button data-refresh-shop ${node.type === 'market' || state.stones < 2 + 2 * Math.max(0, Number(state.shopRefreshCount) || 0) ? 'disabled' : ''}>${node.type === 'market' ? '市集已陈列本段全部商品' : `刷新货架 · 元石 ${2 + 2 * Math.max(0, Number(state.shopRefreshCount) || 0)}`}</button>
           <div class="shop-grid"></div>
         </div>
         <div class="prep-pane${tab === 'gu' ? ' on' : ''}" data-pane="gu">
-          <div class="pane-note">卖蛊返还价值 50%。</div>
+          <div class="pane-note">卖蛊返还价值 50%。勾选战斗蛊用于战前构筑；每种蛊占一个槽，库存不会因此丢弃。</div>
           <div class="grid"></div>
         </div>
+        <div class="prep-pane${tab === 'alchemy' ? ' on' : ''}" data-pane="alchemy"><div class="alchemy-panel"></div></div>
       </div>
     </div>`;
 
@@ -955,6 +996,9 @@ function renderPrepPane(root, tab) {
   } else if (tab === 'gu' && gu) {
     const ownedGu = Object.values(GU_BY_ID).filter((g) => Number(state.owned[g.id] || 0) > 0);
     gu.innerHTML = ownedGu.map(inventoryCard).join('') || '<div class="empty">蛊仓为空。</div>';
+  } else if (tab === 'alchemy') {
+    const panel = root.querySelector('[data-pane="alchemy"] .alchemy-panel');
+    if (panel && typeof renderAlchemy === 'function') renderAlchemy(panel);
   }
   UI.decorate('prep', root);
 }
@@ -966,7 +1010,8 @@ function bindPrepEvents(root) {
   root.addEventListener('click', (ev) => {
     const t = ev.target.closest(
       '[data-prep-tab],[data-buy-offer],[data-sell-gu],[data-break],[data-use-aptitude],'
-      + '[data-produce-leaf],[data-use-leaf],[data-heal-self],[data-train-body],[data-prep-continue]',
+      + '[data-produce-leaf],[data-use-leaf],[data-heal-self],[data-train-body],[data-prep-continue],'
+      + '[data-refresh-shop],[data-toggle-combat-gu],[data-buy-combat-slot],[data-forge],[data-build-boon]',
     );
     if (!t || !root.contains(t) || t.disabled) return;
     if (t.dataset.prepTab) {
@@ -976,6 +1021,13 @@ function bindPrepEvents(root) {
       renderPrepPane(root, prepTab);
       return;
     }
+    if (t.dataset.toggleCombatGu || t.dataset.buyCombatSlot != null) {
+      combatPreparationAction(t);
+      return;
+    }
+    if (t.dataset.refreshShop != null) return act.refreshShop();
+    if (t.dataset.forge) return act.forge(t.dataset.forge);
+    if (t.dataset.buildBoon) return act.chooseBuildBoon(t.dataset.buildBoon);
     if (t.dataset.buyOffer) act.buyOffer(t.dataset.buyOffer);
     else if (t.dataset.produceLeaf) act.produceLeaf(t.dataset.produceLeaf);
     else if (t.dataset.healSelf) act.healSelf(t.dataset.healSelf);
@@ -985,6 +1037,11 @@ function bindPrepEvents(root) {
     else if (t.dataset.break) act.breakthrough(t.dataset.break);
     else if (t.dataset.useAptitude != null) act.useAptitudeGu();
     else if (t.dataset.prepContinue != null) act.leavePrep();
+  });
+  root.addEventListener('change', (ev) => {
+    const t = ev.target;
+    if (!root.contains(t)) return;
+    combatPreparationAction(t);
   });
 }
 
@@ -1012,7 +1069,7 @@ function renderReward(root) {
         ${guideBlock('领取与放弃', [
           '领取免费：点中一只即收入蛊仓，不扣元石，已到账的元石与补给不受影响。',
           '放弃的结果：点「放弃本次蛊虫，保留已到账资源」则本次不获得蛊虫，其余已入账资源照常保留；系统不会替你预选。',
-          '入仓后无需装备；能否立刻催动看卡上写明的修为门槛与使用条件。',
+          '战斗蛊须加入出战构筑；成长和整备蛊按用途使用，修为与资源门槛见卡片。',
         ])}
         <h2>战后出蛊 · 三选一</h2>
         <p class="muted">${tier === 'boss' ? '层主奖励 · 稀有蛊虫与成长' : tier === 'elite' ? '精英奖励 · 高品质蛊虫' : '普通战 · 稳定元石与蛊虫成长'}</p>
@@ -1025,7 +1082,7 @@ function renderReward(root) {
             </button>
             <details class="card-details"><summary>用法与选择建议</summary>${guChoicePreview(gu.id)}<div class="ge">${effectText(gu.effect)}</div></details>
           </article>`).join('')}</div>
-        <p class="muted" style="margin-top:10px">所选蛊虫会收入蛊仓，无需装备。进入整备后，可查看用途、使用条件或出售。</p>
+        <p class="muted" style="margin-top:10px">所选蛊虫收入蛊仓。进入整备后，可加入出战构筑、合炼、按用途使用或出售。</p>
       ` : `
         ${guideBlock('领取与放弃', [
           '本次没有待选蛊虫：元石与补给已入账，直接进入整备即可。',

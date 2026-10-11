@@ -1544,7 +1544,47 @@ const DATA = {
     "aptitude_gu",
     "blood_atk_3_11_gu"
   ],
-  "recipes": [],
+  "recipes": [
+    {
+      "id": "moonlight_glow",
+      "kind": "fixed",
+      "inputs": [
+        "moonlight_gu",
+        "small_light_gu",
+        "small_light_gu"
+      ],
+      "output": "moon_glow_gu",
+      "stoneCost": 10,
+      "source": "Wiki moon-glow-gu.md E:V1-015710/017148/017150：月光1+小光2→二转月芒，主攻三倍、射程不增。10元石与必成是游戏适配；原文记有炼制失败，本配方不模拟失败风险。",
+      "successRollMax": 100,
+      "qiCost": 0,
+      "live": true,
+      "forkId": null,
+      "branchLabel": "月芒 · 高伤月刃",
+      "branchAxis": "burst",
+      "closes": [],
+      "delays": []
+    },
+    {
+      "id": "white_jade_basic",
+      "kind": "fixed",
+      "inputs": [
+        "jade_skin_gu",
+        "white_boar_strength_gu"
+      ],
+      "output": "white_jade_gu",
+      "stoneCost": 15,
+      "source": "蛊真人-clean.txt 15860-15895：白玉蛊=白豕蛊+玉皮蛊。15元石与必成是游戏适配；不加入未核验的额外炼材，也不把后世提高成功率的改良配方混入。",
+      "successRollMax": 100,
+      "qiCost": 0,
+      "live": true,
+      "forkId": null,
+      "branchLabel": null,
+      "branchAxis": null,
+      "closes": [],
+      "delays": []
+    }
+  ],
   "killMoves": [],
   "killMovesEnabled": false,
   "enemies": [
@@ -10730,9 +10770,9 @@ const DATA = {
         "source": "js/lab_save.js → ARCHIVE_KEY / appendArchive；js/main.js → archiveRun / startRun(seedOverride)；js/journey.js → archiveRunCard"
       },
       {
-        "name": "合炼与升炼配方",
-        "detail": "Web 开放配方只投入蛊虫与配方标注的元石；判定用 run seed 与事件序号，失败销毁全部蛊虫投入",
-        "source": "data/refinement_recipes.json（468 条，Web 只投影蛊虫/元石成本）；refine_command_rules.gd::_refinement_roll/_apply_fixed_recipe"
+        "name": "首版炼蛊配方",
+        "detail": "只开放明确核验且输入输出都在首发19蛊名单内的固定配方；元石成本和必成率是游戏适配，暂不模拟原著炼制失败风险",
+        "source": "data/refinement_recipes.json web_release 标记；canon/relations.json"
       },
       {
         "name": "蛊虫行动",
@@ -10952,5 +10992,5 @@ const DATA = {
       }
     ]
   },
-  "contentVersion": "7448f2f521c53fd6c9c212cdba9e8915d43c3e9a043b099eab571eff1ec98b24"
+  "contentVersion": "e192a933ef0d0d39cd749e07d3813faa0489914043d39541f2526cca77801f05"
 };

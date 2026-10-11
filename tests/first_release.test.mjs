@@ -8,7 +8,9 @@ test('first release keeps a useful ranked roster, closed acquisition pools and n
   vm.runInContext(`${read('js/data.js')}\n${read('js/run_rules.js')}\n${read('js/human_rules.js')}\n${read('js/gu_rules.js')}\n${read('js/loot_rules.js')}\n${read('js/shop_rules.js')}\n${read('js/node_action_rules.js')}\nglobalThis.api={DATA,GuRules,NodeActionRules,LootRules,ShopRules};`, c);
   const {DATA:d,GuRules:g,NodeActionRules:n} = c.api;
   assert.equal(d.gu.length,20); assert.equal(d.gu.filter(x=>!x.labOnly).length,19);
-  assert.equal(d.recipes.length,0); assert.equal(d.killMoves.length,0); assert.equal(d.killMovesEnabled,false);
+  assert.ok(d.recipes.every(r => r.live !== false && [r.output, ...r.inputs].every(id => d.releaseGuIds.includes(id))));
+  if (d.recipes.length) assert.deepEqual([...d.recipes.map(r => r.id)].sort(), ['moonlight_glow', 'white_jade_basic']);
+  assert.equal(d.killMoves.length,0); assert.equal(d.killMovesEnabled,false);
   const ids=new Set(d.releaseGuIds);
   for (const gu of d.gu) { assert.ok(gu.rank>=1&&gu.rank<=5); assert.ok(gu.battleEffect||gu.effect?.kind); }
   for (const offer of d.shopOffers.filter(x=>x.gu_id)) assert.ok(ids.has(offer.gu_id));
@@ -149,6 +151,6 @@ test('first release keeps a useful ranked roster, closed acquisition pools and n
   assert.equal(c.state.blood,5); assert.equal(c.state.qi,6);
   vm.runInContext(`state.page='prep';delete state.owned.force_heal_3_03_gu;act.healSelf('force_heal_3_03_gu');`,c);
   assert.equal(c.state.blood,5); assert.equal(c.state.qi,6);
-  const html=read('lab.html'); assert.ok(!/src="js\/(alchemy|killmove)\.js"/.test(html));
+  const html=read('lab.html'); assert.match(html,/src="js\/alchemy\.js"/); assert.ok(!/src="js\/killmove\.js"/.test(html));
 });
 

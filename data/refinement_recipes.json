@@ -143,8 +143,10 @@
   {
    "id": "moonlight_glow",
    "kind": "fixed",
+   "web_release": true,
    "default_unlocked": true,
    "stone_cost": 10,
+   "success_roll_max": 100,
    "input_gu_ids": [
     "moonlight_gu",
     "small_light_gu",
@@ -153,30 +155,21 @@
    "output_gu_id": "moon_glow_gu",
    "branch_label": "月芒 · 高伤月刃",
    "branch_axis": "burst",
-   "source": "Wiki moon-glow-gu.md E:V1-015710/017148/017150：月光1+小光2→二转月芒，主攻三倍、射程不增。过程与绝对数值为网页试玩适配。"
+   "source": "Wiki moon-glow-gu.md E:V1-015710/017148/017150：月光1+小光2→二转月芒，主攻三倍、射程不增。10元石与必成是游戏适配；原文记有炼制失败，本配方不模拟失败风险。"
   },
   {
    "id": "white_jade_basic",
    "kind": "fixed",
+   "web_release": true,
    "default_unlocked": true,
    "input_gu_ids": [
     "jade_skin_gu",
     "white_boar_strength_gu"
    ],
    "stone_cost": 15,
+   "success_roll_max": 100,
    "output_gu_id": "white_jade_gu",
-   "materials": {
-    "beast_blood": 1
-   },
-   "fork_id": "fork_jade_boar",
-   "branch_label": "炼向白玉·防御",
-   "branch_axis": "armor",
-   "material_role": "recipe_key",
-   "farm_hint": "缺兽血 → 打兽类/重甲敌（铁皮山猪）",
-   "preferred_enemy_ids": ["iron_hide_boar", "ridge_hound"],
-   "closes": ["bear_strength_gu", "kit_stable_sustain"],
-   "delays": ["kit_pierce_burst"],
-   "source": "蛊真人-clean.txt 15860-15895：白玉蛊=白豕蛊+玉皮蛊；L0 Phase 5 兽血=防御支配方钥匙",
+   "source": "蛊真人-clean.txt 15860-15895：白玉蛊=白豕蛊+玉皮蛊。15元石与必成是游戏适配；不加入未核验的额外炼材，也不把后世提高成功率的改良配方混入。",
    "inputs": [
     {
      "school": "earth",

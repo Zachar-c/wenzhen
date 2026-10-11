@@ -272,23 +272,18 @@ const baseGuIds = Object.keys(COMBAT_GU_ICON).filter(id => gu.find(e => e.id ===
 const legacyGu = [...gu];
 gu.splice(0, gu.length, ...gu.filter(entry => releaseGuIds.has(entry.id)));
 
-// 配方：固定配方 + Phase 4 分支元数据；过滤自环与被支配项。
-const fixed = recipes.filter((r) =>
-  r.kind === 'fixed' && !r.retired && r.output_gu_id && baseGuIds.includes(r.output_gu_id) &&
-  (r.input_gu_ids || []).length > 0 &&
-  r.input_gu_ids.every((i) => baseGuIds.includes(i)));
-const advances = recipes.filter((r) => {
-  if (r.kind !== 'advance' || r.retired || !baseGuIds.includes(r.output_gu_id)) return false;
-  const inputs = r.input_gu_ids || [];
-  if (!inputs.length) return false;
-  if (inputs.length === 1 && inputs[0] === r.output_gu_id) return false;
-  if ([...new Set(inputs)].length === 1 && inputs[0] === r.output_gu_id) return false;
-  return true;
-}).slice(0, 2);
-const rawPicked = [...fixed, ...advances].map((r) => ({
+// Web首版只投影显式核验并授权的固定配方；其余历史配方留在原始资料中。
+const rawPicked = recipes.filter((r) =>
+  r.web_release === true && r.kind === 'fixed' && !r.retired
+  && releaseGuIds.has(r.output_gu_id)
+  && (r.input_gu_ids || []).length > 0
+  && r.input_gu_ids.every((id) => releaseGuIds.has(id))
+).map((r) => ({
   id: r.id, kind: r.kind, inputs: r.input_gu_ids || [], output: r.output_gu_id,
   stoneCost: r.stone_cost || 0, source: r.source || null,
   successRollMax: r.success_roll_max ?? 100,
+  qiCost: r.qi_cost || 0,
+  live: true,
   forkId: r.fork_id || null,
   branchLabel: r.branch_label || null,
   branchAxis: r.branch_axis || null,
@@ -484,7 +479,7 @@ const mechanisms = {
     { name: '固定节点图与统一整备', detail: '开局按难度生成固定五段分支图；每段准备深度为简单 15 / 普通 10 / 困难 5，只展示当前可走的 2–3 个后继；每场战斗胜利后进入同一整备页', source: '本轮设计：docs/superpowers/specs/2026-09-20-wenzhen-web-run-flow-convergence-design.md' },
     { name: '异闻节点与即时抉择', detail: 'seed决定事件与路线；四段起有药师托运，第五段起有瘴口调息，早段选项仍可出现。卡片提前列明气血、元石、回元及赶路魂债，放弃不付费；回元按当前缺额封顶，真元已满不冒险扣血。事件和资源数量为游戏设计', source: 'data/nodes.json → event模板；data/events.json；js/node_action_rules.js → eventCards/resolveEvent；js/main.js → resolveNodeAction' },
     { name: '跨局旧录与种子复走', detail: '大厅单独保存最近 24 局结局、路线、摘要与种子；按原难度与种子开新局，同一内容版本下会生成相同地图。旧录与进行中存档分开；不还原当局结束前角色状态', source: 'js/lab_save.js → ARCHIVE_KEY / appendArchive；js/main.js → archiveRun / startRun(seedOverride)；js/journey.js → archiveRunCard' },
-    { name: '合炼与升炼配方', detail: 'Web 开放配方只投入蛊虫与配方标注的元石；判定用 run seed 与事件序号，失败销毁全部蛊虫投入', source: 'data/refinement_recipes.json（468 条，Web 只投影蛊虫/元石成本）；refine_command_rules.gd::_refinement_roll/_apply_fixed_recipe' },
+    { name: '首版炼蛊配方', detail: '只开放明确核验且输入输出都在首发19蛊名单内的固定配方；元石成本和必成率是游戏适配，暂不模拟原著炼制失败风险', source: 'data/refinement_recipes.json web_release 标记；canon/relations.json' },
     { name: '蛊虫行动', detail: '所有已炼化战斗蛊直接进入战斗可用列表，无固定槽位上限；每回合念头/行动数按魂魄分档，转数质量门禁、真元/念头成本、条件门禁、每回合一次限制与同流派支援按 Godot 解析器执行', source: 'data/gu.json → combat/true_qi_cost/thought_cost/v1_effect；action_points.gd::per_turn；cultivator_rules.gd::can_activate；v1_battle_resolver.gd::can_play_gu/play_gu；v1_grammar_pipeline.gd::gate_miss_reason' },
     { name: '寿元、延迟、状态消费与意图弱化', detail: 'gu life_cost 在支付后结算，归零立即败北且本次效果不执行；delay 先付费后登记，到期回合重放；consume_status 要求至少一层并在命中后全额清除；weaken_intent 只降低目标下一次伤害意图并在消费或回合末归零', source: 'data/gu.json → life_cost/v1_effect.delay/v1_effect.consume_status/kind=weaken_intent；v1_battle_resolver.gd::_spend_costs/_apply_effect/_fire_delayed_effects/_resolve_enemy_intent/end_turn；v1_grammar_pipeline.gd::gate_miss_reason' },
     { name: '野生蛊炼化', detail: '开局带 2 只野生小光蛊；野生蛊不可催动；炼化按 rank 支付 4+2×(rank-1) 真元，成功后转为已炼化实例并可出战', source: 'run_opening_flow.gd::_inject_wild_starters；refine_command_rules.gd::_attune_gu；refine_snapshot.gd::attune_candidates' },
@@ -698,7 +693,7 @@ const out = {
     schoolPools: Object.fromEntries(Object.entries(schoolPools).map(([school, ids]) => [school, ids.filter(id => gu.some(entry => entry.id === id && entry.playable !== false))]).filter(([, ids]) => ids.length)),
     school: labSchool,
   },
-  gu, releaseGuIds: [...releaseGuIds], recipes: [], killMoves: [], killMovesEnabled: false, enemies: pickedEnemies,
+  gu, releaseGuIds: [...releaseGuIds], recipes: picked, killMoves: [], killMovesEnabled: false, enemies: pickedEnemies,
   nodes, route, shopOffers, npcs, events,
   canon,
   /* Rank 主链：WORLD 真源快照（Integration 刀1）。Lab 投影只准读这里。 */

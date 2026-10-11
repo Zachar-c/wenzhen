@@ -299,6 +299,9 @@ function fresh(difficulty = 'normal', seed) {
     thought: thoughts, thoughtMax: thoughts, modifierLedger: [],
     journey, prepFor: null, reward: null, ending: null, shopSold: [], restUsed: false, journal: [],
     page: 'hall', lootPity: 0,
+    combatLoadout: Object.keys(READY.owned).filter(id => DATA.gu.some(g => g.id === id && g.combat && g.combat !== 'none')).slice(0, 3),
+    combatSlotBonus: 0, shopRefreshCount: 0, battlePlan: 'balanced',
+    battleWins: 0, buildBoons: [], pendingBuildBoon: false,
     globalCodexIds: [], knownFacts: [], travelSoulDebt: null,
     eventLog: [{
       id: 'event_0000', time: 0, nodeId: journey.nodeId, action: 'run_started',
@@ -563,7 +566,8 @@ const GU_BY_ID = { ...(DATA.guSemanticsById || {}) };
 for (const gu of DATA.gu) GU_BY_ID[gu.id] = { ...GU_BY_ID[gu.id], ...gu };
 
 function recomputeQiMax() {
-  state.qiMax = RunRules.essenceMax(state.cultivation, state.aptitude, undefined, 0, state.cultivationStage);
+  state.qiMax = RunRules.essenceMax(state.cultivation, state.aptitude, undefined, 0, state.cultivationStage)
+    + (state.buildBoons || []).filter(id => id === 'focus').length * 3;
   state.qi = Math.min(state.qi, state.qiMax);
   if (state.battle?.playerHuman) {
     state.battle.playerHuman.baseline.essenceMax = state.qiMax;
@@ -628,7 +632,9 @@ function rangedIntentText(enemy) {
 }
 
 function currentCombatRoster(usedInstances = {}, sealedInstances = {}) {
-  return GuRules.combatRoster(DATA.gu, fedGuOwned(), {
+  const owned = Array.isArray(state.combatLoadout)
+    ? Object.fromEntries(state.combatLoadout.map(id => [id, state.owned[id] || 0])) : fedGuOwned();
+  return GuRules.combatRoster(DATA.gu, owned, {
     playerRank: state.cultivation,
     trueQi: state.qi,
     thought: state.thought,
@@ -1307,6 +1313,8 @@ function openBattleOutcome() {
       turn: b.turn,
       battleLog: b.log.slice(-80),
     };
+    state.battleWins = (state.battleWins || 0) + 1;
+    if (state.battleWins % 3 === 0) state.pendingBuildBoon = true;
     state.battle = null;
     showPage('reward');
   }
@@ -1531,7 +1539,118 @@ function finishPlayerAction(b) {
   draw();
 }
 
+function isCombatPlanning() {
+  if (state.ending) return false;
+  if (isPreparing()) return true;
+  const b = state.battle;
+  return !!b && !b.over && !b.autoRunning && !b.planningClosed && b.turn === 1
+    && b.actionsUsed === 0 && !Object.keys(b.guUsedThisTurn || {}).length;
+}
+
+let autoBattleTimer = null;
+function scheduleAutoBattle() {
+  if (autoBattleTimer || !state.battle?.autoRunning || state.battle.over || state.ending) return;
+  autoBattleTimer = setTimeout(() => {
+    autoBattleTimer = null;
+    const b = state.battle;
+    if (!b?.autoRunning || b.over || state.ending) return;
+    if ((b.autoSteps || 0) >= 400) {
+      b.autoRunning = false;
+      b.log.push('自动交锋已达 400 步，暂停供你检查战况。');
+      commit();
+      return;
+    }
+    b.autoSteps = (b.autoSteps || 0) + 1;
+    const target = targetOf(b);
+    if (!target) { openBattleOutcome(); return; }
+    const candidates = currentCombatRoster(b.guUsedThisTurn, b.guSealed).filter(g =>
+      !g.activationReason && !guTargetOutOfRange(g, target)
+      && !GuRules.gateMissReason(g.battleEffect, {target, hp:state.blood, hpMax:state.bloodMax,
+        enemiesAlive:aliveEnemies(b).length, turn:b.turn, statusStacks:target.statuses || {}}))
+      .map(g => ({...g, plan:GuRules.effectPlan(g.battleEffect), availableQi:state.qi, availableThought:state.thought}));
+    const choice = BuildRules.choose({ candidates, healthRatio:state.blood/state.bloodMax,
+      strategy:b.plan || 'balanced', counter:liveReactions(target).length > 0,
+      distance:target.distanceMeters || 0, maintained:b.playerHuman?.maintainedGu || [] });
+    if (choice.gu) act.useGu(choice.gu.instanceId);
+    else if (choice.kind === 'approach') act.approachTarget();
+    else act.basicAttack();
+    scheduleAutoBattle();
+  }, 220);
+}
+
 const act = {
+  forge(recipeId) {
+    if (!isPreparing()) return;
+    const recipe = GuRules.liveRecipes(DATA.recipes).find(r => r.id === recipeId);
+    const result = GuRules.settleForge(recipe, {owned:state.owned, stones:state.stones, playerRank:state.cultivation}, GU_BY_ID);
+    if (!result.ok) return toast(({insufficient_rank:'修为不足以承载成蛊', insufficient_stones:'元石不足', missing_ingredients:'合炼组件不足'})[result.reason] || '配方暂不可用', 'bad');
+    const wasEquipped = Array.isArray(state.combatLoadout) && recipe.inputs.some(id => state.combatLoadout.includes(id));
+    state.owned = result.owned;
+    state.stones = result.stones;
+    if (Array.isArray(state.combatLoadout)) {
+      state.combatLoadout = state.combatLoadout.filter(id => state.owned[id] > 0);
+      if (wasEquipped && !state.combatLoadout.includes(result.output) && state.combatLoadout.length < BuildRules.slots(state.combatSlotBonus)) state.combatLoadout.push(result.output);
+    }
+    state.journal.unshift(`合炼 · ${recipe.inputs.map(id => GU_BY_ID[id].name).join(' + ')} → ${GU_BY_ID[result.output].name} · 元石 ${recipe.stoneCost}`);
+    recordEvent('forge', {owned:{...state.owned}, stones:state.stones, recipe:recipeId, combat_loadout:state.combatLoadout}, 'gu_forged', [result.output]);
+    Sfx.success();
+  },
+  toggleAutoBattle() {
+    const b = state.battle;
+    if (!b || b.over) return;
+    b.autoRunning = !b.autoRunning;
+    b.planningClosed ||= b.autoRunning;
+    if (b.autoRunning) {
+      if (b.autoSteps >= 400) b.autoSteps = 0;
+      b.plan ||= state.battlePlan || 'balanced';
+      b.log.push(`自动交锋 · ${ {balanced:'均衡', aggressive:'猛攻', guarded:'稳守'}[b.plan] }方针`);
+      scheduleAutoBattle();
+    }
+    draw();
+  },
+  setBattlePlan(plan) {
+    if (!isCombatPlanning() || !['balanced','aggressive','guarded'].includes(plan)) return;
+    state.battlePlan = plan;
+  },
+  toggleCombatGu(id) {
+    if (!isCombatPlanning()) return;
+    const gu = DATA.gu.find(g => g.id === id && g.combat && g.combat !== 'none');
+    if (!gu || !(state.owned[id] > 0)) return;
+    // 旧档保持原有全量可用，首次主动配蛊时才转入槽位规则。
+    if (!Array.isArray(state.combatLoadout)) state.combatLoadout = DATA.gu
+      .filter(g => g.combat && g.combat !== 'none' && state.owned[g.id] > 0).map(g => g.id);
+    state.combatLoadout = state.combatLoadout.filter(key => state.owned[key] > 0);
+    if (state.combatLoadout.includes(id)) state.combatLoadout = state.combatLoadout.filter(key => key !== id);
+    else if (state.combatLoadout.length < BuildRules.slots(state.combatSlotBonus)) state.combatLoadout.push(id);
+    else toast('出战槽已满，可撤下其他蛊或扩槽', 'bad');
+  },
+  buyCombatSlot() {
+    if (!isCombatPlanning() || BuildRules.slots(state.combatSlotBonus) >= 6) return;
+    const cost = 10 * ((state.combatSlotBonus || 0) + 1);
+    if (state.stones < cost) return toast('扩槽元石不足', 'bad');
+    state.stones -= cost;
+    state.combatSlotBonus = (state.combatSlotBonus || 0) + 1;
+    recordEvent('build_slot', {stones:state.stones, slots:BuildRules.slots(state.combatSlotBonus)}, 'slot_purchased');
+  },
+  refreshShop() {
+    if (!isPreparing() || currentNode()?.type === 'market') return;
+    const cost = BuildRules.refreshCost(state.shopRefreshCount);
+    if (state.stones < cost) return toast('刷新元石不足', 'bad');
+    state.stones -= cost;
+    state.shopRefreshCount = (state.shopRefreshCount || 0) + 1;
+    recordEvent('shop_refresh', {stones:state.stones, count:state.shopRefreshCount}, 'shelf_refreshed');
+  },
+  chooseBuildBoon(id) {
+    if (!isPreparing() || !state.pendingBuildBoon || !['vigor','focus','fortune'].includes(id)) return;
+    state.buildBoons ||= [];
+    state.buildBoons.push(id);
+    state.pendingBuildBoon = false;
+    if (id === 'vigor') { state.bloodMax += 4; state.blood = Math.min(state.bloodMax, state.blood + 4); }
+    if (id === 'focus') { recomputeQiMax(); state.qi = Math.min(state.qiMax, state.qi + 3); }
+    if (id === 'fortune') state.stones += 18;
+    state.journal.unshift(`阶段机缘 · ${{vigor:'强健：气血上限 +4',focus:'凝神：真元上限 +3',fortune:'横财：元石 +18'}[id]}`);
+    recordEvent('build_boon', {boon:id, stones:state.stones, health:state.blood, health_max:state.bloodMax, true_qi_max:state.qiMax}, 'boon_chosen');
+  },
   produceLeaf(guId) {
     if (!assertRunMutable() || !['prep', 'gu', 'cult'].includes(state.page) || !state.prepFor) return;
     const gu = GU_BY_ID[guId];
@@ -1664,6 +1783,7 @@ const act = {
     state.prepFor = null;
     state.reward = null;
     state.shopSold = [];
+    state.shopRefreshCount = 0;
     state.battle = null;
     // 休整的「本次探访已消费」标记按节点重置：lab 一节点一处理，进入节点即清零，
     // 与 Godot 的 <节点id>_used 旗标（rest_rules.gd:125,167）同语义。
@@ -1982,8 +2102,9 @@ const act = {
     state.qi = travelPressure.essence;
     state.knownFacts = travelPressure.knownFacts;
     const playerHuman = HumanRules.actor({
-      id: 'player', rank: state.cultivation, aptitude: state.aptitude, guInstances: heldPlayerGuInstances(),
-      baseline: { ...HumanRules.base(state.cultivation, state.aptitude, state.cultivationStage), essenceMax: state.qiMax },
+      id: 'player', rank: state.cultivation, aptitude: state.aptitude,
+      guInstances: currentCombatRoster().map(g => ({instanceId:g.instanceId, definitionId:g.id, state:'held', sealed:false})),
+      baseline: { ...HumanRules.base(state.cultivation, state.aptitude, state.cultivationStage), hpMax:state.bloodMax, essenceMax: state.qiMax },
     });
     playerHuman.essence = state.qi;
     playerHuman.modifierLedger = (state.modifierLedger || []).map((entry) => ({ ...entry }));
@@ -2595,6 +2716,7 @@ const act = {
   },
 
   leavePrep() {
+    if (state.pendingBuildBoon) return toast('先选择这次阶段机缘', 'bad');
     return act.completeCurrentNode('结束整备');
   },
 
@@ -2716,11 +2838,13 @@ for (const actKey of Object.keys(act)) {
   const rawAct = act[actKey];
   if (typeof rawAct !== 'function') continue;
   act[actKey] = function wrappedAct(...args) {
-    if (['buyOffer', 'sellGu', 'breakthrough', 'useAptitudeGu', 'trainBody', 'produceLeaf', 'useLeaf', 'healSelf', 'leavePrep'].includes(actKey) && !isPreparing()) {
+    if (['forge', 'buyOffer', 'sellGu', 'breakthrough', 'useAptitudeGu', 'trainBody', 'produceLeaf', 'useLeaf', 'healSelf', 'leavePrep'].includes(actKey) && !isPreparing()) {
       return toast('当前仅可查看，进入整备后可操作', 'bad');
     }
+    if (state.battle && ['useGu','basicAttack','approachTarget','observe','endTurn','exhaust','useMove'].includes(actKey)) state.battle.planningClosed = true;
     const result = rawAct.apply(this, args);
     commit();
+    scheduleAutoBattle();
     return result;
   };
 }
@@ -2804,6 +2928,7 @@ document.addEventListener('pointerdown', () => Sfx.click(), { once: true });
 
 draw();
 showPage(resumePage());
+scheduleAutoBattle();
 // 只读快照入口：供 tests/helpers/lab_browser.mjs 读取完整可序列化 state。
 // 不是改状态 / 调 act 的捷径。
 globalThis.__labSnapshot = function labSnapshot() {

@@ -94,9 +94,12 @@ function bindBattleEvents(root, encounter) {
   root.addEventListener('click', (ev) => {
     const t = ev.target.closest(
       '[data-target],[data-use],[data-use-gu],[data-stop-gu],[data-basic-attack],[data-approach],[data-observe],'
-      + '[data-exhaust],[data-end-turn],[data-escape],[data-retreat],[data-start-encounter],[data-foe]',
+      + '[data-exhaust],[data-end-turn],[data-escape],[data-retreat],[data-start-encounter],[data-foe],[data-toggle-auto],'
+      + '[data-toggle-combat-gu],[data-buy-combat-slot]',
     );
     if (!t || !root.contains(t) || t.disabled) return;
+    if (combatPreparationAction(t)) return;
+    if (t.hasAttribute('data-toggle-auto')) { act.toggleAutoBattle(); return; }
     if (t.dataset.target) act.setTarget(t.dataset.target);
     else if (t.dataset.use) act.useMove(t.dataset.use);
     else if (t.dataset.stopGu) act.stopGu(t.dataset.stopGu);
@@ -113,6 +116,7 @@ function bindBattleEvents(root, encounter) {
       if (ids.length) act.startBattle(ids, (encounter || currentNode())?.id);
     } else if (t.dataset.foe) act.startBattle(t.dataset.foe);
   });
+  root.addEventListener('change', ev => combatPreparationAction(ev.target));
 }
 
 // 战报 DOM 只保留最近条目：长局 log 会涨到数百条，整段 innerHTML 是 draw 热点。
@@ -265,6 +269,13 @@ function renderBattle(root) {
   }).join('');
 
   root.innerHTML = `
+    ${isCombatPlanning() ? combatPreparationPanel({showAutoToggle:false}) : ''}
+    <section class="rail-block" data-auto-combat>
+      <div class="kicker">战前决策 → 自动交锋</div>
+      <p>均衡：伤重先疗伤，择机护体；进取：优先攻击，濒危才疗伤；稳守：先护体、重视疗伤。按可用蛊、真元、操控与距离逐回合执行；无可用攻击蛊时接近并用拳脚。反击会先用拳脚触发。方针在第一步后锁定。</p>
+      <button class="primary" data-toggle-auto ${b.over ? 'disabled' : ''}>${b.autoRunning ? '暂停自动交锋' : b.planningClosed ? '继续自动交锋' : '按战前方案自动交锋'}</button>
+      <span>${b.autoRunning ? '正在按方案行动，战报逐步记录结果' : '可先配蛊和选择方针，也可使用下方手动行动'}</span>
+    </section>
     <div class="battle-head">
       <div class="battle-heading">
         <div class="kicker">${encounter ? `第 ${encounter.segment} 段 · ${segmentTitle(encounter.segment)} · ${encounter.name}` : '当前遭遇'}</div>
@@ -353,6 +364,8 @@ function renderBattle(root) {
     </div>`;
 
   bindBattleEvents(root, encounter);
+  if (b.autoRunning) root.querySelectorAll('[data-use],[data-use-gu],[data-stop-gu],[data-basic-attack],[data-approach],[data-observe],[data-exhaust],[data-end-turn],[data-retreat],[data-target]')
+    .forEach(button => { button.disabled = true; });
   restoreBattleView(root, prevOpen, prevFocusKey);
 }
 

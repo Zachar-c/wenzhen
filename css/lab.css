@@ -409,3 +409,14 @@ body[data-page="cult"] .prep-rail{grid-template-columns:1fr}
 .lesson-card img.gu-art-compact{width:48px;height:67px;margin:0;object-fit:contain;border-radius:6px}
 .filterbar button{display:inline-flex;align-items:center;gap:6px}
 .filterbar .visual-icon{width:17px;height:17px}
+.combat-loadout{margin-bottom:16px}
+.loadout-list{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.loadout-list button[aria-pressed="true"]{border-color:var(--gold);background:#253a2c}
+.combat-loadout select{font:inherit;color:inherit;background:#101c17;border:1px solid var(--line);border-radius:6px;padding:8px 12px;margin-left:10px}
+[data-auto-combat]{margin-bottom:18px}
+[data-auto-combat] p{max-width:850px;line-height:1.8}
+.alchemy-panel .io{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.alchemy-panel .io img{width:28px;height:28px;object-fit:contain}
+.alchemy-panel .recipe{padding:18px 0;border-bottom:1px solid var(--line)}
+.alchemy-panel .meta{margin:10px 0;line-height:1.7;overflow-wrap:anywhere}
+.alchemy-panel .src{display:block;opacity:.7;font-size:12px}
