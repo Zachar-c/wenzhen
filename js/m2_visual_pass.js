@@ -17,13 +17,17 @@ atlasProbe.onerror=()=>{atlasReady=false;};
 atlasProbe.src=atlasPath;
 // Distinct silhouettes by actual Gu ID; illustrative vocabulary only, not new rules.
 const motifs={
- B101:"blade",B102:"shield",B103:"blade",Y101:"moth",Y102:"mirror",Y103:"lantern",
+ B101:"blade",B102:"shield",B103:"blade",B201:"returnblade",Y101:"moth",Y102:"mirror",Y103:"lantern",
  S101:"sprout",S102:"tree",S103:"drop",Z101:"eye",Z102:"chain",Z103:"knot",
  H101:"eye",H102:"target",H103:"gate",T101:"sand",T102:"furnace",T103:"flame",
  M101:"wave",M102:"wind",M103:"step",N201:"blade",N202:"fang",
- G101:"eye",G102:"shield",G103:"echo"
+ G101:"eye",G102:"shield",G103:"echo",G112:"hourglass",G201:"aegis"
 };
 const motifShapes={
+ returnblade:'<path d="M61 157 L122 39 L146 53 L107 133 L152 118 L140 144 L79 177Z"/><path d="M55 95 Q43 47 102 43 M77 32 L102 43 L85 65"/>',
+ hourglass:'<path d="M54 41 H146 M54 167 H146 M63 45 Q64 82 100 100 Q136 82 137 45 M63 163 Q65 126 100 108 Q135 126 137 163"/><circle cx="100" cy="100" r="13"/><path d="M100 84 V66 M100 116 V135"/>',
+ aegis:'<path d="M100 25 Q150 47 161 72 Q164 132 100 174 Q36 132 39 72 Q50 47 100 25Z"/><path d="M100 47 Q132 62 138 86 Q140 126 100 151 Q60 126 62 86 Q68 62 100 47Z"/><path d="M78 99 H122 M100 77 V123"/>',
+
  blade:'<path d="M76 149 L121 51 L143 38 L147 67 L98 159 L81 168Z"/><path d="M91 137 L126 65 M68 144 L112 166"/>',
  shield:'<path d="M100 39 L155 62 L147 122 Q130 155 100 171 Q70 155 53 122 L45 62Z"/><path d="M100 51 L100 154 M58 87 L143 87"/>',
  moth:'<path d="M100 90 Q35 13 31 91 Q42 129 89 116 Q40 175 81 171 L100 128 Q119 171 160 171 Q166 132 111 116 Q158 129 169 91 Q165 13 100 90Z"/><path d="M100 70 L100 153"/>',
