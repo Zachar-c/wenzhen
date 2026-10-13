@@ -8,6 +8,7 @@ const GU=[
 ["H101","认隙蛊","阖辟","标","8 tick标记；下次定标额外2",12,1],["H102","定标蛊","阖辟","攻","造成3伤害，建立10 tick界标",8,2],["H103","掩扉蛊","阖辟","防","有界标，敌宣告时护盾3；冲撞再减1",10,0],
 ["T101","试砂蛊","参同","标","10 tick试砂；下次火筹额外2",12,1],["T102","护炉蛊","参同","防","护盾低于2时获得3（有试砂+1），持续10",10,0],["T103","火筹蛊","参同","攻","伤害3并灼烧，后续+2/+4各1",8,2],
 ["M101","试流蛊","乘物","标","有风时标记8 tick；下次听风+2",12,1],["M102","听风蛊","乘物","攻","有风时造成3伤害",8,2],["M103","踏脉蛊","乘物","防","敌宣告时护盾3；冲撞改规避4",10,0],
+["N201","裂势蛊","百兵","攻","敌人蓄势时斩击5；专破蓄势窗口",10,0],["N202","饮锋蛊","玄牝","反","受到实际伤害后积攒血势，下一tick反击（最多6）",10,0],
 ["G101","辨兆蛊","观复","察","记录已公开攻击并减伤2",10,0],["G102","听息蛊","观复","防","准确观察时在命中前获得4护盾",10,0],["G103","记痕蛊","观复","反","听息有效吸收后下一tick反击3，重复招式+2",12,0]
 ].map(([id,name,school,kind,description,cd,first])=>({id,name,school,kind,description,cd,first}));
 const GM=Object.fromEntries(GU.map(g=>[g.id,g]));
@@ -29,8 +30,8 @@ const ENEMY_SPOILS=[
  {foe:"boar",gu:"S102",clue:"野猪皮下有守根蛊寄生的痕迹"},
  {foe:"swordsman",gu:"Y102",clue:"刀客身后有无法对齐的投影"},
  {foe:"bandit",gu:"T103",clue:"悍匪腰间藏有灼热火筹"},
- {foe:"shadow",gu:"M102",clue:"刺客背囊传出听风之鸣"},
- {foe:"warden",gu:"G101",clue:"铁卫以辨兆蛊洞察来敌"}
+ {foe:"shadow",gu:"N201",clue:"刺客背囊传出听风之鸣"},
+ {foe:"warden",gu:"N202",clue:"铁卫以辨兆蛊洞察来敌"}
 ];
 const HUNTS=[[0,1],[1,2],[2,1],[3,4],[4,5],[5,4]];
 function targetIndex(){return Number.isInteger(state.targetIndex)&&HUNTS[state.round-1]?.includes(state.targetIndex)?state.targetIndex:state.round-1}
@@ -139,6 +140,10 @@ function direct(value,source,opts={}){if(battle.foe.hp<=0)return;let dmg=value;c
 function hitQueued(e){let value=Math.max(0,e.damage),sources={};if(e.evade)value=Math.max(0,value-e.evade);if(e.type==="charge"&&has("gate"))value=Math.max(0,value-1);if(has("bind")){value=Math.max(0,value-2);battle.states=battle.states.filter(s=>s.type!=="bind")};if(e.reduction)value=Math.max(0,value-e.reduction);const shade=get("shade");if(shade&&!shade.used&&value>0){value=Math.max(0,value-1);shade.used=true}
 battle.shields.sort((a,b)=>a.seq-b.seq);for(const s of battle.shields){const absorb=Math.min(value,s.value);value-=absorb;s.value-=absorb;sources[s.source]=(sources[s.source]||0)+absorb}
 if(battle.totals){battle.totals.shieldAbsorbed+=Object.values(sources).reduce((sum,n)=>sum+n,0);for(const [src,n] of Object.entries(sources))battle.totals.absorbedByInstance[src]=(battle.totals.absorbedByInstance[src]||0)+n;battle.totals.damageTaken+=Math.min(value,battle.hp)}battle.shields=battle.shields.filter(s=>s.value>0);battle.hp=Math.max(0,battle.hp-value);push("敌方 "+e.name+" 命中，生命 -"+value+"；剩余 "+battle.hp);
+if(value>0){
+ const drink=battle.instances.find(x=>x.gu==="N202"&&x.ready<=battle.tick);
+ if(drink){cast(drink);battle.pending.push({tick:battle.tick+1,type:"blood",damage:Math.min(6,value),source:drink.instance});push("饮锋蓄血势 "+Math.min(6,value))}
+}
 const gs=battle.instances.find(x=>x.gu==="G103"&&x.ready<=battle.tick),heard=Object.entries(sources).filter(([k,v])=>v>0&&k.startsWith("G102:")).length>0;
 if(gs&&heard&&e.observed){cast(gs);const bonus=battle.lastConfirmed===e.type?2:0;battle.pending.push({tick:battle.tick+1,type:"counter",damage:3+bonus,source:gs.id})}
 if(e.observed)battle.lastConfirmed=e.type;
@@ -183,19 +188,20 @@ case"M103":if(enemy&&enemy.impact-enemy.windup===t){cast(x);if(enemy.type==="cha
 case"Z103":if(enemy&&enemy.impact===t+1&&has("bind")){cast(x);b.states=b.states.filter(s=>s.type!=="bind");enemy.reduction+=4;shield(x.gu+":"+x.instance,2,enemy.impact+1)}break;
 case"G102":if(enemy&&enemy.impact===t&&enemy.observed){cast(x);shield(x.gu+":"+x.instance,4,t+1)}break;
 }}
-for(const x of fresh().filter(x=>["B101","Y101","S101","Z102","H102","T103","M102"].includes(x.gu))){let bonus=0;
-if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())continue;if(x.gu==="Y101"){const shade=get("shade");if(shade&&!shade.attackUsed){bonus=1;shade.attackUsed=true}}
+for(const x of fresh().filter(x=>["B101","Y101","S101","Z102","H102","T103","M102","N201"].includes(x.gu))){let bonus=0;
+if(x.gu==="N201"&&(!enemy||enemy.impact<=t))continue;if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())continue;if(x.gu==="Y101"){const shade=get("shade");if(shade&&!shade.attackUsed){bonus=1;shade.attackUsed=true}}
 if(x.gu==="H102"){const gap=get("gap");if(gap){bonus=2;b.states=b.states.filter(s=>s!==gap)}}
 if(x.gu==="T103"){const sand=get("sand");if(sand){bonus=2;b.states=b.states.filter(s=>s!==sand)}}
 if(x.gu==="M102"){const flow=get("flow");if(flow){bonus=2;b.states=b.states.filter(s=>s!==flow)}}
-cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3})[x.gu],GM[x.gu].name,{bonus});
+cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3,N201:5})[x.gu],GM[x.gu].name,{bonus});
 if((x.gu==="S101"||x.gu==="T103")&&b.foe.hp>0)mark("dot",x.instance,5,1,{kind:x.gu,next:[t+2,t+4]});
 if(x.gu==="Z102"&&b.foe.hp>0)mark("bind",x.instance,8);
 if(x.gu==="H102"&&b.foe.hp>0)mark("beacon",x.instance,10);
 }
 if(t>=2&&(t-2)%6===0)direct(2,"基础攻击");
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="counter"))direct(e.damage,"记痕反击",{consumeWeak:false});
-b.pending=b.pending.filter(x=>!(x.tick===t&&x.type==="counter"));
+for(const e of b.pending.filter(x=>x.tick===t&&x.type==="blood"))direct(e.damage,"饮锋反击",{consumeWeak:false});
+b.pending=b.pending.filter(x=>!(x.tick===t&&["counter","blood"].includes(x.type)));
 for(const s of [...b.states].filter(x=>x.type==="dot"&&x.next.includes(t))){direct(s.value,s.kind==="S101"?"根刺":"灼烧",{consumeWeak:false,periodic:true});s.next=s.next.filter(n=>n!==t)}
 if(b.foe.hp<=0){finish(true);return}
 if(enemy&&enemy.impact===t){hitQueued(enemy);if(b.hp<=0){finish(false);return}}
