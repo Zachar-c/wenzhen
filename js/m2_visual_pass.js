@@ -134,6 +134,7 @@ function sceneCue(app,stage){
  fx.append(orb,trace);
  stage.appendChild(fx);
  fx.addEventListener("animationend",()=>fx.remove(),{once:true});
+ if(matchMedia("(prefers-reduced-motion: reduce)").matches)fx.remove();
 }
 const app=document.getElementById("app");if(app){
  const observer=new MutationObserver(()=>{decorate();const stage=app.querySelector(".combat-stage");if(stage)sceneCue(app,stage)});
