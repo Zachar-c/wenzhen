@@ -46,16 +46,24 @@ function huntBoard(){
 function upcomingSpoils(){return ENEMY_SPOILS[targetIndex()]}
 function lootPreview(){const d=upcomingSpoils();return '<section class="panel"><h3>可追夺的蛊</h3><b class="gold">'+esc(GM[d.gu].name)+'</b><p>'+esc(d.clue)+'</p><p>战胜敌人才可夺得；夺蛊与变卖均由玩家决定。</p></section>'}
 function endRun(){state.completed=true;const meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');if(state.lastResult?.won&&state.losses<3)meta.wins++;localStorage.setItem(META_KEY,JSON.stringify(meta))}
-function resolveSpoils(choice,replaceId){
+function resolveSpoils(choice,replaceId,swapEquipId){
  if(!state||!state.pendingSpoils||battle||state.inBattle||state.completed)return false;
  const d=state.pendingSpoils;
  if(choice==="claim"){
-  if(state.gu.length>=12){
-   if(!replaceId||!state.gu.some(x=>x.id===replaceId))return false;
+  const full=state.gu.length>=12;
+  if(full&&(!replaceId||!state.gu.some(x=>x.id===replaceId)))return false;
+  if(swapEquipId&&(!state.equip.includes(swapEquipId)||(full&&replaceId===swapEquipId)))return false;
+  if(full){
    state.equip=state.equip.filter(id=>id!==replaceId);
    state.gu=state.gu.filter(x=>x.id!==replaceId);
   }
-  state.gu.push(owned(d.gu));
+  const acquired=owned(d.gu);
+  state.gu.push(acquired);
+  if(swapEquipId){
+   state.equip=state.equip.map(id=>id===swapEquipId?acquired.id:id);
+  }else if(state.equip.length<5){
+   // Explicitly equipped only when requested; claiming is never auto-equip.
+  }
  }else if(choice==="sell")state.gold+=2;
  else return false;
  state.pendingSpoils=null;
@@ -66,7 +74,8 @@ function renderSpoils(){
  const d=state.pendingSpoils,g=GM[d.gu],full=state.gu.length>=12;
  const replacement=full?'<label>蛊仓已满，夺取时舍弃一只旧蛊：<select id="spoil-replace">'+state.gu.map(x=>'<option value="'+x.id+'">'+esc(GM[x.gu].name)+' · '+x.id+'</option>').join('')+'</select></label>':'';
  const claim=full?"resolveSpoils('claim',q('spoil-replace').value)":"resolveSpoils('claim')";
- q("app").innerHTML='<section class="panel spoils-panel"><span class="combat-overline">胜者缴获 · '+esc(d.foe)+'</span><h2>夺得 '+esc(g.name)+'</h2><p>'+esc(d.clue)+'</p><div class="slot">'+esc(g.description)+'</div><p>当前蛊仓 '+state.gu.length+'/12；收入后可在下轮自由换装。</p>'+replacement+'<div class="actions"><button class="primary" onclick="'+claim+'">收入蛊仓'+(full?'（舍弃所选旧蛊）':'')+'</button><button onclick="resolveSpoils('+"'sell'"+')">变卖 +2 金币</button></div></section>';
+ const swapButtons=state.equip.map(id=>{const old=state.gu.find(x=>x.id===id),replace=full?"q('spoil-replace').value":"null";return '<button onclick="resolveSpoils(\'claim\','+replace+',\''+id+'\')">夺蛊并替换 '+esc(GM[old.gu].name)+'</button>'}).join('');
+ q("app").innerHTML='<section class="panel spoils-panel"><span class="combat-overline">胜者缴获 · '+esc(d.foe)+'</span><h2>夺得 '+esc(g.name)+'</h2><p>'+esc(d.clue)+'</p><div class="slot">'+esc(g.description)+'</div><p>当前蛊仓 '+state.gu.length+'/12；收入后可在下轮自由换装。</p>'+replacement+'<div class="actions"><button class="primary" onclick="'+claim+'">收入蛊仓'+(full?'（舍弃所选旧蛊）':'')+'</button>'+swapButtons+'<button onclick="resolveSpoils('+"'sell'"+')">变卖 +2 金币</button></div></section>';
 }
 
 const clone=x=>JSON.parse(JSON.stringify(x));
