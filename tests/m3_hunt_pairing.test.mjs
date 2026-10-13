@@ -23,4 +23,5 @@ test('M3-B hunt choice varies in actual fight outcomes, not merely illustrated e
  assert.ok(rows.some(r=>r.foe==='枯根傀儡'&&r.regen>0));
  assert.ok(rows.some(r=>r.foe==='枯根傀儡'&&r.blocked>0));
  assert.ok(rows.every(r=>r.tick<=120),'every enemy must respect finite battle duration');
+ assert.ok(schools.some(s=>rows.find(r=>r.school===s&&r.foe==='镇关铁卫')?.won!==rows.find(r=>r.school===s&&r.foe==='枯根傀儡')?.won),'at least one school must face a meaningful win/loss branch');
 });
