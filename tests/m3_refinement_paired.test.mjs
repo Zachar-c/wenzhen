@@ -41,3 +41,26 @@ test('refining after pre-equipping duplicates consumes only one of each componen
  assert.equal(run('state.gu.filter(x=>x.gu==="B102").length'),1);
  assert.equal(run('state.gu.filter(x=>x.gu==="B201").length'),1);
 });
+
+test('M3 two distinct pathways have measurable opposite consequences (defensive Y201 vs offensive B201)',()=>{
+ const rows=[];
+ for(const foe of [0,1,2,3,4,5]){
+  function play(school,craft){
+   const store=new Map(),dom=new Map(),ctx=vm.createContext({Math,Date,JSON,console,confirm:()=>true,setInterval:()=>1,clearInterval:()=>{},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)},document:{getElementById(id){if(!dom.has(id))dom.set(id,{innerHTML:'',insertAdjacentHTML(){}});return dom.get(id)}}});
+   vm.runInContext(script,ctx);
+   const run=x=>vm.runInContext(x,ctx);
+   run('init('+JSON.stringify(school)+')');
+   run('state.round='+(foe+1)+';state.targetIndex='+foe);
+   if(craft)assert.equal(run('refineGu('+JSON.stringify(craft)+')'),true);
+   run('startBattle();quick()');
+   return JSON.parse(JSON.stringify(run('state.lastResult')));
+  }
+  const natural=play('晦明',null),guarded=play('晦明','Y201');
+  const burst=play('百兵','B201');
+  rows.push({foe:guarded.foe,yBaseWon:natural.won,yGuardWon:guarded.won,yBaseHP:natural.hp,yGuardHP:guarded.hp,yBaseTick:natural.tick,yGuardTick:guarded.tick,bBurstHP:burst.hp,bBurstTick:burst.tick});
+ }
+ console.log('M3_TWO_PATHWAYS '+JSON.stringify(rows));
+ assert.equal(new Set(rows.map(r=>r.foe)).size,6);
+ assert.ok(rows.some(r=>r.yGuardHP!==r.yBaseHP),'defensive fusion must change at least one fight outcome or HP');
+ assert.ok(rows.some(r=>r.yGuardTick!==r.yBaseTick),'removing direct attack should change pacing');
+});
