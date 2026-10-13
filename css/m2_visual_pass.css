@@ -1,0 +1,102 @@
+/* Visual-pass component layer; no gameplay or layout/viewport contract changes. */
+.shopitem:has(>.m2-gu-illustration){display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto 1fr auto auto;column-gap:10px;align-content:start}
+.shopitem>.m2-gu-illustration{grid-column:1;grid-row:1 / 4;align-self:stretch;width:76px;min-height:94px;border-radius:7px;box-shadow:inset 0 0 0 1px #dfc89b80,0 6px 17px #0007;background-position:center;background-size:cover}
+.shopitem:has(>.m2-gu-illustration)>.name,.shopitem:has(>.m2-gu-illustration)>.meta,.shopitem:has(>.m2-gu-illustration)>.offer-hint{grid-column:2;min-width:0}
+.shopitem:has(>.m2-gu-illustration)>.gold,.shopitem:has(>.m2-gu-illustration)>.actions{grid-column:1 / -1}
+.shopitem:has(>.m2-gu-illustration) .name::before{display:none}
+.shopitem:has(>.m2-gu-illustration) .name{padding-right:0}
+.shopitem[data-gu-kind="攻"]{--gu-accent:#dfb487}.shopitem[data-gu-kind="防"]{--gu-accent:#9dcfbd}.shopitem[data-gu-kind="反"]{--gu-accent:#e3a6ac}
+.shopitem[data-gu-kind="察"],.shopitem[data-gu-kind="标"]{--gu-accent:#b5ade4}
+.shopitem[data-gu-kind]{border-top:2px solid var(--gu-accent,#d1b992)}
+.slot:has(>.m2-gu-illustration){padding-left:54px;min-height:48px}
+.slot>.m2-gu-illustration{position:absolute;top:7px;left:7px;width:38px;height:38px;border-radius:5px;background-size:cover;border:1px solid #d5b78d77}
+.battle-gu>.m2-gu-illustration{display:block;flex:none;width:45px;height:45px;border:1px solid #d6bc9a88;border-radius:6px;background-size:cover;background-position:center}
+.battle-gu.cooling>.m2-gu-illustration{filter:grayscale(.85) brightness(.62)}
+.player-figure[data-portrait]::before{content:"";top:0;left:0;transform:none;width:100%;height:100%;border:0;border-radius:0;background:var(--cultivator-portrait) center bottom/contain no-repeat;box-shadow:none}
+.player-figure[data-portrait] .halo{opacity:.45}
+.player-figure[data-portrait] .soul-core{display:none}
+.combat-stage[data-impact="strike"] .arena-light{filter:brightness(1.45);animation:m2-strike .45s ease-out}
+.combat-stage[data-impact="guard"] .player-figure{filter:drop-shadow(0 0 19px #80d4d6a8)}
+.combat-stage[data-impact="counter"] .player-figure{filter:drop-shadow(0 0 24px #ec968bba)}
+.spoils-panel .slot:has(.m2-gu-illustration){border-color:#e3ca9a}
+@keyframes m2-strike{0%{opacity:.35;transform:scale(.85)}45%{opacity:1;transform:scale(1.08)}100%{opacity:.55;transform:scale(1)}}
+@media(min-width:1000px) and (min-height:650px){.shopitem:has(>.m2-gu-illustration){grid-template-columns:55px minmax(0,1fr);column-gap:7px}.shopitem>.m2-gu-illustration{width:55px;min-height:65px}.battle-gu>.m2-gu-illustration{width:33px;height:33px}}
+@media(max-width:520px){.shopitem:has(>.m2-gu-illustration){grid-template-columns:38px minmax(0,1fr);column-gap:6px}.shopitem>.m2-gu-illustration{width:38px;min-height:53px}.shopitem .offer-hint{grid-column:1/-1!important}.shopitem:has(>.m2-gu-illustration)>.name{font-size:15px}.battle-gu>.m2-gu-illustration{width:36px;height:36px}.player-figure[data-portrait]::before{top:0;height:100%}}
+@media(prefers-reduced-motion:reduce){.combat-stage[data-impact] .arena-light{animation:none}}
+
+/* R3 mobile battle: stage is the primary event; avoid burying it below telemetry. */
+@media(max-width:790px){
+ .combat-title{display:flex;align-items:center;justify-content:space-between;margin:2px 0 8px}
+ .combat-title h2{font-size:24px;margin:0}
+ .combat-stage{margin:0 0 12px;min-height:0}
+ .combat-stage .arena{min-height:240px}
+ .combat-stage .figure-portrait{height:190px}
+ .combat-stage .stage-top,.combat-stage .stage-bottom{padding:6px 10px;font-size:10px}
+ .combat-stage .attack-intent{margin:4px 8px;padding:7px 9px}
+ .combat-stage .focus-event{margin:0 8px 8px;padding:8px}
+ .combat-side .panel{margin:0 0 10px}
+}
+@media(max-width:520px){
+ .combat-stage .arena{min-height:220px;padding:5px}
+ .combat-stage .figure-portrait{height:170px}
+ .combat-stage .combatant-name{font-size:10px}
+ .combat-stage .hp-numbers strong{font-size:20px}
+ .combat-stage .versus-rune{width:30px;height:30px;font-size:15px}
+ .combat-side .battle-gu-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .combat-side .battle-gu{min-width:0}
+}
+
+/* R4: event-driven combat punctuation, visual only. Single event effect per tick.
+   Each cue has 420ms lifetime and never blocks input. */
+.combat-stage{isolation:isolate}
+.m2-scene-cue{position:absolute;z-index:7;inset:0;overflow:hidden;pointer-events:none;animation:m2-cue-dismiss .44s ease-out both}
+.m2-scene-cue i{position:absolute;display:block;left:50%;top:41%;width:120px;height:120px;border-radius:50%;transform:translate(-50%,-50%) scale(.2);border:2px solid var(--cue,#f3d39e);box-shadow:0 0 28px var(--cue,#f3d39e),inset 0 0 25px #fff2;animation:m2-cue-ring .44s ease-out both}
+.m2-scene-cue b{position:absolute;display:block;left:23%;right:23%;top:39%;height:2px;transform:rotate(-24deg) scaleX(.1);background:linear-gradient(90deg,transparent,var(--cue,#f3d39e),#fff,transparent);filter:drop-shadow(0 0 9px var(--cue,#f3d39e));animation:m2-cue-sweep .38s ease-out both}
+.m2-cue-strike{--cue:#f4bc84}.m2-cue-counter{--cue:#f1899f}.m2-cue-guard{--cue:#91d9d6}.m2-cue-heal{--cue:#a5e6b2}
+.m2-cue-guard b,.m2-cue-heal b{height:3px;transform:rotate(0) scaleX(.1)}
+@keyframes m2-cue-ring{0%{opacity:.12;transform:translate(-50%,-50%) scale(.2)}40%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(2.8)}}
+@keyframes m2-cue-sweep{0%{opacity:0;transform:rotate(-24deg) scaleX(.1)}35%{opacity:1}100%{opacity:0;transform:rotate(-24deg) scaleX(1.6)}}
+@keyframes m2-cue-dismiss{0%{opacity:.95}70%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.m2-scene-cue{display:none!important}}
+
+/* R8 asset pilot: cropped painterly busts, four subjects in one lightweight atlas.
+   No full-body claim, no gameplay-affecting transitions. */
+.player-figure[data-art="r8"]::before{
+ content:"";width:min(94%,185px);height:calc(100% - 8px);top:4px;left:50%;
+ transform:translateX(-50%);
+ background-image:url("../assets/visual/m2_r8_character_atlas.webp");
+ background-size:400% 100%;
+ background-position:0% 0%;
+ background-repeat:no-repeat;
+ border:1px solid rgba(214,193,158,.22);
+ border-radius:6px;
+ box-shadow:inset 0 0 28px rgba(6,10,20,.58),0 0 20px rgba(98,133,168,.16);
+}
+.foe-portrait.m2-r8-foe-portrait{
+ display:block;flex:none;width:min(94%,190px);height:94%;
+ align-self:flex-end;
+ background-image:url("../assets/visual/m2_r8_character_atlas.webp");
+ background-repeat:no-repeat;background-size:400% 100%;
+ border:1px solid rgba(233,207,168,.44);
+ border-radius:6px;
+ filter:saturate(.92) contrast(1.04);
+ box-shadow:inset 0 0 25px rgba(8,13,25,.7),0 14px 30px rgba(0,0,0,.48);
+}
+.m2-r8-foe-portrait[data-foe="swordsman"]{background-position:33.33333% 0}
+.m2-r8-foe-portrait[data-foe="shadow"]{background-position:66.66667% 0}
+.m2-r8-foe-portrait[data-foe="warden"]{background-position:100% 0}
+@media(max-width:520px){.foe-portrait.m2-r8-foe-portrait{width:min(94%,125px)}}
+
+/* R8 painted Gu atlas: seven hand-picked semantic illustrations. Remaining Gu keep distinct SVG art. */
+.m2-gu-illustration.m2-r8-gu-painted{
+ background-size:700% 100%,100% 100%;
+ background-repeat:no-repeat,no-repeat;
+ image-rendering:auto;
+}
+.m2-r8-gu-painted[data-tile="0"]{background-position:0% center,center}
+.m2-r8-gu-painted[data-tile="1"]{background-position:16.6667% center,center}
+.m2-r8-gu-painted[data-tile="2"]{background-position:33.3333% center,center}
+.m2-r8-gu-painted[data-tile="3"]{background-position:50% center,center}
+.m2-r8-gu-painted[data-tile="4"]{background-position:66.6667% center,center}
+.m2-r8-gu-painted[data-tile="5"]{background-position:83.3333% center,center}
+.m2-r8-gu-painted[data-tile="6"]{background-position:100% center,center}
