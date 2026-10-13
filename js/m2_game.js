@@ -316,7 +316,7 @@ if(x.gu==="M102"){const flow=get("flow");if(flow){bonus=2;b.states=b.states.filt
 if(["B301","B401","B501"].includes(x.gu)&&b.weaponBroken)continue;
 cast(x);const landed=direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3,N201:5,G112:3,B201:4,B301:4,B401:4,B501:4})[x.gu],GM[x.gu].name,{bonus});
 if(["B301","B401","B501"].includes(x.gu)&&landed>0&&b.foe.hp>0&&b.jointIntegrity>0&&!b.weaponBroken){
- b.pending.push({tick:t+2,type:"jointStrike",gu:x.gu,remaining:x.gu==="B501"?2:1,damage:3});
+ b.pending.push({tick:t+2,type:"jointStrike",gu:x.gu,remaining:x.gu==="B501"?2:1,segment:2,damage:3});
  push("实击确认：实体兵胚与完好关节俱在，预备折角续击");
 }
 if(x.gu==="B201"&&b.foe.hp>0)b.pending.push({tick:t+2,type:"returnBlade",damage:3});
@@ -329,11 +329,10 @@ for(const e of b.pending.filter(x=>x.tick===t&&x.type==="counter"))direct(e.dama
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="blood"))direct(e.damage,"饮锋反击",{consumeWeak:false});
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="returnBlade"))direct(e.damage,"折锋回刺",{consumeWeak:false});
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="jointStrike")){
- if(b.weaponBroken||b.jointIntegrity<=0||b.foe.hp<=0){push("变节续击被硬反制阻断：缴械、关节全损或目标已倒");continue}
- b.jointIntegrity--;
+ if(b.weaponBroken||b.jointIntegrity<e.segment-1||b.foe.hp<=0){push("变节续击被硬反制阻断：缴械、关节不足或目标已倒");continue}
  const landed=direct(e.damage,"变节折角·"+GM[e.gu].name,{consumeWeak:false,angle:true});
  if(e.remaining>1&&landed>0&&b.foe.hp>0&&b.jointIntegrity>0&&!b.weaponBroken){
-  b.pending.push({tick:t+2,type:"jointStrike",gu:e.gu,remaining:e.remaining-1,damage:e.damage});
+  b.pending.push({tick:t+2,type:"jointStrike",gu:e.gu,remaining:e.remaining-1,segment:e.segment+1,damage:e.damage});
   push("第二段真命中且下一关节完好，允许第三段");
  }
 }
