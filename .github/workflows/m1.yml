@@ -6,6 +6,7 @@ on:
     branches: [master]
     paths:
       - 'm1.html'
+      - 'css/m1_visual.css'
       - 'js/m1_game.js'
       - 'data/m1_contract.json'
       - 'docs/M1_IMPLEMENTATION_SPEC.md'
