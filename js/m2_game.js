@@ -11,7 +11,8 @@ const GU=[
 ["M101","试流蛊","乘物","标","有风时标记8 tick；下次听风+2",12,1],["M102","听风蛊","乘物","攻","有风时造成3伤害",8,2],["M103","踏脉蛊","乘物","防","敌宣告时护盾3；冲撞改规避4",10,0],
 ["N201","裂势蛊","百兵","攻","敌人蓄势时斩击5；专破蓄势窗口",10,0],["N202","饮锋蛊","玄牝","反","受到实际伤害后积攒血势，下一tick反击（最多6）",10,0],
 ["G101","辨兆蛊","观复","察","记录已公开攻击并减伤2",10,0],["G102","听息蛊","观复","防","准确观察时在命中前获得4护盾",10,0],["G103","记痕蛊","观复","反","听息有效吸收后下一tick反击3，重复招式+2",12,0],
-["G112","知几蛊","观复","攻","敌方连续两次宣告同一招式后，趁真实起手刺击3；变招未明时不发动",12,0]
+["G112","知几蛊","观复","攻","敌方连续两次宣告同一招式后，趁真实起手刺击3；变招未明时不发动",12,0],
+["G201","重息蛊","观复","防","连续两次确认相同起手后，在命中前凝成8点护盾；首招及变招不成立",10,0]
 ].map(([id,name,school,kind,description,cd,first])=>({id,name,school,kind,description,cd,first}));
 const GM=Object.fromEntries(GU.map(g=>[g.id,g]));
 const SCHOOLS=["百兵","晦明","玄牝","执枢","阖辟","参同","乘物","观复"];
@@ -92,7 +93,7 @@ function starters(school){return GU.filter(g=>g.school===school).slice(0,3).map(
 function save(){if(state)localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 function init(school){if(!SCHOOLS.includes(school))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
 function beginRound(){state.round++;state.targetIndex=state.round-1;state.gold+=5;state.free=true;state.rerolls=0;state.seekUsed=false;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school).slice(0,3);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
-const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊"}];
+const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊"},{id:"G201",inputs:["G101","G102"],label:"辨兆蛊＋听息蛊 → 重息蛊"}];
 function availableRecipes(){return M3_RECIPES.filter(r=>r.inputs.every(id=>state.gu.some(g=>g.gu===id)))}
 function refineGu(recipeId){
  if(!state||battle||state.inBattle||state.pendingSpoils||state.completed)return false;
@@ -171,7 +172,7 @@ if(value>0){
  const drink=battle.instances.find(x=>x.gu==="N202"&&x.ready<=battle.tick);
  if(drink){cast(drink);battle.pending.push({tick:battle.tick+1,type:"blood",damage:Math.min(6,value),source:drink.instance});push("饮锋蓄血势 "+Math.min(6,value))}
 }
-const gs=battle.instances.find(x=>x.gu==="G103"&&x.ready<=battle.tick),heard=Object.entries(sources).filter(([k,v])=>v>0&&k.startsWith("G102:")).length>0;
+const gs=battle.instances.find(x=>x.gu==="G103"&&x.ready<=battle.tick),heard=Object.entries(sources).filter(([k,v])=>v>0&&(k.startsWith("G102:")||k.startsWith("G201:"))).length>0;
 if(gs&&heard&&e.observed){cast(gs);const bonus=battle.lastConfirmed===e.type?2:0;battle.pending.push({tick:battle.tick+1,type:"counter",damage:3+bonus,source:gs.id})}
 if(e.observed)battle.lastConfirmed=e.type;
 battle.current=null}
@@ -202,7 +203,7 @@ case"T101":if(!has("sand",x.instance)){cast(x);mark("sand",x.instance,10)}break;
 case"M101":if(environmentWind()&&!has("flow",x.instance)){cast(x);mark("flow",x.instance,8)}break;
 case"G101":if(enemy&&observation(enemy)&&!enemy.observed){cast(x);enemy.observed=true;enemy.reduction=(enemy.reduction||0)+2;push("辨兆确认："+enemy.name)}break;
 }}
-for(const x of fresh().filter(x=>["Y103","S102","T102","S103","B102","Y102","H103","M103","Z103","G102"].includes(x.gu))){
+for(const x of fresh().filter(x=>["Y103","S102","T102","S103","B102","Y102","H103","M103","Z103","G102","G201"].includes(x.gu))){
 switch(x.gu){
 case"Y103":if(!has("shade",x.instance)){cast(x);mark("shade",x.instance,6,0,{attackUsed:false,used:false})}break;
 case"S102":if(b.shields.reduce((a,s)=>a+s.value,0)<2){cast(x);shield(x.gu+":"+x.instance,3,t+10)}break;
@@ -214,6 +215,7 @@ case"H103":if(enemy&&enemy.impact-enemy.windup===t&&has("beacon")){cast(x);shiel
 case"M103":if(enemy&&enemy.impact-enemy.windup===t){cast(x);if(enemy.type==="charge")enemy.evade+=4;else shield(x.gu+":"+x.instance,3,enemy.impact+1)}break;
 case"Z103":if(enemy&&enemy.impact===t+1&&has("bind")){cast(x);b.states=b.states.filter(s=>s.type!=="bind");enemy.reduction+=4;shield(x.gu+":"+x.instance,2,enemy.impact+1)}break;
 case"G102":if(enemy&&enemy.impact===t&&enemy.observed){cast(x);shield(x.gu+":"+x.instance,4,t+1)}break;
+case"G201":if(enemy&&enemy.impact===t&&enemy.revealed&&b.repeatMoveCount>=2){cast(x);enemy.observed=true;shield(x.gu+":"+x.instance,8,t+1);push("重息辨认旧式："+enemy.name)}break;
 }}
 for(const x of fresh().filter(x=>["B101","B201","Y101","S101","Z102","H102","T103","M102","N201","G112"].includes(x.gu))){let bonus=0;
 if(x.gu==="N201"&&(!enemy||enemy.impact<=t))continue;if(x.gu==="G112"&&(!enemy||!enemy.revealed||b.repeatMoveCount<2||enemy.impact<=t))continue;if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())continue;if(x.gu==="Y101"){const shade=get("shade");if(shade&&!shade.attackUsed){bonus=1;shade.attackUsed=true}}
