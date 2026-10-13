@@ -1,0 +1,313 @@
+{
+  "schema": "wenzhen.m1.contract.d2.8.v1",
+  "source": "docs/M1_IMPLEMENTATION_SPEC.md",
+  "mode": "standalone-offline",
+  "schools": [
+    "百兵",
+    "晦明",
+    "玄牝",
+    "执枢",
+    "阖辟",
+    "参同",
+    "乘物",
+    "观复"
+  ],
+  "schoolCodes": [
+    "B",
+    "Y",
+    "S",
+    "Z",
+    "H",
+    "T",
+    "M",
+    "G"
+  ],
+  "economy": {
+    "startingGold": 8,
+    "roundIncome": 5,
+    "shopSlots": 4,
+    "purchasePrice": 4,
+    "sellPrice": 2,
+    "inventoryMax": 12,
+    "equipMax": 5,
+    "lockedSlotsMax": 2,
+    "refreshCosts": [
+      0,
+      2,
+      3,
+      4
+    ],
+    "refreshCostCap": 4
+  },
+  "battle": {
+    "tickMs": 500,
+    "timeoutTick": 120,
+    "playerHp": 30,
+    "baseAttackFirstTick": 2,
+    "baseAttackInterval": 6,
+    "baseAttackDamage": 2,
+    "shieldCap": 12,
+    "phaseOrder": [
+      "P0_EXPIRY",
+      "P1_DECLARE",
+      "P2_PREPARE",
+      "P3_PLAYER_DAMAGE",
+      "P4_ENEMY_HIT",
+      "P5_HEAL_SETTLE"
+    ],
+    "damageMitigation": [
+      "evade",
+      "fixedReduction",
+      "shieldFIFO",
+      "hp"
+    ],
+    "lossLimit": 3,
+    "stageBattles": 3
+  },
+  "firstRunExtraBySchool": [
+    "T103",
+    "B101",
+    "B101",
+    "T103",
+    "B103",
+    "B103",
+    "T103",
+    "B101"
+  ],
+  "gu": [
+    {
+      "id": "B101",
+      "name": "引锋",
+      "cd": 8,
+      "first": 2,
+      "effect": "direct4;weak+2-once"
+    },
+    {
+      "id": "B102",
+      "name": "守柄",
+      "cd": 10,
+      "first": 0,
+      "effect": "on-declare shield3"
+    },
+    {
+      "id": "B103",
+      "name": "试刃",
+      "cd": 12,
+      "first": 1,
+      "effect": "weak8;boar-break6"
+    },
+    {
+      "id": "Y101",
+      "name": "藏晖",
+      "cd": 8,
+      "first": 2,
+      "effect": "dim direct3;shade+1"
+    },
+    {
+      "id": "Y102",
+      "name": "投影",
+      "cd": 12,
+      "first": 0,
+      "effect": "dim on-declare evade4-bound-to-attack"
+    },
+    {
+      "id": "Y103",
+      "name": "遮灯",
+      "cd": 12,
+      "first": 0,
+      "effect": "shade6;next-canghui+1;next-received-1"
+    },
+    {
+      "id": "S101",
+      "name": "含芽",
+      "cd": 8,
+      "first": 2,
+      "effect": "direct2;root-dot1@+2,+4"
+    },
+    {
+      "id": "S102",
+      "name": "守根",
+      "cd": 10,
+      "first": 0,
+      "effect": "if-shield<2 shield3@10"
+    },
+    {
+      "id": "S103",
+      "name": "引露",
+      "cd": 12,
+      "first": 0,
+      "effect": "P5 heal3-if-wounded;otherwise-if-shield<2 shield2"
+    },
+    {
+      "id": "Z101",
+      "name": "识主",
+      "cd": 14,
+      "first": 1,
+      "effect": "owner-mark10;direct+1"
+    },
+    {
+      "id": "Z102",
+      "name": "系令",
+      "cd": 10,
+      "first": 2,
+      "effect": "owner-required direct3;bind8 next-hit-2"
+    },
+    {
+      "id": "Z103",
+      "name": "解扣",
+      "cd": 12,
+      "first": 0,
+      "effect": "impact-minus-1;consume-bind;original-2-and-extra-2;shield2"
+    },
+    {
+      "id": "H101",
+      "name": "认隙",
+      "cd": 12,
+      "first": 1,
+      "effect": "gap8;next-H102+2"
+    },
+    {
+      "id": "H102",
+      "name": "定标",
+      "cd": 8,
+      "first": 2,
+      "effect": "direct3;beacon10"
+    },
+    {
+      "id": "H103",
+      "name": "掩扉",
+      "cd": 10,
+      "first": 0,
+      "effect": "on-declare-if-beacon shield3;charge-reduce1"
+    },
+    {
+      "id": "T101",
+      "name": "试砂",
+      "cd": 12,
+      "first": 1,
+      "effect": "sand10;next-T103+2"
+    },
+    {
+      "id": "T102",
+      "name": "护炉",
+      "cd": 10,
+      "first": 0,
+      "effect": "if-shield<2 shield3;with-sand +1@10"
+    },
+    {
+      "id": "T103",
+      "name": "火筹",
+      "cd": 8,
+      "first": 2,
+      "effect": "direct3;burn-dot1@+2,+4"
+    },
+    {
+      "id": "M101",
+      "name": "试流",
+      "cd": 12,
+      "first": 1,
+      "effect": "wind-required;flow8;next-M102+2"
+    },
+    {
+      "id": "M102",
+      "name": "听风",
+      "cd": 8,
+      "first": 2,
+      "effect": "wind-required direct3"
+    },
+    {
+      "id": "M103",
+      "name": "踏脉",
+      "cd": 10,
+      "first": 0,
+      "effect": "on-declare shield3;charge-instead-evade4"
+    },
+    {
+      "id": "G101",
+      "name": "辨兆",
+      "cd": 10,
+      "first": 0,
+      "effect": "known-move observe12;hit-reduce2;feint-reveal-impact-2"
+    },
+    {
+      "id": "G102",
+      "name": "听息",
+      "cd": 10,
+      "first": 0,
+      "effect": "observed-impact shield4;source-absorbed-tracking"
+    },
+    {
+      "id": "G103",
+      "name": "记痕",
+      "cd": 12,
+      "first": 0,
+      "effect": "on-G102-absorb next-tick-counter3;repeat+2"
+    }
+  ],
+  "foes": [
+    {
+      "id": "rogue",
+      "name": "普通散修",
+      "hp": 18,
+      "armor": 0,
+      "first": 6,
+      "period": [
+        8
+      ],
+      "moves": [
+        {
+          "name": "平砍",
+          "damage": 3,
+          "windup": 2,
+          "type": "normal"
+        }
+      ]
+    },
+    {
+      "id": "boar",
+      "name": "铁背野猪",
+      "hp": 24,
+      "armor": 1,
+      "first": 5,
+      "period": [
+        10
+      ],
+      "moves": [
+        {
+          "name": "铁背冲撞",
+          "damage": 5,
+          "windup": 4,
+          "type": "charge"
+        }
+      ]
+    },
+    {
+      "id": "swordsman",
+      "name": "变招刀客",
+      "hp": 32,
+      "armor": 0,
+      "first": 5,
+      "period": [
+        9,
+        10
+      ],
+      "moves": [
+        {
+          "name": "直斩",
+          "damage": 5,
+          "windup": 3,
+          "type": "straight"
+        },
+        {
+          "name": "变招",
+          "damage": 6,
+          "windup": 4,
+          "type": "feint"
+        }
+      ],
+      "windPeriod": 18,
+      "windOnTicks": 12,
+      "feintRevealBeforeImpact": 2
+    }
+  ]
+}
