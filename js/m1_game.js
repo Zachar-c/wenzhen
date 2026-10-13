@@ -37,6 +37,27 @@ function equip(id){if(state.equip.includes(id))state.equip=state.equip.filter(z=
 function lock(i){const x=state.shelf[i];if(!x)return;if(!x.lock&&state.shelf.filter(z=>z&&z.lock).length>=2)return;x.lock=!x.lock;save();render()}
 function reroll(){let cost=state.free?0:Math.min(4,state.rerolls+2);if(state.gold<cost)return;state.gold-=cost;if(state.free)state.free=false;else state.rerolls++;state.shelf=state.shelf.map(x=>x&&x.lock?x:offer());save();render()}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+const SYNERGY=[
+ [["B103","B101"],"试刃→引锋：破绽爆发"],
+ [["Y103","Y101"],"遮灯→藏晖：进攻增幅"],
+ [["Z101","Z102"],"识主→系令：解锁攻击"],
+ [["Z102","Z103"],"系令→解扣：追加防护"],
+ [["H101","H102"],"认隙→定标：直接增伤"],
+ [["H102","H103"],"定标→掩扉：界标防御"],
+ [["T101","T103"],"试砂→火筹：直接增伤"],
+ [["M101","M102"],"试流→听风：有风联动"],
+ [["G101","G102","G103"],"辨兆→听息→记痕：有效吸收后反击"],
+ [["S101","T103"],"含芽+火筹：两路持续伤害"]
+];
+const FOE_HINTS={rogue:"散修：2 tick 蓄势；伤害3",boar:"野猪：护甲1；冲撞5，破甲和规避各有用途",swordsman:"刀客：变招在命中前2 tick才公开轨迹"};
+const RUNE_GLYPHS={攻:"刃",防:"盾",标:"印",辅:"隐",疗:"生",察:"观",反:"返"};
+function equippedGu(){return state.equip.map(id=>state.gu.find(g=>g.id===id)?.gu).filter(Boolean)}
+function synergyFor(ids){const set=new Set(ids);return SYNERGY.filter(([required])=>required.every(x=>set.has(x))).map(x=>x[1])}
+function buildGuide(){const ids=equippedGu(),active=synergyFor(ids);
+return '<div class="build-compact"><strong>攻击 '+ids.filter(x=>GM[x].kind==="攻").length+'</strong><strong>防护/观察 '+ids.filter(x=>["防","疗","察"].includes(GM[x].kind)).length+'</strong><strong>联动 '+active.length+'</strong></div><div class="guide-lines">'+(active.length?active.map(x=>'<p>◆ '+esc(x)+'</p>').join(''):'<p>尚未形成已识别的联动，可在货架补齐。</p>')+'</div><p class="opponent-note">'+esc(FOE_HINTS[FOES[state.round-1].id])+'</p>'}
+function offerHint(gu){const before=new Set(synergyFor(equippedGu())),next=synergyFor([...equippedGu(),gu]).filter(x=>!before.has(x));return '<div class="offer-hint">'+(next.length?'新增联动：'+esc(next[0]):'不新增联动 · 可替换或叠放')+'</div>'}
+function battleReport(stats){if(!stats)return '';const best=Object.entries(stats.damageBySource||{}).sort((a,b)=>b[1]-a[1]);return '<div class="battle-report"><div><small>造成伤害</small><strong>'+stats.damageDealt+'</strong></div><div><small>护盾吸收</small><strong>'+stats.shieldAbsorbed+'</strong></div><div><small>实际失血</small><strong>'+stats.damageTaken+'</strong></div><div><small>实际治疗</small><strong>'+stats.healing+'</strong></div></div><p class="report-sources">主要来源：'+(best.slice(0,3).map(([k,v])=>esc(k)+' '+v).join(' / ')||'无')+'</p>'}
 function guCard(inst){const g=GM[inst.gu];return '<div class="slot"><b>'+esc(g.name)+'</b> <span class="chip">'+g.kind+'</span><div class="meta">'+esc(g.description)+' · 冷却'+g.cd+' tick</div><button onclick="equip(\''+inst.id+'\')">'+(state.equip.includes(inst.id)?"卸下":"装备")+'</button><button onclick="sell(\''+inst.id+'\')">出售 +2</button></div>'}
 function render(){if(!state){const data=localStorage.getItem(STORE_KEY);if(data){try{state=JSON.parse(data)}catch{localStorage.removeItem(STORE_KEY)}}}
 q("status").innerHTML=state?'<span class="chip">第'+state.round+'/3轮</span> <span class="chip gold">'+state.gold+' 金币</span> <span class="chip">败北 '+state.losses+'/3</span>':'<span class="chip">独立 M1 存档</span>';
@@ -44,7 +65,7 @@ if(!state){q("app").innerHTML='<h2>择一道途，踏入三场试炼</h2><p>每�
 if(state.completed){q("app").innerHTML='<section class="panel"><h2>M1 阶段结算</h2><p>完成 '+state.round+' 场试炼，失败 '+state.losses+' 次。此处为第一阶段结算，并非全15轮通关。</p><button class="primary" onclick="restart()">新的一局</button></section>';return}
 if(battle){renderBattle();return}if(state.inBattle){startBattle();return}
 let cost=state.free?0:Math.min(4,state.rerolls+2);
-q("app").innerHTML='<h2>第'+state.round+'轮 · 整备与交易</h2><p>下一战：'+FOES[state.round-1].name+' · 首阶段生命30 · 已出战负载 '+state.equip.length+'/5 · 蛊仓 '+state.gu.length+'/12</p><div class="shell"><div><section class="panel"><h3>四槽货架</h3><div class="grid">'+state.shelf.map((x,i)=>!x?'<div class="card shopitem placeholder">已售出</div>':'<div class="card shopitem"><div class="name">'+GM[x.gu].name+'</div><div class="meta">'+GM[x.gu].description+'</div><div class="gold">价格 4</div><div class="actions"><button onclick="buy('+i+')" '+(state.gold<4||state.gu.length>=12?'disabled':'')+'>购买</button><button onclick="lock('+i+')">'+(x.lock?'已锁定 · 解锁':'锁定')+'</button></div></div>').join('')+'</div><div class="actions"><button onclick="reroll()" '+(state.gold<cost?'disabled':'')+'>刷新货架 · '+(cost?'金币 '+cost:'免费')+'</button><span class="chip">跨轮最多锁定2件</span></div></section><section class="panel"><h3>蛊仓与出战</h3>'+state.gu.map(guCard).join('')+'</section></div><div><section class="panel"><h3>当前蛊组</h3>'+state.equip.map(id=>'<div class="slot">'+esc(GM[state.gu.find(g=>g.id===id).gu].name)+'</div>').join('')+'<p>技能按实际条件自动触发；同名蛊独立冷却。</p><button class="primary" onclick="startBattle()">迎战 '+FOES[state.round-1].name+'</button></section><section class="panel"><h3>经营规则</h3><p>一转售价4，出售返2；每轮收入5；免费首刷，付费2/3/4/4…；最多12实例，负载5。</p><button onclick="restart()">放弃并重开</button></section></div></div>'}
+q("app").innerHTML='<h2>第'+state.round+'轮 · 整备与交易</h2><p>下一战：'+FOES[state.round-1].name+' · 首阶段生命30 · 已出战负载 '+state.equip.length+'/5 · 蛊仓 '+state.gu.length+'/12</p><div class="shell"><div><section class="panel"><h3>四槽货架</h3><div class="grid">'+state.shelf.map((x,i)=>!x?'<div class="card shopitem placeholder">已售出</div>':'<div class="card shopitem"><div class="name">'+GM[x.gu].name+'</div><div class="meta">'+GM[x.gu].description+'</div>'+offerHint(x.gu)+'<div class="gold">价格 4</div><div class="actions"><button onclick="buy('+i+')" '+(state.gold<4||state.gu.length>=12?'disabled':'')+'>购买</button><button onclick="lock('+i+')">'+(x.lock?'已锁定 · 解锁':'锁定')+'</button></div></div>').join('')+'</div><div class="actions"><button onclick="reroll()" '+(state.gold<cost?'disabled':'')+'>刷新货架 · '+(cost?'金币 '+cost:'免费')+'</button><span class="chip">跨轮最多锁定2件</span></div></section><section class="panel"><h3>蛊仓与出战</h3>'+state.gu.map(guCard).join('')+'</section></div><div><section class="panel build-guide"><h3>战前判断</h3>'+buildGuide()+'</section><section class="panel"><h3>当前蛊组</h3>'+state.equip.map(id=>'<div class="slot">'+esc(GM[state.gu.find(g=>g.id===id).gu].name)+'</div>').join('')+'<p>技能按实际条件自动触发；同名蛊独立冷却。</p><button class="primary" onclick="startBattle()">迎战 '+FOES[state.round-1].name+'</button></section><section class="panel"><h3>经营规则</h3><p>一转售价4，出售返2；每轮收入5；免费首刷，付费2/3/4/4…；最多12实例，负载5。</p><button onclick="restart()">放弃并重开</button></section></div></div>'}
 function restart(){if(!confirm('放弃现有 M1 进度并重新开局？'))return;clearInterval(timer);timer=null;battle=null;state=null;localStorage.removeItem(STORE_KEY);render()}
 function has(type,source){return battle.states.some(s=>s.type===type&&(!source||s.source===source)&&s.until>battle.tick)}
 function get(type,source){return battle.states.find(s=>s.type===type&&(!source||s.source===source)&&s.until>battle.tick)}
