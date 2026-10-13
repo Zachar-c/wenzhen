@@ -40,6 +40,14 @@ try{
   assert.equal(await page.locator('.battle-gu>.m2-gu-illustration').count()>0,true,'battle cards must be painted');
   await page.evaluate(()=>window.scrollTo(0,0));
   await page.screenshot({path:`${dir}/05_battle_${key}.png`});
+  if(width===390){
+   const scrollProof=await page.evaluate(()=>{window.scrollTo(0,Math.min(180,document.documentElement.scrollHeight-innerHeight));return window.scrollY;});
+   if(scrollProof>20){
+    await page.waitForTimeout(1150);
+    const now=await page.evaluate(()=>window.scrollY);
+    assert.ok(Math.abs(now-scrollProof)<=3,`mobile battle should not forcibly scroll every tick: before ${scrollProof} after ${now}`);
+   }
+  }
   if(width<600){
    const arena=await page.locator('.combat-stage').boundingBox();
    assert.ok(arena&&arena.y<height&&arena.y+arena.height>0,`mobile battle stage should intersect viewport: ${JSON.stringify(arena)}`);
