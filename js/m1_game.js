@@ -142,6 +142,31 @@ if(enemy&&enemy.impact===t){hitQueued(enemy);if(b.hp<=0){finish(false);return}}
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="heal")){const before=b.hp;b.hp=Math.min(30,b.hp+e.value);if(b.totals)b.totals.healing+=b.hp-before;push("引露治疗 +"+(b.hp-before))}b.pending=b.pending.filter(x=>!(x.tick===t&&x.type==="heal"));
 if(t>=120){finish(false);return}b.tick++}
 function finish(won){clearInterval(timer);timer=null;let result={won,tick:battle.tick,hp:battle.hp,foe:battle.foe.name,log:log.slice(),stats:clone(battle.totals)};battle=null;state.lastResult=result;state.inBattle=false;state.losses+=won?0:1;if(state.losses>=3||state.round>=3){state.completed=true;const meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');if(won&&state.losses<3)meta.wins++;localStorage.setItem(META_KEY,JSON.stringify(meta))}else beginRound();save();render();q("app").insertAdjacentHTML("afterbegin",'<section class="panel"><h3>'+(won?'战斗胜利':'战斗失利')+' · '+esc(result.foe)+'</h3><p>结束 tick '+result.tick+' · 剩余生命 '+result.hp+'</p>'+battleReport(result.stats)+'<details><summary>展开事件日志</summary><pre class="log">'+esc(result.log.join("\n"))+'</pre></details></section>')}
-function renderBattle(){const b=battle;if(!b)return;q("app").innerHTML='<h2>第'+state.round+'战 · 自动交锋</h2><div class="shell"><section class="battlefield"><div class="enemy">'+esc(b.foe.name)+'</div><div class="bar"><i style="width:'+Math.max(0,100*b.foe.hp/FOES[state.round-1].hp)+'%"></i></div><p>敌方生命 '+b.foe.hp+'/'+FOES[state.round-1].hp+' · 护甲 '+b.foe.armor+'</p><p class="intent">'+(b.current?esc(b.current.name)+' · 命中倒计时 '+(b.current.impact-b.tick):'观察敌方起手')+'</p><h2>蛊师气血 '+b.hp+'/30</h2><div class="bar"><i style="width:'+100*b.hp/30+'%"></i></div><p>战斗 tick '+b.tick+' / 120</p><div class="grid">'+b.instances.map(x=>'<div class="chip">'+esc(x.name)+' · '+(x.ready<=b.tick?'就绪':x.ready-b.tick+' tick')+'</div>').join('')+'</div><p class="small">每 tick = 0.5秒；战斗采用确定性结算</p></section><section class="panel"><h3>战斗事件</h3><pre class="log" id="log">'+esc(log.slice(-38).join("\n"))+'</pre><div class="actions"><button onclick="quick()">立即结算</button></div></section></div>';let el=q("log");if(el)el.scrollTop=el.scrollHeight}
+function renderBattle(){
+ const b=battle;if(!b)return;
+ const foe=FOES[state.round-1],remain=b.current?b.current.impact-b.tick:null,shieldValue=b.shields.reduce((n,s)=>n+s.value,0);
+ const enemyAct=b.current?(b.current.type==="feint"&&!b.current.revealed?"轨迹未明 · 变招蓄势":b.current.name+" · "+remain+" tick后命中"):"尚未宣告";
+ const progress=b.current?Math.max(0,Math.min(100,100*(1-remain/b.current.windup))):0;
+ const field=b.foe.id==="boar"?"潮湿岩地":b.foe.id==="swordsman"?"流风断续":"干地微光";
+ const glyph=b.foe.id==="boar"?"兽":b.foe.id==="swordsman"?"斩":"行";
+ const art=b.foe.id==="boar"?"assets/enemies/enemy_iron_hide_boar.png":b.foe.id==="rogue"?"assets/enemies/enemy_sanxiu.png":null;
+ const foeArt=art?'<img class="foe-portrait" alt="'+esc(foe.name)+'立绘" src="'+art+'">':'<div class="foe-crest" aria-hidden="true"><i></i><span>变招</span></div>';
+ const flash=log.slice(-1)[0]||"[0] 战斗准备",recent=log.slice(-5).reverse().map(line=>{
+  const tone=line.includes("命中")?"tone-danger":line.includes("护盾")||line.includes("规避")?"tone-guard":line.includes("→")?"tone-damage":"tone-neutral";
+  return '<div class="event-strip '+tone+'">'+esc(line)+'</div>';
+ }).join("");
+ const instances=b.instances.map(x=>'<div class="battle-gu '+(x.ready<=b.tick?"ready":"cooling")+'"><div class="battle-gu-glyph">'+esc(RUNE_GLYPHS[x.kind]||"蛊")+'</div><div class="battle-gu-copy"><strong>'+esc(x.name)+'</strong><small>'+esc(x.kind)+' · '+(x.ready<=b.tick?"已就绪":x.ready-b.tick+" tick后就绪")+'</small></div><div class="ready-pip"></div></div>').join("");
+ q("app").innerHTML='<div class="combat-title"><div><span class="combat-overline">问真 · 第一阶段 / 第 '+state.round+' 战</span><h2>自动交锋</h2></div><span class="battle-clock">TICK '+String(b.tick).padStart(3,"0")+' <small>/ 120</small></span></div>'+
+ '<div class="combat-shell"><section class="combat-stage enemy-'+esc(b.foe.id)+'"><div class="stage-top"><span>道途 · '+esc(state.school)+'</span><span>'+field+'</span></div>'+
+ '<div class="arena"><div class="arena-light"></div><div class="arena-floor"></div>'+
+ '<div class="combatant foe"><div class="figure-portrait">'+foeArt+'</div><div class="combatant-name">敌 / '+esc(foe.name)+' <small>护甲 '+foe.armor+'</small></div><div class="hp-numbers"><strong>'+b.foe.hp+'</strong><small>/ '+foe.hp+' 气血</small></div><div class="hp-track"><i style="width:'+Math.max(0,100*b.foe.hp/foe.hp)+'%"></i></div></div>'+
+ '<div class="arena-divider"><div class="versus-rune">斗</div><span>自动对决</span></div>'+
+ '<div class="combatant player"><div class="figure-portrait player-figure"><div class="halo"></div><div class="soul-head"></div><div class="soul-body"></div><div class="soul-core"></div></div><div class="combatant-name">我 / '+esc(state.school)+' 蛊师 <small>护盾 '+shieldValue+'</small></div><div class="hp-numbers"><strong>'+b.hp+'</strong><small>/ 30 气血</small></div><div class="hp-track player-track"><i style="width:'+Math.max(0,100*b.hp/30)+'%"></i></div></div>'+
+ '</div><div class="attack-intent '+(b.current?"casting":"")+'"><div class="attack-meta"><span>敌方意图</span><strong>'+esc(enemyAct)+'</strong></div><div class="attack-progress"><i style="width:'+progress+'%"></i></div></div>'+
+ '<div class="focus-event"><small>战场焦点</small><strong>'+esc(flash.replace(/^\[\d+\]\s*/,""))+'</strong></div><div class="stage-bottom"><span>0.5秒 / tick</span><span>'+esc(glyph)+' · 战意未息</span></div></section>'+
+ '<aside class="combat-side"><section class="panel gu-field"><div class="gu-panel-header"><h3>蛊组运转</h3><small>'+b.instances.length+' / 5 出战</small></div><div class="battle-gu-list">'+instances+'</div><div class="battle-progress"><div><small>我方已造成</small><strong>'+b.totals.damageDealt+'</strong></div><div><small>护盾已吸收</small><strong>'+b.totals.shieldAbsorbed+'</strong></div></div></section>'+
+ '<section class="panel battle-notes"><h3>战斗事件</h3><div class="recent-events" aria-live="polite">'+recent+'</div><details class="battle-log-details"><summary>查看完整事件日志</summary><pre class="log" id="log">'+esc(log.join("\n"))+'</pre></details><div class="actions"><button class="primary" onclick="quick()">立即结算</button></div></section></aside></div>';
+ const el=q("log");if(el)el.scrollTop=el.scrollHeight;
+}
 function quick(){clearInterval(timer);timer=null;let guard=130;while(battle&&guard--)step();if(battle)renderBattle()}
 render();
