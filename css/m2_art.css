@@ -159,3 +159,64 @@ summary{cursor:pointer;color:#e4c193}
  .book-footer{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+
+/* M2 visual review iteration B: increase semantic hierarchy and bring decisions into the first viewport. */
+.preflight{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(270px,.75fr);gap:16px;align-items:stretch;margin-bottom:18px}
+.preflight>.panel{margin:0;padding:19px 20px;min-width:0}
+.preflight>.panel:first-child{border-color:#c9ad8170;background:linear-gradient(125deg,#3b3444,#252d3b)}
+.preflight>.panel:last-child{background:radial-gradient(circle at 86% 0%,#a6794548,transparent 54%),linear-gradient(145deg,#403341,#2b2535);border-color:#d4ad7473}
+.preflight>.panel h3{font-size:18px;margin-bottom:7px}
+.preflight>.panel>p{font-size:12px;color:#d5c5c4;margin:6px 0 11px}
+.preflight>.panel .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.preflight>.panel .card{min-height:142px;padding:13px 15px;background:linear-gradient(140deg,#423745,#2b3040);border-color:#9c829071}
+.preflight>.panel .card.selected{background:linear-gradient(135deg,#594353,#373044);border-color:#e8bb8a}
+.preflight>.panel .card .name{font-size:20px}
+.preflight>.panel .card .meta{font-size:12px;margin:3px 0}
+.preflight>.panel .card>p{font-size:11px;margin:3px 0;color:#e6d3c4}
+.preflight>.panel .card button{padding:7px 12px;font-size:12px;margin-top:5px}
+.preflight>.panel:last-child>b{font:600 23px "Noto Serif SC",serif;display:block;margin:10px 0;color:#ffd295}
+.preflight>.panel:last-child>p:last-child{font-size:11px;color:#cfc3bf;border-top:1px solid #d8b78530;padding-top:10px}
+.game-main>p{font-size:14px;color:#d4c8cc}
+.panel{background:linear-gradient(138deg,#3a3042ed,#242b3bf5 65%,#1e2635f8);border-color:#e1b88c61}
+.card{background:linear-gradient(145deg,#3d3346,#282d3f);border-color:#e2b98d55}
+.panel h3{color:#fce2b9}
+.card .name{color:#ffe1b3}
+.meta,.shopitem .meta{color:#d3c6c7}
+p,.small{color:#d6c7cd}
+.card>p{color:#d7c7cb}
+.shopitem{background:linear-gradient(155deg,#453549,#2d2c43 72%,#263343);border-color:#d5b48a70}
+.shopitem .name{display:flex;align-items:center;gap:10px;min-height:42px;padding-right:22px}
+.shopitem .name::before{content:"蛊";display:grid;place-items:center;flex:none;width:40px;height:40px;background:linear-gradient(135deg,#82604e,#383342);border:1px solid #e6c093a8;border-radius:10px 3px 10px 3px;color:#ffe2ab;font:21px "Songti SC",serif;box-shadow:0 3px 15px #120f1b80}
+.shopitem .offer-hint{color:#bcebd4;background:#1a3b3aa3;border-left-color:#8cd4ae}
+.shell>.panel,.shell>div>.panel{border-color:#d4af8863}
+.shell .panel:has(.shopitem){background:linear-gradient(160deg,#393041,#242b39)}
+.slot{background:linear-gradient(105deg,#3d3446,#283344);border-color:#bd9b8070}
+.slot .meta{color:#dbd0cb}
+button{border-color:#c6ab958e;color:#fff0d6}
+button.primary{color:#fff9eb}
+.guide-lines p{color:#d8e9df}
+.opponent-note{color:#ffdaa1}
+.book-footer{color:#aca5ae}
+@media(min-width:1050px){
+ .game-main>h2{margin-top:10px}
+ .preflight{gap:14px}
+ .shell{margin-top:2px}
+}
+@media(max-width:900px){
+ .preflight{grid-template-columns:1fr}
+ .preflight>.panel:first-child{min-height:0}
+ .preflight>.panel:last-child>b{font-size:20px}
+}
+@media(max-width:520px){
+ .preflight{gap:10px;margin-bottom:12px}
+ .preflight>.panel{padding:15px 12px}
+ .preflight>.panel .grid{gap:7px}
+ .preflight>.panel .card{padding:11px 10px;min-height:168px}
+ .preflight>.panel .card .name{font-size:17px}
+ .preflight>.panel .card .meta{font-size:11px}
+ .preflight>.panel .card button{font-size:11px;padding:7px 9px}
+ .preflight>.panel h3{font-size:16px}
+ .shopitem .name::before{width:30px;height:30px;font-size:17px}
+ .shopitem .name{gap:6px;font-size:16px}
+}
