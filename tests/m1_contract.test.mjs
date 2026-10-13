@@ -97,6 +97,20 @@ test('Z103 consumes bind but preserves initial reduction plus extra 2, then shie
   g.run('step()');
   assert.equal(g.run('battle.hp'),28);
 });
+test('synthetic interrupt cancels old hit, reschedules at +6 and grants 12-tick immunity',()=>{
+ const g=harness();g.run('init("百兵");state.equip=[state.equip[1]];startBattle()');
+ for(let i=0;i<=6;i++)g.run('step()');
+ const old=g.run('battle.current.id');
+ assert.equal(g.run('interrupt("test")'),true);
+ assert.equal(g.run('battle.current'),null);
+ assert.equal(g.run('battle.nextDeclare'),13);
+ assert.equal(g.run('battle.interruptImmuneUntil'),19);
+ assert.equal(g.run('battle.shields.filter(s=>s.source.startsWith("B102:")).every(s=>s.until===12)'),true);
+ for(let i=7;i<=13;i++)g.run('step()');
+ assert.notEqual(g.run('battle.current.id'),old);
+ assert.equal(g.run('battle.current.impact'),15);
+ assert.equal(g.run('interrupt("test")'),false);
+});
 test('combat reload only restarts same round and does not mint extra gold or RNG',()=>{
   const a=harness();
   a.run('init("百兵");reroll();startBattle()');
