@@ -37,7 +37,7 @@ test('eight schools can run the full six-fight loop without runtime failure',()=
  }
 });
 test('chapter two preparation persists without duplicated reward on reload',()=>{
- const g=session();g.run('init("百兵");startBattle();quick();startBattle();quick();startBattle();quick()');
+ const g=session();g.run('init("百兵")');for(let i=0;i<3;i++)g.run('startBattle();quick();if(state.pendingSpoils)resolveSpoils("claim")');
  assert.equal(g.run('state.round'),4);
  const gold=g.run('state.gold'),rng=g.run('state.rng'),saved=g.store.get('wenzhen_m2_v1');
  const b=session(saved);assert.equal(b.run('state.round'),4);
