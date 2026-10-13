@@ -5,6 +5,8 @@ const schools={"百兵":["#bfa9f0","#514b85"],"晦明":["#e6c38b","#605078"],"�
 const kinds={"攻":"✦","防":"◇","标":"◎","疗":"✿","辅":"◈","反":"❖","察":"◉"};
 const guData=typeof GU!=="undefined"?GU:[];
 const guByName=new Map(guData.map(g=>[g.name,g]));
+const paintedGuTile={B101:0,T103:1,Y101:2,M102:3,Y102:4,S101:5,G101:6};
+const guAtlasPath="assets/visual/m2_r8_gu_atlas.webp";
 const uri=s=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
 const atlasPath="assets/visual/m2_r8_character_atlas.webp";
 let atlasReady=false;
@@ -77,7 +79,13 @@ function decorate(){
   const g=guByName.get(name);if(!g)continue;
   el.dataset.guPainted=g.id;el.dataset.guKind=g.kind;el.dataset.guSchool=g.school;
   const icon=document.createElement("span");icon.className="m2-gu-illustration";
-  icon.setAttribute("aria-hidden","true");icon.style.backgroundImage='url("'+art(g)+'")';
+  icon.setAttribute("aria-hidden","true");
+  const tile=paintedGuTile[g.id];
+  if(Number.isInteger(tile)){
+    icon.classList.add("m2-r8-gu-painted");
+    icon.dataset.tile=String(tile);
+    icon.style.backgroundImage='url("'+guAtlasPath+'"), url("'+art(g)+'")';
+  }else icon.style.backgroundImage='url("'+art(g)+'")';
   if(el.classList.contains("battle-gu"))el.querySelector(".battle-gu-glyph")?.replaceWith(icon);
   else el.insertBefore(icon,el.firstChild);
  }
