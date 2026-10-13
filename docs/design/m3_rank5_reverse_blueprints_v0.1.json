@@ -1,0 +1,926 @@
+{
+  "meta": {
+    "title": "问真 M3 五转终点反推设计 v0.1",
+    "date": "2026-10-13",
+    "status": "DESIGN_ONLY_NOT_IN_RUNTIME",
+    "owner": "M3_gameplay",
+    "source": "docs/research/library/gu_catalog_v0.6.json",
+    "principle": "5转结果→核心场景与失败→4/3/2/1转功能追溯",
+    "no_auto_import": true,
+    "not_current_economy": true
+  },
+  "endpoints": [
+    {
+      "school": "百兵道",
+      "endpoint_id": "B501",
+      "endpoint_name": "万节藏锋蛊",
+      "rank": 5,
+      "identity": "多节拆招",
+      "ultimate_effect": "每次合法命中后，可在同一实体兵器尚有完好关节时改变下一次攻击角度，连续最多3段",
+      "activation_required": "实体兵胚与完好关节，第一击必须命中",
+      "player_reason": "三段分拆施压，越击越易被缴械",
+      "hard_counter": "兵材被打碎/缴械；无材立即停机",
+      "causal_chain": "击中→折返→变节→保全未损的兵胚",
+      "reverse_ladder": [
+        {
+          "rank": 5,
+          "output": "B501",
+          "output_name": "万节藏锋蛊",
+          "inputs": [
+            {
+              "id": "B401",
+              "name": "百节承锋蛊",
+              "rank": 4
+            },
+            {
+              "id": "B402",
+              "name": "归鞘轮兵蛊",
+              "rank": 4
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "合兵铆",
+              "qty": 3
+            }
+          ],
+          "archive_stone_fee": 290,
+          "source_formula": "F-B-5-01"
+        },
+        {
+          "rank": 4,
+          "output": "B401",
+          "output_name": "百节承锋蛊",
+          "inputs": [
+            {
+              "id": "B301",
+              "name": "游节兵蛊",
+              "rank": 3
+            },
+            {
+              "id": "B302",
+              "name": "回匣刀蛊",
+              "rank": 3
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "击甲铁",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 116,
+          "source_formula": "F-B-4-01"
+        },
+        {
+          "rank": 3,
+          "output": "B301",
+          "output_name": "游节兵蛊",
+          "inputs": [
+            {
+              "id": "B201",
+              "name": "折锋蛊",
+              "rank": 2
+            },
+            {
+              "id": "B202",
+              "name": "骨节兵蛊",
+              "rank": 2
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "藏锋砂",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 46,
+          "source_formula": "F-B-3-01"
+        },
+        {
+          "rank": 2,
+          "output": "B201",
+          "output_name": "折锋蛊",
+          "inputs": [
+            {
+              "id": "B101",
+              "name": "引锋蛊",
+              "rank": 1
+            },
+            {
+              "id": "B102",
+              "name": "守柄蛊",
+              "rank": 1
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "玄铁屑",
+              "qty": 1
+            }
+          ],
+          "archive_stone_fee": 18,
+          "source_formula": "F-B-2-01"
+        }
+      ]
+    },
+    {
+      "school": "晦明道",
+      "endpoint_id": "Y501",
+      "endpoint_name": "烛幽见真蛊",
+      "rank": 5,
+      "identity": "验影揭伪",
+      "ultimate_effect": "同屏存在光源、遮挡体和受影面且敌人确实暴露轮廓时，揭露一次伪装并给予定向攻击窗口",
+      "activation_required": "可追溯光源、受影面、观察记录",
+      "player_reason": "揭伪创造破绽而非直接凭空高伤",
+      "hard_counter": "熄灯/无投影物/封闭光路",
+      "causal_chain": "藏晖→投影→折影→比对→核验",
+      "reverse_ladder": [
+        {
+          "rank": 5,
+          "output": "Y501",
+          "output_name": "烛幽见真蛊",
+          "inputs": [
+            {
+              "id": "Y401",
+              "name": "一灯万影蛊",
+              "rank": 4
+            },
+            {
+              "id": "Y402",
+              "name": "明灭照形蛊",
+              "rank": 4
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "映面晶",
+              "qty": 3
+            }
+          ],
+          "archive_stone_fee": 290,
+          "source_formula": "F-Y-5-01"
+        },
+        {
+          "rank": 4,
+          "output": "Y401",
+          "output_name": "一灯万影蛊",
+          "inputs": [
+            {
+              "id": "Y301",
+              "name": "光隙影蛊",
+              "rank": 3
+            },
+            {
+              "id": "Y302",
+              "name": "明镜照蛊",
+              "rank": 3
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "藏晖砂",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 116,
+          "source_formula": "F-Y-4-01"
+        },
+        {
+          "rank": 3,
+          "output": "Y301",
+          "output_name": "光隙影蛊",
+          "inputs": [
+            {
+              "id": "Y201",
+              "name": "灯影蛊",
+              "rank": 2
+            },
+            {
+              "id": "Y202",
+              "name": "折影蛊",
+              "rank": 2
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "照影银",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 46,
+          "source_formula": "F-Y-3-01"
+        },
+        {
+          "rank": 2,
+          "output": "Y201",
+          "output_name": "灯影蛊",
+          "inputs": [
+            {
+              "id": "Y101",
+              "name": "藏晖蛊",
+              "rank": 1
+            },
+            {
+              "id": "Y102",
+              "name": "投影蛊",
+              "rank": 1
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "灯脂",
+              "qty": 1
+            }
+          ],
+          "archive_stone_fee": 18,
+          "source_formula": "F-Y-2-01"
+        }
+      ]
+    },
+    {
+      "school": "玄牝道",
+      "endpoint_id": "S501",
+      "endpoint_name": "玄牝藏生蛊",
+      "rank": 5,
+      "identity": "活根持续战",
+      "ultimate_effect": "己方真实活根持续存活且得到既有养分时，积累根脉，轮次持续越久可在防护和毒刺间分配存活根",
+      "activation_required": "活体根脉、实际受伤/养分来源",
+      "player_reason": "打持久战成长，转换存活根时舍弃一段防护",
+      "hard_counter": "根系被烧毁/截断或养分枯竭",
+      "causal_chain": "发芽→养根→回根→枝根编织→存生",
+      "reverse_ladder": [
+        {
+          "rank": 5,
+          "output": "S501",
+          "output_name": "玄牝藏生蛊",
+          "inputs": [
+            {
+              "id": "S401",
+              "name": "根脉千结蛊",
+              "rank": 4
+            },
+            {
+              "id": "S402",
+              "name": "春壳万棘蛊",
+              "rank": 4
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "根髓浆",
+              "qty": 3
+            }
+          ],
+          "archive_stone_fee": 290,
+          "source_formula": "F-S-5-01"
+        },
+        {
+          "rank": 4,
+          "output": "S401",
+          "output_name": "根脉千结蛊",
+          "inputs": [
+            {
+              "id": "S301",
+              "name": "回根护体蛊",
+              "rank": 3
+            },
+            {
+              "id": "S302",
+              "name": "蜕刺丛蛊",
+              "rank": 3
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "枯荣粉",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 116,
+          "source_formula": "F-S-4-01"
+        },
+        {
+          "rank": 3,
+          "output": "S301",
+          "output_name": "回根护体蛊",
+          "inputs": [
+            {
+              "id": "S201",
+              "name": "养根蛊",
+              "rank": 2
+            },
+            {
+              "id": "S202",
+              "name": "护蜕蛊",
+              "rank": 2
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "护芽脂",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 46,
+          "source_formula": "F-S-3-01"
+        },
+        {
+          "rank": 2,
+          "output": "S201",
+          "output_name": "养根蛊",
+          "inputs": [
+            {
+              "id": "S101",
+              "name": "含芽蛊",
+              "rank": 1
+            },
+            {
+              "id": "S102",
+              "name": "守根蛊",
+              "rank": 1
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "春息露",
+              "qty": 1
+            }
+          ],
+          "archive_stone_fee": 18,
+          "source_formula": "F-S-2-01"
+        }
+      ]
+    },
+    {
+      "school": "执枢道",
+      "endpoint_id": "Z501",
+      "endpoint_name": "万令有主蛊",
+      "rank": 5,
+      "identity": "合法连令",
+      "ultimate_effect": "只对已标识归属的己方蛊，按可用冷却与条件提交最多3级有序命令；每条独立验印",
+      "activation_required": "已拥有且绑定的蛊、明确标记、合法技能准备态",
+      "player_reason": "通过出招顺序产生组合窗口，不是控制陌生敌蛊",
+      "hard_counter": "原印被封、指令冲突或条件不满足",
+      "causal_chain": "识主→验印→传枢→九令归枢→连令",
+      "reverse_ladder": [
+        {
+          "rank": 5,
+          "output": "Z501",
+          "output_name": "万令有主蛊",
+          "inputs": [
+            {
+              "id": "Z401",
+              "name": "九令归枢蛊",
+              "rank": 4
+            },
+            {
+              "id": "Z402",
+              "name": "明印护主蛊",
+              "rank": 4
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "归信印",
+              "qty": 3
+            }
+          ],
+          "archive_stone_fee": 290,
+          "source_formula": "F-Z-5-01"
+        },
+        {
+          "rank": 4,
+          "output": "Z401",
+          "output_name": "九令归枢蛊",
+          "inputs": [
+            {
+              "id": "Z301",
+              "name": "同主连令蛊",
+              "rank": 3
+            },
+            {
+              "id": "Z302",
+              "name": "封枢换令蛊",
+              "rank": 3
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "索契墨",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 116,
+          "source_formula": "F-Z-4-01"
+        },
+        {
+          "rank": 3,
+          "output": "Z301",
+          "output_name": "同主连令蛊",
+          "inputs": [
+            {
+              "id": "Z201",
+              "name": "验印蛊",
+              "rank": 2
+            },
+            {
+              "id": "Z202",
+              "name": "传枢蛊",
+              "rank": 2
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "副命简",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 46,
+          "source_formula": "F-Z-3-01"
+        },
+        {
+          "rank": 2,
+          "output": "Z201",
+          "output_name": "验印蛊",
+          "inputs": [
+            {
+              "id": "Z101",
+              "name": "识主蛊",
+              "rank": 1
+            },
+            {
+              "id": "Z102",
+              "name": "系令蛊",
+              "rank": 1
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "契纹纸",
+              "qty": 1
+            }
+          ],
+          "archive_stone_fee": 18,
+          "source_formula": "F-Z-2-01"
+        }
+      ]
+    },
+    {
+      "school": "阖辟道",
+      "endpoint_id": "H501",
+      "endpoint_name": "阖辟双门蛊",
+      "rank": 5,
+      "identity": "双标限路",
+      "ultimate_effect": "双方已有两个可验证界标时建立短时通路，允许一次攻击绕开常规路径，再封门暂止一次反击",
+      "activation_required": "两个真实已知界标、通路存在、开启窗口",
+      "player_reason": "阵地准备换跨位出击，关闭时放弃通路",
+      "hard_counter": "界标被毁或两点之间封堵；超时失效",
+      "causal_chain": "认隙→隙门→移门→天门→双门",
+      "reverse_ladder": [
+        {
+          "rank": 5,
+          "output": "H501",
+          "output_name": "阖辟双门蛊",
+          "inputs": [
+            {
+              "id": "H401",
+              "name": "一线天门蛊",
+              "rank": 4
+            },
+            {
+              "id": "H402",
+              "name": "合辟守界蛊",
+              "rank": 4
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "回标钉",
+              "qty": 3
+            }
+          ],
+          "archive_stone_fee": 290,
+          "source_formula": "F-H-5-01"
+        },
+        {
+          "rank": 4,
+          "output": "H401",
+          "output_name": "一线天门蛊",
+          "inputs": [
+            {
+              "id": "H301",
+              "name": "移砾界门蛊",
+              "rank": 3
+            },
+            {
+              "id": "H302",
+              "name": "须臾护扉蛊",
+              "rank": 3
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "封界灰",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 116,
+          "source_formula": "F-H-4-01"
+        },
+        {
+          "rank": 3,
+          "output": "H301",
+          "output_name": "移砾界门蛊",
+          "inputs": [
+            {
+              "id": "H201",
+              "name": "隙门蛊",
+              "rank": 2
+            },
+            {
+              "id": "H202",
+              "name": "时扉蛊",
+              "rank": 2
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "窥孔晶",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 46,
+          "source_formula": "F-H-3-01"
+        },
+        {
+          "rank": 2,
+          "output": "H201",
+          "output_name": "隙门蛊",
+          "inputs": [
+            {
+              "id": "H101",
+              "name": "认隙蛊",
+              "rank": 1
+            },
+            {
+              "id": "H102",
+              "name": "定标蛊",
+              "rank": 1
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "界石",
+              "qty": 1
+            }
+          ],
+          "archive_stone_fee": 18,
+          "source_formula": "F-H-2-01"
+        }
+      ]
+    },
+    {
+      "school": "参同道",
+      "endpoint_id": "T501",
+      "endpoint_name": "参同化育蛊",
+      "rank": 5,
+      "identity": "双工固方",
+      "ultimate_effect": "已验证的两段不同处理工序连续执行成功时，将本局一条固定已有蛊方压缩为单槽能力；流程有失败和残余",
+      "activation_required": "已验证固定配方、两步真实工序、可用工序媒介",
+      "player_reason": "先投资工序获取高效率构筑，不得合成任意技能",
+      "hard_counter": "破炉/工序反序/缺已验证配方",
+      "causal_chain": "试砂→定炉→定相→两仪同炉→化育",
+      "reverse_ladder": [
+        {
+          "rank": 5,
+          "output": "T501",
+          "output_name": "参同化育蛊",
+          "inputs": [
+            {
+              "id": "T401",
+              "name": "两仪同炉蛊",
+              "rank": 4
+            },
+            {
+              "id": "T402",
+              "name": "金砂回胎蛊",
+              "rank": 4
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "余液瓶",
+              "qty": 3
+            }
+          ],
+          "archive_stone_fee": 290,
+          "source_formula": "F-T-5-01"
+        },
+        {
+          "rank": 4,
+          "output": "T401",
+          "output_name": "两仪同炉蛊",
+          "inputs": [
+            {
+              "id": "T301",
+              "name": "同炉定相蛊",
+              "rank": 3
+            },
+            {
+              "id": "T302",
+              "name": "焰砂破胎蛊",
+              "rank": 3
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "伏火砂",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 116,
+          "source_formula": "F-T-4-01"
+        },
+        {
+          "rank": 3,
+          "output": "T301",
+          "output_name": "同炉定相蛊",
+          "inputs": [
+            {
+              "id": "T201",
+              "name": "定炉蛊",
+              "rank": 2
+            },
+            {
+              "id": "T202",
+              "name": "坎离蛊",
+              "rank": 2
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "看胎晶",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 46,
+          "source_formula": "F-T-3-01"
+        },
+        {
+          "rank": 2,
+          "output": "T201",
+          "output_name": "定炉蛊",
+          "inputs": [
+            {
+              "id": "T101",
+              "name": "试砂蛊",
+              "rank": 1
+            },
+            {
+              "id": "T102",
+              "name": "护炉蛊",
+              "rank": 1
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "丹砂",
+              "qty": 1
+            }
+          ],
+          "archive_stone_fee": 18,
+          "source_formula": "F-T-2-01"
+        }
+      ]
+    },
+    {
+      "school": "乘物道",
+      "endpoint_id": "M501",
+      "endpoint_name": "乘物无滞蛊",
+      "rank": 5,
+      "identity": "择媒转击",
+      "ultimate_effect": "先验证风或石的一种传导媒介，之后令一次攻击沿实际存在的可达介质路径传递；切换必须重新验证",
+      "activation_required": "可见的风/石介质、连续传导路径",
+      "player_reason": "环境适配换稳定输出，针对无直线窗口敌人",
+      "hard_counter": "无介质、实墙隔绝、路径中断",
+      "causal_chain": "试流→借风→逐风→乘风→无滞",
+      "reverse_ladder": [
+        {
+          "rank": 5,
+          "output": "M501",
+          "output_name": "乘物无滞蛊",
+          "inputs": [
+            {
+              "id": "M401",
+              "name": "乘风千里蛊",
+              "rank": 4
+            },
+            {
+              "id": "M402",
+              "name": "因地成势蛊",
+              "rank": 4
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "镇浪珠",
+              "qty": 3
+            }
+          ],
+          "archive_stone_fee": 290,
+          "source_formula": "F-M-5-01"
+        },
+        {
+          "rank": 4,
+          "output": "M401",
+          "output_name": "乘风千里蛊",
+          "inputs": [
+            {
+              "id": "M301",
+              "name": "逐风折羽蛊",
+              "rank": 3
+            },
+            {
+              "id": "M302",
+              "name": "地脉传震蛊",
+              "rank": 3
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "细罅铁",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 116,
+          "source_formula": "F-M-4-01"
+        },
+        {
+          "rank": 3,
+          "output": "M301",
+          "output_name": "逐风折羽蛊",
+          "inputs": [
+            {
+              "id": "M201",
+              "name": "借风蛊",
+              "rank": 2
+            },
+            {
+              "id": "M202",
+              "name": "石脉蛊",
+              "rank": 2
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "归羽丝",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 46,
+          "source_formula": "F-M-3-01"
+        },
+        {
+          "rank": 2,
+          "output": "M201",
+          "output_name": "借风蛊",
+          "inputs": [
+            {
+              "id": "M101",
+              "name": "试流蛊",
+              "rank": 1
+            },
+            {
+              "id": "M102",
+              "name": "听风蛊",
+              "rank": 1
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "风羽",
+              "qty": 1
+            }
+          ],
+          "archive_stone_fee": 18,
+          "source_formula": "F-M-2-01"
+        }
+      ]
+    },
+    {
+      "school": "观复道",
+      "endpoint_id": "G501",
+      "endpoint_name": "万象观复蛊",
+      "rank": 5,
+      "identity": "验循先机",
+      "ultimate_effect": "对已连续观察到的单种循环招式，估计其下一次出手窗口并在命中前一次精准化解，额外动作不能被预知",
+      "activation_required": "至少两次真实重复观察、相同敌人、可解释节律",
+      "player_reason": "敌情知识转为特定时机优势；面对变招依旧脆弱",
+      "hard_counter": "变招/隐藏节律/新敌种会使窗口失效",
+      "causal_chain": "辨兆→重息→循痕→观微→观复",
+      "reverse_ladder": [
+        {
+          "rank": 5,
+          "output": "G501",
+          "output_name": "万象观复蛊",
+          "inputs": [
+            {
+              "id": "G401",
+              "name": "观微见著蛊",
+              "rank": 4
+            },
+            {
+              "id": "G402",
+              "name": "周而复始蛊",
+              "rank": 4
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "止妄砂",
+              "qty": 3
+            }
+          ],
+          "archive_stone_fee": 290,
+          "source_formula": "F-G-5-01"
+        },
+        {
+          "rank": 4,
+          "output": "G401",
+          "output_name": "观微见著蛊",
+          "inputs": [
+            {
+              "id": "G301",
+              "name": "三息观机蛊",
+              "rank": 3
+            },
+            {
+              "id": "G302",
+              "name": "回痕截式蛊",
+              "rank": 3
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "回兆简",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 116,
+          "source_formula": "F-G-4-01"
+        },
+        {
+          "rank": 3,
+          "output": "G301",
+          "output_name": "三息观机蛊",
+          "inputs": [
+            {
+              "id": "G201",
+              "name": "重息蛊",
+              "rank": 2
+            },
+            {
+              "id": "G202",
+              "name": "循痕蛊",
+              "rank": 2
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "察步纸",
+              "qty": 2
+            }
+          ],
+          "archive_stone_fee": 46,
+          "source_formula": "F-G-3-01"
+        },
+        {
+          "rank": 2,
+          "output": "G201",
+          "output_name": "重息蛊",
+          "inputs": [
+            {
+              "id": "G101",
+              "name": "辨兆蛊",
+              "rank": 1
+            },
+            {
+              "id": "G102",
+              "name": "听息蛊",
+              "rank": 1
+            }
+          ],
+          "archive_materials": [
+            {
+              "name": "旧年轮",
+              "qty": 1
+            }
+          ],
+          "archive_stone_fee": 18,
+          "source_formula": "F-G-2-01"
+        }
+      ]
+    }
+  ]
+}
