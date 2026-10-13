@@ -282,3 +282,10 @@ test('M3-B Root Puppet heals real damage periodically, but fire DoT suppresses r
  assert.equal(burn.run('log.some(x=>x.includes("火筹灼烧阻断枯根再生"))'),true);
  assert.equal(burn.run('log.some(x=>x.includes("枯根傀儡再生"))'),false);
 });
+
+test('M3 repeated pattern supports existing 记痕蛊 counter only after actual G201 shield absorption',()=>{
+ const g=session();g.run('init("观复");refineGu("G201");startBattle()');
+ g.run('for(let i=0;i<=18&&battle;i++)step()');
+ assert.equal(g.run('log.some(x=>x.includes("记痕反击"))'),true);
+ assert.equal(g.run('battle?.totals.absorbedByInstance&&Object.keys(battle.totals.absorbedByInstance).some(x=>x.startsWith("G201:"))'),true);
+});
