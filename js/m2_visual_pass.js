@@ -53,6 +53,12 @@ function art(g){
  const veins=Array.from({length:6},(_,i)=>`<path d="M100 100 Q${30+i*26} ${25+(seed%17)} ${23+i*31} 14" stroke="${a}" stroke-opacity=".32" stroke-width="1" fill="none" transform="rotate(${i*60} 100 100)"/>`).join("");
  return uri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><radialGradient id="b"><stop stop-color="${b}"/><stop offset="1" stop-color="#131b29"/></radialGradient><radialGradient id="c"><stop stop-color="${a}" stop-opacity=".55"/><stop offset="1" stop-color="${a}" stop-opacity="0"/></radialGradient></defs><rect width="200" height="200" fill="url(#b)"/><circle cx="100" cy="100" r="84" fill="none" stroke="${a}" stroke-opacity=".38"/><circle cx="100" cy="100" r="65" fill="url(#c)"/>${petals}${veins}<g fill="${a}" fill-opacity=".16" stroke="${a}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${motifShapes[motifs[g.id]]||motifShapes.echo}</g><circle cx="100" cy="100" r="7" fill="${a}" opacity=".85"/><path d="M15 45 V15 H45 M155 15 H185 V45 M15 155 V185 H45 M155 185 H185 V155" stroke="${a}" stroke-width="2" fill="none"/></svg>`);
 }
+const guArtCache=new Map();
+function cachedArt(g){
+ let result=guArtCache.get(g.id);
+ if(!result){result=art(g);guArtCache.set(g.id,result)}
+ return result;
+}
 function portrait(){
  return uri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360"><defs><linearGradient id="coat"><stop stop-color="#aab3c0"/><stop offset=".48" stop-color="#52607b"/><stop offset="1" stop-color="#1c293e"/></linearGradient><radialGradient id="glow"><stop stop-color="#f2d7b2" stop-opacity=".46"/><stop offset="1" stop-color="#f2d7b2" stop-opacity="0"/></radialGradient></defs><circle cx="150" cy="170" r="140" fill="url(#glow)"/><path d="M73 349 Q64 252 119 209 L179 207 Q238 261 226 349Z" fill="url(#coat)" stroke="#c4b5a6" stroke-width="2"/><path d="M119 210 L151 294 L180 210 L166 350 H134Z" fill="#e5d1ba" opacity=".84"/><path d="M123 74 Q147 27 186 71 Q205 102 187 204 L213 267 Q156 289 89 262 L106 181Z" fill="#151d31" stroke="#918ca2" stroke-width="2"/><path d="M115 91 Q125 67 153 66 Q189 69 189 107 L181 173 Q165 200 146 189 Q120 174 116 145Z" fill="#ead4bf"/><path d="M114 112 Q150 102 179 74 Q171 43 140 49 Q103 62 104 126Z" fill="#252a40"/><path d="M124 126 l19 -3 M160 123 l20 1" stroke="#494253" stroke-width="3"/><path d="M144 156 Q154 160 163 154" stroke="#a26970" fill="none"/><path d="M183 85 Q210 122 202 206" stroke="#a19ba9" stroke-width="8" fill="none"/><path d="M69 348 Q44 283 94 248 M230 348 Q253 284 204 249" stroke="#c2b5a2" stroke-width="18" fill="none"/><path d="M93 250 Q111 232 122 215 M209 247 Q192 231 179 214" stroke="#e8d9ba" stroke-width="4" fill="none"/><circle cx="154" cy="240" r="7" fill="#e6ca8c"/></svg>`);
 }
@@ -86,8 +92,8 @@ function decorate(){
   if(Number.isInteger(tile)){
     icon.classList.add("m2-r8-gu-painted");
     icon.dataset.tile=String(tile);
-    icon.style.backgroundImage='url("'+guAtlasPath+'"), url("'+art(g)+'")';
-  }else icon.style.backgroundImage='url("'+art(g)+'")';
+    icon.style.backgroundImage='url("'+guAtlasPath+'"), url("'+cachedArt(g)+'")';
+  }else icon.style.backgroundImage='url("'+cachedArt(g)+'")';
   if(el.classList.contains("battle-gu"))el.querySelector(".battle-gu-glyph")?.replaceWith(icon);
   else el.insertBefore(icon,el.firstChild);
  }
