@@ -24,7 +24,7 @@ jobs:
       - name: M1 regression and rules contract
         run: node --test tests/m1*.test.mjs
       - name: Emit fixed-seed golden baseline for reviewer
-        run: node tools/m1_goldens.mjs
+        run: node tools/m1_goldens.mjs --verify
   browser:
     runs-on: ubuntu-latest
     steps:
