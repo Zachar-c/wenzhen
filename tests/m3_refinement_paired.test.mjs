@@ -64,3 +64,22 @@ test('M3 two distinct pathways have measurable opposite consequences (defensive 
  assert.ok(rows.some(r=>r.yGuardHP!==r.yBaseHP),'defensive fusion must change at least one fight outcome or HP');
  assert.ok(rows.some(r=>r.yGuardTick!==r.yBaseTick),'removing direct attack should change pacing');
 });
+
+test('M3 Y201 evaluates a complementary offense, not an isolated defensive Gu alone',()=>{
+ const rows=[];
+ for(const foe of [0,1,2,3,4,5]){
+  function fight(refine){
+   const store=new Map(),dom=new Map();
+   const ctx=vm.createContext({Math,Date,JSON,console,confirm:()=>true,setInterval:()=>1,clearInterval:()=>{},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)},document:{getElementById(id){if(!dom.has(id))dom.set(id,{innerHTML:'',insertAdjacentHTML(){}});return dom.get(id)}}});
+   vm.runInContext(script,ctx);const run=x=>vm.runInContext(x,ctx);
+   run('init("晦明");state.round='+(foe+1)+';state.targetIndex='+foe);
+   if(refine)run('refineGu("Y201")');
+   run('const extra=owned("S101");state.gu.push(extra);state.equip.push(extra.id);startBattle();quick()');
+   return JSON.parse(JSON.stringify(run('state.lastResult')));
+  }
+  const base=fight(false),crafted=fight(true);
+  rows.push({foe:base.foe,baseWon:base.won,craftedWon:crafted.won,baseHP:base.hp,craftedHP:crafted.hp,baseTick:base.tick,craftedTick:crafted.tick});
+ }
+ console.log('M3_Y201_WITH_OFFENSE '+JSON.stringify(rows));
+ assert.equal(rows.length,6);
+});
