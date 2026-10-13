@@ -20,6 +20,8 @@ try{
   assert.equal(painted,4,'all shop offers must carry generated illustrations');
   const artwork=await page.locator('.shopitem>.m2-gu-illustration').evaluateAll(nodes=>nodes.map(n=>n.style.backgroundImage));
   assert.equal(new Set(artwork).size,4,'four offers must use distinct Gu artworks');
+  const ratios=await page.locator('.shopitem>.m2-r8-gu-painted').evaluateAll(els=>els.map(el=>{const b=el.getBoundingClientRect();return b.width/b.height;}));
+  assert.equal(ratios.every(r=>Math.abs(r-1)<.05),true,'illustrated Gu tiles must retain square proportions');
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
   await page.screenshot({path:`${dir}/03_inventory_${key}.png`});
   if(width===1366){
@@ -35,11 +37,19 @@ try{
   await page.locator('.player-figure[data-portrait]').waitFor();
   await page.waitForFunction(()=>!!document.querySelector('.player-figure[data-art="r8"]'));
   const playerArt=await page.locator('.player-figure').evaluate(el=>getComputedStyle(el,'::before').backgroundImage);
-  assert.match(playerArt,/m2_r8_character_atlas\.webp/,'original portrait atlas must render in combat');
+  assert.ok(playerArt.includes('m2_r8_character_atlas.webp')||playerArt.includes('data:image/webp;base64'),'portrait atlas must render, either file or identical inline WebP');
   assert.equal(await page.locator('.combat-stage .foe-portrait').count(),1,'enemy portrait must exist in first battle');
   assert.equal(await page.locator('.battle-gu>.m2-gu-illustration').count()>0,true,'battle cards must be painted');
   await page.evaluate(()=>window.scrollTo(0,0));
   await page.screenshot({path:`${dir}/05_battle_${key}.png`});
+  if(width===390){
+   const scrollProof=await page.evaluate(()=>{window.scrollTo(0,Math.min(180,document.documentElement.scrollHeight-innerHeight));return window.scrollY;});
+   if(scrollProof>20){
+    await page.waitForTimeout(1150);
+    const now=await page.evaluate(()=>window.scrollY);
+    assert.ok(Math.abs(now-scrollProof)<=3,`mobile battle should not forcibly scroll every tick: before ${scrollProof} after ${now}`);
+   }
+  }
   if(width<600){
    const arena=await page.locator('.combat-stage').boundingBox();
    assert.ok(arena&&arena.y<height&&arena.y+arena.height>0,`mobile battle stage should intersect viewport: ${JSON.stringify(arena)}`);

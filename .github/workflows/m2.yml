@@ -5,6 +5,12 @@ on:
   pull_request:
     paths:
       - 'm2.html'
+      - 'css/m2_visual_pass.css'
+      - 'js/m2_visual_pass.js'
+      - 'tools/m2_visual_capture.mjs'
+      - 'tools/m2_visual_events.mjs'
+      - 'tools/m2_visual_perf.mjs'
+      - 'tools/m2_visual_live_gu.mjs'
       - 'js/m2_game.js'
       - 'tests/m2*.test.mjs'
       - 'tests/m3*.test.mjs'
@@ -33,8 +39,18 @@ jobs:
           npx playwright install --with-deps chromium
       - run: node tools/m2_browser_smoke.mjs
       - if: always()
+        run: node tools/m2_visual_capture.mjs
+      - if: always()
+        run: node tools/m2_visual_events.mjs
+      - if: always()
+        run: node tools/m2_visual_perf.mjs
+      - if: always()
+        run: node tools/m2_visual_live_gu.mjs
+      - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: m2-browser-evidence
-          path: artifacts/m2-browser/
+          path: |
+            artifacts/m2-browser/
+            artifacts/m2-visual-pass/
           if-no-files-found: ignore
