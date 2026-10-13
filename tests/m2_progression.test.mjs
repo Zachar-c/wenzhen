@@ -129,3 +129,26 @@ test('invalid slot swap never grants a free Gu or advances round',()=>{
  assert.equal(g.run('state.round'),1);
  assert.equal(g.run('state.pendingSpoils.gu'),'B101');
 });
+
+test('M2 new Gu are not starter Gu and have sourced acquisition',()=>{
+ const g=session();g.run('init("百兵")');
+ assert.equal(g.run('GU.length'),26);
+ assert.equal(g.run('state.gu.some(x=>x.gu==="N201"||x.gu==="N202")'),false);
+ assert.equal(g.run('ENEMY_SPOILS[4].gu'),'N201');
+ assert.equal(g.run('ENEMY_SPOILS[5].gu'),'N202');
+});
+test('裂势 attacks only when enemy has announced its windup',()=>{
+ const g=session();g.run('init("百兵")');
+ g.run('state.equip=[];const x=owned("N201");state.gu.push(x);state.equip=[x.id];startBattle()');
+ g.run('step()');
+ assert.equal(g.run('battle.totals.damageBySource["裂势蛊"]||0'),0);
+ g.run('for(let i=0;i<7;i++)step()');
+ assert.ok(g.run('battle.totals.damageBySource["裂势蛊"]||0')>0);
+});
+test('饮锋 counters only on actual incoming HP damage',()=>{
+ const g=session();g.run('init("百兵")');
+ g.run('state.equip=[];const x=owned("N202");state.gu.push(x);state.equip=[x.id];startBattle()');
+ g.run('for(let i=0;i<9;i++)step()');
+ assert.ok(g.run('battle.totals.damageTaken')>0);
+ assert.ok(g.run('battle.totals.damageBySource["饮锋反击"]||0')>0);
+});
