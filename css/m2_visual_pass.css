@@ -45,3 +45,16 @@
  .combat-side .battle-gu-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
  .combat-side .battle-gu{min-width:0}
 }
+
+/* R4: event-driven combat punctuation, visual only. Single event effect per tick.
+   Each cue has 420ms lifetime and never blocks input. */
+.combat-stage{isolation:isolate}
+.m2-scene-cue{position:absolute;z-index:7;inset:0;overflow:hidden;pointer-events:none;animation:m2-cue-dismiss .44s ease-out both}
+.m2-scene-cue i{position:absolute;display:block;left:50%;top:41%;width:120px;height:120px;border-radius:50%;transform:translate(-50%,-50%) scale(.2);border:2px solid var(--cue,#f3d39e);box-shadow:0 0 28px var(--cue,#f3d39e),inset 0 0 25px #fff2;animation:m2-cue-ring .44s ease-out both}
+.m2-scene-cue b{position:absolute;display:block;left:23%;right:23%;top:39%;height:2px;transform:rotate(-24deg) scaleX(.1);background:linear-gradient(90deg,transparent,var(--cue,#f3d39e),#fff,transparent);filter:drop-shadow(0 0 9px var(--cue,#f3d39e));animation:m2-cue-sweep .38s ease-out both}
+.m2-cue-strike{--cue:#f4bc84}.m2-cue-counter{--cue:#f1899f}.m2-cue-guard{--cue:#91d9d6}.m2-cue-heal{--cue:#a5e6b2}
+.m2-cue-guard b,.m2-cue-heal b{height:3px;transform:rotate(0) scaleX(.1)}
+@keyframes m2-cue-ring{0%{opacity:.12;transform:translate(-50%,-50%) scale(.2)}40%{opacity:.9}100%{opacity:0;transform:translate(-50%,-50%) scale(2.8)}}
+@keyframes m2-cue-sweep{0%{opacity:0;transform:rotate(-24deg) scaleX(.1)}35%{opacity:1}100%{opacity:0;transform:rotate(-24deg) scaleX(1.6)}}
+@keyframes m2-cue-dismiss{0%{opacity:.95}70%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.m2-scene-cue{display:none!important}}
