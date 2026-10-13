@@ -95,7 +95,7 @@ function starters(school){return GU.filter(g=>g.school===school).slice(0,3).map(
 function save(){if(state)localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 function init(school){if(!SCHOOLS.includes(school))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
 function beginRound(){state.round++;state.targetIndex=state.round-1;state.gold+=5;state.free=true;state.rerolls=0;state.seekUsed=false;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school).slice(0,3);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
-const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊"},{id:"G201",inputs:["G101","G102"],label:"辨兆蛊＋听息蛊 → 重息蛊"}];
+const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊",note:"两段追击；失去守柄防护"},{id:"G201",inputs:["G101","G102"],label:"辨兆蛊＋听息蛊 → 重息蛊",note:"重复招式才防护；首招失守"}];
 function availableRecipes(){return M3_RECIPES.filter(r=>r.inputs.every(id=>state.gu.some(g=>g.gu===id)))}
 function refineGu(recipeId){
  if(!state||battle||state.inBattle||state.pendingSpoils||state.completed)return false;
@@ -135,6 +135,7 @@ const SYNERGY=[
  [["T101","T103"],"试砂→火筹：直接增伤"],
  [["M101","M102"],"试流→听风：有风联动"],
  [["G101","G102","G103"],"辨兆→听息→记痕：有效吸收后反击"],
+ [["G201","G103"],"重息→记痕：重复招式格挡成功后反击"],
  [["S101","T103"],"含芽+火筹：两路持续伤害"]
 ];
 const FOE_HINTS={rogue:"散修：2 tick 蓄势；伤害3",boar:"野猪：护甲1；冲撞5，破甲和规避各有用途",swordsman:"刀客：变招在命中前2 tick才公开轨迹",bandit:"悍匪：护甲1、猛击频繁",shadow:"刺客：高频直斩与变招",warden:"铁卫：护甲2、高生命，考验持续输出",rootling:"枯根傀儡：每10 tick 回复3生命；火筹灼烧期间再生被抑制"};
@@ -145,7 +146,7 @@ function buildGuide(){const ids=equippedGu(),active=synergyFor(ids);
 return '<div class="build-compact"><strong>攻击 '+ids.filter(x=>GM[x].kind==="攻").length+'</strong><strong>防护/观察 '+ids.filter(x=>["防","疗","察"].includes(GM[x].kind)).length+'</strong><strong>联动 '+active.length+'</strong></div><div class="guide-lines">'+(active.length?active.map(x=>'<p>◆ '+esc(x)+'</p>').join(''):'<p>尚未形成已识别的联动，可在货架补齐。</p>')+'</div><p class="opponent-note">'+esc(FOE_HINTS[targetFoe().id])+'</p>'}
 function offerHint(gu){const before=new Set(synergyFor(equippedGu())),next=synergyFor([...equippedGu(),gu]).filter(x=>!before.has(x));return '<div class="offer-hint">'+(next.length?'新增联动：'+esc(next[0]):'不新增联动 · 可替换或叠放')+'</div>'}
 function battleReport(stats){if(!stats)return '';const best=Object.entries(stats.damageBySource||{}).sort((a,b)=>b[1]-a[1]);return '<div class="battle-report"><div><small>造成伤害</small><strong>'+stats.damageDealt+'</strong></div><div><small>护盾吸收</small><strong>'+stats.shieldAbsorbed+'</strong></div><div><small>实际失血</small><strong>'+stats.damageTaken+'</strong></div><div><small>实际治疗</small><strong>'+stats.healing+'</strong></div></div><p class="report-sources">主要来源：'+(best.slice(0,3).map(([k,v])=>esc(k)+' '+v).join(' / ')||'无')+'</p>'}
-function refinementPanel(){return '<div class="slot"><b>固定蛊方 · 原蛊会被消耗</b>'+M3_RECIPES.map(r=>'<div class="meta">'+esc(r.label)+'</div><button onclick="refineGu(\''+r.id+'\')" '+(!availableRecipes().includes(r)?'disabled':'')+'>合炼（牺牲原蛊）</button>').join('')+'</div>'}
+function refinementPanel(){return '<div class="slot"><b>固定蛊方 · 原蛊会被消耗</b>'+M3_RECIPES.map(r=>'<div class="meta">'+esc(r.label)+' · '+esc(r.note)+'</div><button onclick="refineGu(\''+r.id+'\')" '+(!availableRecipes().includes(r)?'disabled':'')+'>合炼（牺牲原蛊）</button>').join('')+'</div>'}
 function guCard(inst){const g=GM[inst.gu];return '<div class="slot"><b>'+esc(g.name)+'</b> <span class="chip">'+g.kind+'</span><div class="meta">'+esc(g.description)+' · 冷却'+g.cd+' tick</div><button onclick="equip(\''+inst.id+'\')">'+(state.equip.includes(inst.id)?"卸下":"装备")+'</button><button onclick="sell(\''+inst.id+'\')">出售 +2</button></div>'}
 function setPrepTab(tab){if(!["shop","inventory"].includes(tab))return;document.body.dataset.prepTab=tab;document.querySelectorAll(".prep-tab").forEach(b=>{const active=b.dataset.tab===tab;b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active))})}
 function render(){if(!state){const data=localStorage.getItem(STORE_KEY);if(data){try{state=JSON.parse(data)}catch{localStorage.removeItem(STORE_KEY)}}}
@@ -248,9 +249,9 @@ function renderBattle(){
  const enemyAct=b.current?(b.current.type==="feint"&&!b.current.revealed?"轨迹未明 · 变招蓄势":b.current.name+" · "+remain+" tick后命中"):"尚未宣告";
  const progress=b.current?Math.max(0,Math.min(100,100*(1-remain/b.current.windup))):0;
  const field=b.foe.id==="boar"?"潮湿岩地":b.foe.id==="swordsman"?"流风断续":"干地微光";
- const glyph=b.foe.id==="boar"?"兽":b.foe.id==="swordsman"||b.foe.id==="shadow"?"斩":b.foe.id==="warden"?"镇":"行";
+ const glyph=b.foe.id==="boar"?"兽":b.foe.id==="swordsman"||b.foe.id==="shadow"?"斩":b.foe.id==="warden"?"镇":b.foe.id==="rootling"?"根":"行";
  const art=b.foe.id==="boar"?"assets/enemies/enemy_iron_hide_boar.png":b.foe.id==="rogue"||b.foe.id==="bandit"?"assets/enemies/enemy_sanxiu.png":null;
- const foeArt=art?'<img class="foe-portrait" alt="'+esc(foe.name)+'立绘" src="'+art+'">':'<div class="foe-crest" aria-hidden="true"><i></i><span>变招</span></div>';
+ const foeArt=art?'<img class="foe-portrait" alt="'+esc(foe.name)+'立绘" src="'+art+'">':'<div class="foe-crest" aria-hidden="true"><i></i><span>'+esc(b.foe.id==="warden"?"镇关":b.foe.id==="rootling"?"枯根":"变招") +'</span></div>';
  const flash=log.slice(-1)[0]||"[0] 战斗准备",recent=log.slice(-5).reverse().map(line=>{
   const tone=line.includes("命中")?"tone-danger":line.includes("护盾")||line.includes("规避")?"tone-guard":line.includes("→")?"tone-damage":"tone-neutral";
   return '<div class="event-strip '+tone+'">'+esc(line)+'</div>';

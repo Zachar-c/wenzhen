@@ -289,3 +289,9 @@ test('M3 repeated pattern supports existing 记痕蛊 counter only after actual 
  assert.equal(g.run('log.some(x=>x.includes("记痕反击"))'),true);
  assert.equal(g.run('battle?.totals.absorbedByInstance&&Object.keys(battle.totals.absorbedByInstance).some(x=>x.startsWith("G201:"))'),true);
 });
+
+test('M3 G201+G103 synergy remains visible after two original Gu are consumed',()=>{
+ const g=session();g.run('init("观复");refineGu("G201")');
+ assert.equal(g.run('synergyFor(equippedGu()).includes("重息→记痕：重复招式格挡成功后反击")'),true);
+ assert.equal(g.run('synergyFor(equippedGu()).some(x=>x.includes("辨兆→听息"))'),false);
+});
