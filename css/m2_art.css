@@ -220,3 +220,30 @@ button.primary{color:#fff9eb}
  .shopitem .name::before{width:30px;height:30px;font-size:17px}
  .shopitem .name{gap:6px;font-size:16px}
 }
+
+
+/* Battle protagonist: a diegetic summoned talisman rather than placeholder low-poly human. */
+.player-figure{overflow:visible;perspective:480px}
+.player-figure .soul-head,.player-figure .soul-body{display:none}
+.player-figure::before{
+ content:"道";position:absolute;z-index:2;top:74px;left:50%;transform:translateX(-50%) rotate(-4deg);
+ display:grid;place-items:center;width:156px;height:190px;color:#fff1c8;
+ font:80px/1 "Songti SC","Noto Serif SC",serif;letter-spacing:0;
+ background:
+ radial-gradient(ellipse at 50% 45%,rgba(250,213,150,.30),transparent 63%),
+ linear-gradient(165deg,rgba(89,77,102,.86),rgba(36,59,65,.97));
+ border:1px solid #e4c68da6;border-radius:48% 48% 36% 36% / 28% 28% 48% 48%;
+ box-shadow:0 0 0 5px #a7cdbb12,0 0 0 11px #dfc18c12,0 0 45px #b8dfd04d,inset 0 1px 25px #f4cb9870;
+ text-shadow:0 0 22px #f9dbaaab,0 4px 5px #171821;
+}
+.player-figure .halo{top:52px;width:220px;height:220px;border:1px dashed #e6ca96a6;box-shadow:0 0 0 14px #d5bc7614,0 0 0 27px #bbd8c40d,0 0 35px #e4c18835}
+.player-figure .halo::before,.player-figure .halo::after{
+ content:"";position:absolute;inset:23px;border:1px solid #b1e2cb6e;border-radius:50%;
+}
+.player-figure .halo::after{inset:-26px;border:1px dotted #f5c9937a;transform:rotate(18deg)}
+.player-figure .soul-core{z-index:3;top:230px;left:50%;width:16px;height:16px;box-shadow:0 0 20px 7px #e7dca39c}
+@media(max-width:520px){
+ .player-figure::before{top:40px;width:104px;height:134px;font-size:52px}
+ .player-figure .halo{top:28px;width:145px;height:145px}
+ .player-figure .soul-core{top:156px;width:12px;height:12px}
+}
