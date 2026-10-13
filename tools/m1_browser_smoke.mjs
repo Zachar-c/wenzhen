@@ -18,6 +18,8 @@ try{
   if(i===0){
    await page.screenshot({path:output+'/m1_shop_desktop.png',fullPage:true});
    await page.setViewportSize({width:390,height:844});
+   const separated=await page.locator('header').evaluate(h=>{const a=h.children[0].getBoundingClientRect(),b=h.children[1].getBoundingClientRect();return a.bottom<=b.top||a.right<=b.left});
+   assert.equal(separated,true,'mobile title must not overlap status badges');
    await page.screenshot({path:output+'/m1_shop_mobile.png',fullPage:true});
    await page.setViewportSize({width:1280,height:800});
   }
