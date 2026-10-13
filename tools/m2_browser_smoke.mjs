@@ -15,11 +15,14 @@ try{
   await page.getByRole('button',{name:'选择道途'}).nth(i).click();
   assert.match(await page.locator('#status').innerText(),/13 金币/);
   assert.equal(await page.locator('.shopitem').count(),4);
+  assert.equal(await page.locator('.preflight').count(),1,'one compact enemy-intelligence strip');
+  assert.equal(await page.locator('.book-header').count(),1,'M2 custom header must load');
   if(i===0){
    await page.screenshot({path:output+'/m2_shop_desktop.png',fullPage:true});
    await page.setViewportSize({width:390,height:844});
    const separated=await page.locator('header').evaluate(h=>{const a=h.children[0].getBoundingClientRect(),b=h.children[1].getBoundingClientRect();return a.bottom<=b.top||a.right<=b.left});
    assert.equal(separated,true,'mobile title must not overlap status badges');
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true,'M2 mobile shop must not overflow');
    await page.screenshot({path:output+'/m2_shop_mobile.png',fullPage:true});
    await page.setViewportSize({width:1280,height:800});
   }
