@@ -106,6 +106,20 @@ try{
     assert.match(await craft.locator('#app').innerText(),/折锋回刺|造成伤害/);
     await craftCtx.close();
   }
+  if(i===0){
+    const second=await browser.newContext({viewport:{width:1366,height:768}});
+    const yp=await second.newPage();
+    await yp.goto(new URL('../m2.html',import.meta.url).href);
+    await yp.getByRole('button',{name:'选择道途'}).nth(1).click();
+    await yp.getByRole('button',{name:/合炼（牺牲原蛊）/}).click();
+    assert.equal(await yp.evaluate(()=>state.gu.some(g=>g.gu==="Y201")),true);
+    assert.equal(await yp.evaluate(()=>state.gu.some(g=>g.gu==="Y101"||g.gu==="Y102")),false);
+    await yp.getByRole('button',{name:/迎战/}).click();
+    assert.equal(await yp.locator('.combat-stage').count(),1);
+    await yp.getByRole('button',{name:'立即结算'}).click();
+    assert.match(await yp.locator('#app').innerText(),/造成伤害|护盾吸收/);
+    await second.close();
+  }
   // Genuine purchase/equipment interaction through buttons, not JS fixture injection.
   await page.getByRole('button',{name:'购买'}).last().click();
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
