@@ -94,7 +94,7 @@ try{
     const craft=await craftCtx.newPage();
     await craft.goto(new URL('../m2.html',import.meta.url).href);
     await craft.getByRole('button',{name:'选择道途'}).first().click();
-    assert.equal(await craft.locator('button[onclick="refineGu(\\\'B201\\\')"]').isEnabled(),true);
+    assert.equal(await craft.locator('button[onclick*="B201"]').isEnabled(),true);
     await craft.getByRole('button',{name:/合炼（牺牲原蛊）/}).click();
     assert.equal(await craft.evaluate(()=>state.gu.some(x=>x.gu==="B101"||x.gu==="B102")),false);
     assert.equal(await craft.evaluate(()=>state.gu.filter(x=>x.gu==="B201").length),1);
@@ -111,7 +111,7 @@ try{
     const yp=await second.newPage();
     await yp.goto(new URL('../m2.html',import.meta.url).href);
     await yp.getByRole('button',{name:'选择道途'}).nth(1).click();
-    await yp.locator('button[onclick="refineGu(\\\'Y201\\\')"]').click();
+    await yp.locator('button[onclick*="Y201"]').click();
     assert.equal(await yp.evaluate(()=>state.gu.some(g=>g.gu==="Y201")),true);
     assert.equal(await yp.evaluate(()=>state.gu.some(g=>g.gu==="Y101"||g.gu==="Y102")),false);
     await yp.getByRole('button',{name:/迎战/}).click();
