@@ -36,6 +36,40 @@ try{
    await page.screenshot({path:output+'/m2_shop_mobile.png',fullPage:true});
    await page.setViewportSize({width:1280,height:800});
   }
+  if(i===0){
+    // Stress-only fixture: full Gu inventory, not part of the normal eight-school playthrough.
+    const stress=await browser.newContext({viewport:{width:1366,height:768}});
+    const pg=await stress.newPage();
+    await pg.goto(new URL('../m2.html',import.meta.url).href);
+    await pg.getByRole('button',{name:'选择道途'}).first().click();
+    await pg.evaluate(()=>{
+      while(state.gu.length<12)state.gu.push(owned('B101'));
+      save();render();
+    });
+    await pg.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
+    assert.equal(await pg.locator('.shell .slot').count()>=12,true,'twelve Gu instances must remain rendered');
+    const layout=await pg.evaluate(()=>{
+      const doc=document.documentElement;
+      const content=document.querySelector('.shell>div:first-child>section:nth-child(2)');
+      const last=content.querySelector('.slot:last-of-type');
+      const panel=content.getBoundingClientRect();
+      return {whole:doc.scrollHeight<=innerHeight+2,
+        x:doc.scrollWidth<=innerWidth+2,
+        scrollable:content.scrollHeight>content.clientHeight,
+        last:!!last, panelHeight:panel.height};
+    });
+    assert.equal(layout.whole,true,'full 12-Gu inventory must not scroll entire desktop document');
+    assert.equal(layout.x,true,'full inventory must not overflow horizontally');
+    assert.equal(layout.scrollable,true,'full inventory needs bounded inner scrolling');
+    const lastEquip=pg.getByRole('button',{name:'装备'}).last();
+    await lastEquip.scrollIntoViewIfNeeded();
+    await lastEquip.click();
+    assert.equal(await pg.evaluate(()=>state.equip.length),4,'last inventory entry must be operable');
+    await pg.screenshot({path:output+'/m2_inventory_full_1366x768.png'});
+    await pg.getByRole('tab',{name:/交易 · 商店/}).click();
+    assert.equal(await pg.locator('.shopitem').count(),4,'shop remains available after full-inventory tab');
+    await stress.close();
+  }
   // Genuine purchase/equipment interaction through buttons, not JS fixture injection.
   await page.getByRole('button',{name:'购买'}).last().click();
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
