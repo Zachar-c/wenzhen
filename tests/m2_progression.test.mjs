@@ -172,3 +172,13 @@ test('M2 research Gu remains nonstarter but is in shop offer population',()=>{
  assert.equal(g.run('GU.some(x=>x.id==="G112")'),true);
  assert.equal(g.run('GM.G112.school'),'观复');
 });
+
+test('知几蛊 does not trigger against alternating sword feints, even after many cycles',()=>{
+ const g=session();g.run('init("观复");startBattle();quick();resolveSpoils("claim")');
+ assert.equal(g.run('state.round'),2);
+ assert.equal(g.run('chooseTarget(2)'),true);
+ g.run('state.equip=[];const x=owned("G112");state.gu.push(x);state.equip=[x.id];startBattle()');
+ g.run('for(let i=0;i<65&&battle;i++)step()');
+ const dmg=g.run('battle?.totals.damageBySource["知几蛊"]||state.lastResult?.stats.damageBySource["知几蛊"]||0');
+ assert.equal(dmg,0,'alternating different declared moves must not trigger the repeated-move Gu');
+});
