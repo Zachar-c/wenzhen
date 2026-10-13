@@ -95,7 +95,7 @@ if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())co
 if(x.gu==="H102"){const gap=get("gap");if(gap){bonus=2;b.states=b.states.filter(s=>s!==gap)}}
 if(x.gu==="T103"){const sand=get("sand");if(sand){bonus=2;b.states=b.states.filter(s=>s!==sand)}}
 if(x.gu==="M102"){const flow=get("flow");if(flow){bonus=2;b.states=b.states.filter(s=>s!==flow)}}
-if(x.gu==="B101"&&has("weak"))bonus+=2;cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3})[x.gu],GM[x.gu].name,{bonus});
+cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3})[x.gu],GM[x.gu].name,{bonus});
 if((x.gu==="S101"||x.gu==="T103")&&b.foe.hp>0)mark("dot",x.instance,5,1,{kind:x.gu,next:[t+2,t+4]});
 if(x.gu==="Z102"&&b.foe.hp>0)mark("bind",x.instance,8);
 if(x.gu==="H102"&&b.foe.hp>0)mark("beacon",x.instance,10);
