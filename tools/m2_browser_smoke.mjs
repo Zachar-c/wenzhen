@@ -117,7 +117,7 @@ try{
     assert.equal(await observer.evaluate(()=>state.gu.filter(x=>x.gu==="G201").length),1);
     assert.equal(await observer.evaluate(()=>state.gu.some(x=>x.gu==="G101"||x.gu==="G102")),false);
     assert.equal(await observer.evaluate(()=>state.equip.length),2);
-    await observer.screenshot({path:output+'/m3_observation_recipe_1366.png'});
+    await observer.waitForTimeout(550); // UI entry animation must settle before visual evidence.\n    await observer.screenshot({path:output+'/m3_observation_recipe_1366.png'});
     await observer.getByRole('button',{name:/迎战/}).click();
     await observer.getByRole('button',{name:'立即结算'}).click();
     assert.match(await observer.locator('#app').innerText(),/造成伤害|护盾吸收/);
@@ -133,7 +133,7 @@ try{
     await root.locator('.preflight .card').filter({hasText:'枯根傀儡'}).getByRole('button',{name:/追猎此敌/}).click();
     assert.equal(await root.evaluate(()=>targetFoe().id),'rootling');
     assert.match(await root.locator('#app').innerText(),/火筹灼烧期间/);
-    await root.screenshot({path:output+'/m3_rootling_hunt_1366.png'});
+    await root.waitForTimeout(550); // Avoid capturing panels mid fade-in.\n    await root.screenshot({path:output+'/m3_rootling_hunt_1366.png'});
     await root.getByRole('button',{name:/迎战/}).click();
     await root.getByRole('button',{name:'立即结算'}).click();
     assert.match(await root.locator('#app').innerText(),/造成伤害|护盾吸收/);
