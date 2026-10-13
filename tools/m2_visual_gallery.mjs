@@ -12,7 +12,7 @@ try{
   const escValue=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   document.body.removeAttribute('data-prep-tab');
   const cards=GU.map(g=>'<div class="shopitem card"><div class="name">'+escValue(g.name)+'</div><div class="meta">'+escValue(g.school)+' · '+escValue(g.kind)+'</div><div class="offer-hint">'+escValue(g.description)+'</div><div class="gold">'+escValue(g.id)+'</div></div>').join('');
-  document.querySelector('#app').innerHTML='<h2>美术验收 · 26 只现役蛊</h2><p>七只匹配插画候选，其余使用可追溯 SVG；以下图集仅为测试专用渲染。</p><div class="grid m2-gallery">'+cards+'</div>';
+  document.querySelector('#app').innerHTML='<h2>美术验收 · '+GU.length+' 只现役蛊</h2><p>七只匹配插画候选，其余使用可追溯 SVG；以下图集仅为测试专用渲染。</p><div class="grid m2-gallery">'+cards+'</div>';
   document.documentElement.style.cssText+='height:auto;overflow:auto';
   document.body.style.cssText+='height:auto;display:block;overflow:auto';
   document.querySelector('#app').style.cssText+='height:auto;max-height:none;overflow:visible';
