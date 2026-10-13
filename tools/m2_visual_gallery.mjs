@@ -1,4 +1,4 @@
-// Browser-rendered audit wall: 26 actual M2 Gu IDs, not a fictional card list.
+// Browser-rendered audit wall: all Gu IDs in the current M2 runtime, not a fixed historical list.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {chromium} from 'playwright';
@@ -25,6 +25,7 @@ try{
  });
  await page.addStyleTag({content:'.m2-gallery{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.m2-gallery .shopitem{min-height:190px;grid-template-columns:96px minmax(0,1fr)}.m2-gallery .shopitem>.m2-gu-illustration{width:96px;min-height:120px}.m2-gallery .shopitem .name{font-size:16px}.m2-gallery .offer-hint{font-size:11px}.m2-gallery .shopitem .meta{font-size:12px}'});
  const total=await page.evaluate(()=>GU.length);
+ assert.ok(total>=26,'M2 currently contains at least the original 26 Gu; audit runtime rather than hard-code it');
  const ids=await page.evaluate(()=>GU.map(g=>g.id));
  assert.equal(manifest.gu.tiles.every(x=>ids.includes(x.id)),true,'candidate tile IDs must all be active Gu');
  await page.waitForFunction(expected=>document.querySelectorAll('.m2-gallery .shopitem[data-gu-painted]').length===expected,total);
@@ -33,7 +34,8 @@ try{
  assert.equal(new Set(names).size,total);
  const atlasGood=await page.evaluate(()=>Promise.all(['assets/visual/m2_r8_character_atlas.webp','assets/visual/m2_r8_gu_atlas.webp'].map(src=>new Promise(ok=>{let image=new Image();image.onload=()=>ok(image.naturalWidth>0);image.onerror=()=>ok(false);image.src=src}))));
  assert.deepEqual(atlasGood,[true,true],'both painterly art files must decode offline');
- await page.screenshot({path:output+'/07_gu_26_real_chromium_1920x1080.png',fullPage:true});
+ await page.screenshot({path:output+'/07_gu_current_real_chromium_1920x1080.png',fullPage:true});
+ fs.writeFileSync(output+'/gu_gallery_inventory.json',JSON.stringify({total,ids,painted:manifest.gu.tiles.map(t=>t.id),fallback:ids.filter(id=>!manifest.gu.tiles.some(t=>t.id===id))},null,2));
  assert.deepEqual(errors,[],'gallery JS errors');
  console.log('M2_ART_GALLERY_OK '+names.length+' current Gu, 7 painted, 2 decoded atlases');
 }finally{await browser.close()}
