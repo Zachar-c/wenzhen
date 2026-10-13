@@ -36,8 +36,10 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
       - run: node tools/m2_browser_smoke.mjs
-      - run: node tools/m2_visual_capture.mjs
-      - run: node tools/m2_visual_gallery.mjs
+      - if: always()
+        run: node tools/m2_visual_capture.mjs
+      - if: always()
+        run: node tools/m2_visual_gallery.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:
