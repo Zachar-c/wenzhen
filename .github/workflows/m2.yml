@@ -9,6 +9,7 @@ on:
       - 'tests/m2*.test.mjs'
       - 'tests/m3*.test.mjs'
       - 'tools/m2_browser_smoke.mjs'
+      - 'tools/m3_rank5_browser_smoke.mjs'
       - '.github/workflows/m2.yml'
 jobs:
   test:
@@ -32,9 +33,16 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
       - run: node tools/m2_browser_smoke.mjs
+      - run: node tools/m3_rank5_browser_smoke.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: m2-browser-evidence
           path: artifacts/m2-browser/
+          if-no-files-found: ignore
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m3-browser-evidence
+          path: artifacts/m3-browser/
           if-no-files-found: ignore
