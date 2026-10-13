@@ -132,7 +132,7 @@ test('invalid slot swap never grants a free Gu or advances round',()=>{
 
 test('M2 new Gu are not starter Gu and have sourced acquisition',()=>{
  const g=session();g.run('init("百兵")');
- assert.equal(g.run('GU.length'),28);
+ assert.equal(g.run('GU.length'),29);
  assert.equal(g.run('state.gu.some(x=>x.gu==="N201"||x.gu==="N202")'),false);
  assert.equal(g.run('ENEMY_SPOILS[4].gu'),'N201');
  assert.equal(g.run('ENEMY_SPOILS[5].gu'),'N202');
@@ -242,4 +242,26 @@ test('M3 return strike occurs on a later tick and has a real combat source',()=>
  assert.equal(g.run('battle.totals.damageBySource["折锋回刺"]||0'),0);
  g.run('for(let n=0;n<8&&battle;n++)step()');
  assert.ok(g.run('battle?.totals.damageBySource["折锋回刺"]||state.lastResult?.stats.damageBySource["折锋回刺"]||0')>0);
+});
+
+test('Library Y201 fusion consumes light attack+projection defense and cannot be purchased',()=>{
+ const g=session();g.run('init("晦明")');
+ assert.equal(g.run('availableRecipes().some(r=>r.id==="Y201")'),true);
+ assert.equal(g.run('refineGu("Y201")'),true);
+ assert.equal(g.run('state.gu.filter(g=>["Y101","Y102"].includes(g.gu)).length'),0);
+ assert.equal(g.run('state.gu.filter(g=>g.gu==="Y201").length'),1);
+ assert.equal(g.run('state.equip.length'),2);
+ assert.equal(g.run('state.gold'),13);
+ assert.equal(g.run('seekGu("Y201")'),false);
+ assert.equal(g.run('state.shelf.some(x=>x?.gu==="Y201")'),false);
+ assert.equal(g.run('refineGu("Y201")'),false);
+});
+test('灯影 protects only after a real revealed attack, and is disabled when light is covered',()=>{
+ const g=session();g.run('init("晦明");refineGu("Y201");startBattle()');
+ g.run('for(let n=0;n<7;n++)step()');
+ assert.ok(g.run('battle.current?.evade')>=6);
+ assert.ok(g.run('log.some(x=>x.includes("灯影依明光"))'));
+ const dark=session();dark.run('init("晦明");refineGu("Y201");startBattle()');
+ dark.run('battle.states.push({type:"shade",instance:"synthetic",until:100,used:false,attackUsed:false});for(let n=0;n<7;n++)step()');
+ assert.equal(dark.run('log.some(x=>x.includes("灯影依明光"))'),false);
 });
