@@ -7,7 +7,7 @@ const script=fs.readFileSync(new URL('../js/m2_game.js',import.meta.url),'utf8')
 function session(foeIndex,refine,seed=1729){
  const store=new Map(),dom=new Map();
  const sandbox={Math,Date,JSON,console,confirm:()=>true,setInterval:()=>1,clearInterval:()=>{},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)},document:{getElementById(id){if(!dom.has(id))dom.set(id,{innerHTML:'',scrollTop:0,insertAdjacentHTML(){}});return dom.get(id)}}};
- const ctx=vm.createContext(sandbox);
+ const ctx=vm.createContext(sandbox);vm.runInContext(script,ctx);
  const run=s=>vm.runInContext(s,ctx);
  run('init("百兵")');
  run('state.seed='+seed+';state.rng='+seed+';state.targetIndex='+foeIndex);
@@ -31,7 +31,7 @@ test('M3 first recipe yields a genuinely different damage/defense pattern agains
 });
 test('refining after pre-equipping duplicates consumes only one of each component',()=>{
  const store=new Map(),dom=new Map();const ctx=vm.createContext({Math,Date,JSON,console,confirm:()=>true,setInterval:()=>1,clearInterval:()=>{},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)},document:{getElementById(id){if(!dom.has(id))dom.set(id,{innerHTML:'',insertAdjacentHTML(){}});return dom.get(id)}}});
- const run=x=>vm.runInContext(x,ctx);
+ vm.runInContext(script,ctx);const run=x=>vm.runInContext(x,ctx);
  run('init("百兵");state.gu.push(owned("B101"));state.gu.push(owned("B102"));');
  const before=run('state.gu.length');
  assert.equal(run('refineGu("B201")'),true);
