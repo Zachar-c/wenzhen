@@ -18,6 +18,16 @@ try{
   assert.equal(await page.locator('.preflight').count(),1,'one compact enemy-intelligence strip');
   assert.equal(await page.locator('.book-header').count(),1,'M2 custom header must load');
   if(i===0){
+    await page.setViewportSize({width:1366,height:768});
+    await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
+    assert.equal(await page.locator('body').getAttribute('data-prep-tab'),'inventory');
+    assert.equal(await page.locator('.shell>div:first-child>section:nth-child(2)').isVisible(),true);
+    await page.getByRole('tab',{name:/交易 · 商店/}).click();
+    assert.equal(await page.locator('.shell>div:first-child>section:nth-child(1)').isVisible(),true);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollHeight<=window.innerHeight+2),true,'1366x768 game shell must not require document scrolling');
+    await page.setViewportSize({width:1280,height:800});
+  }
+  if(i===0){
    await page.screenshot({path:output+'/m2_shop_desktop.png',fullPage:true});
    await page.setViewportSize({width:390,height:844});
    const separated=await page.locator('header').evaluate(h=>{const a=h.children[0].getBoundingClientRect(),b=h.children[1].getBoundingClientRect();return a.bottom<=b.top||a.right<=b.left});
