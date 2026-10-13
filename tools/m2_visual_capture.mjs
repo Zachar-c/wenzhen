@@ -33,6 +33,9 @@ try{
   if(width===1366){await page.reload();await page.getByRole('tab',{name:/交易 · 商店/}).click()}
   await page.getByRole('button',{name:/迎战/}).click();
   await page.locator('.player-figure[data-portrait]').waitFor();
+  await page.waitForFunction(()=>!!document.querySelector('.player-figure[data-art="r8"]'));
+  const playerArt=await page.locator('.player-figure').evaluate(el=>getComputedStyle(el,'::before').backgroundImage);
+  assert.match(playerArt,/m2_r8_character_atlas\.webp/,'original portrait atlas must render in combat');
   assert.equal(await page.locator('.combat-stage .foe-portrait').count(),1,'enemy portrait must exist in first battle');
   assert.equal(await page.locator('.battle-gu>.m2-gu-illustration').count()>0,true,'battle cards must be painted');
   await page.evaluate(()=>window.scrollTo(0,0));
