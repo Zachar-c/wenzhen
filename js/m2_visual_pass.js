@@ -6,6 +6,11 @@ const kinds={"攻":"✦","防":"◇","标":"◎","疗":"✿","辅":"◈","反":"
 const guData=typeof GU!=="undefined"?GU:[];
 const guByName=new Map(guData.map(g=>[g.name,g]));
 const uri=s=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
+const atlasPath="assets/visual/m2_r8_character_atlas.webp";
+let atlasReady=false;
+const atlasProbe=new Image();
+atlasProbe.onload=()=>{atlasReady=true;decorate();};
+atlasProbe.src=atlasPath;
 // Distinct silhouettes by actual Gu ID; illustrative vocabulary only, not new rules.
 const motifs={
  B101:"blade",B102:"shield",B103:"blade",Y101:"moth",Y102:"mirror",Y103:"lantern",
@@ -79,12 +84,20 @@ function decorate(){
  const player=app.querySelector(".player-figure");if(player&&!player.dataset.portrait){
   player.dataset.portrait="true";player.style.setProperty("--cultivator-portrait",'url("'+portrait()+'")');
  }
+ if(player&&atlasReady)player.dataset.art="r8";
  const stage=app.querySelector(".combat-stage");
  const crest=stage?.querySelector(".foe-crest");
  if(crest){
    const foeId=(stage.className.match(/enemy-([a-z]+)/)||[])[1];
    const source=foePortrait(foeId);
-   if(source){
+   if(atlasReady&&["swordsman","shadow","warden"].includes(foeId)){
+     const panel=document.createElement("div");
+     panel.className="foe-portrait m2-r8-foe-portrait";
+     panel.dataset.foe=foeId;
+     panel.setAttribute("role","img");
+     panel.setAttribute("aria-label","敌方人物半身插画");
+     crest.replaceWith(panel);
+   }else if(source){
      const img=document.createElement("img");
      img.className="foe-portrait m2-foe-fallback";
      img.alt="敌方人物剪影";
