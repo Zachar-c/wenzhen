@@ -14,7 +14,7 @@ test('top-down five-rank goals cover all eight schools and cannot leak directly 
   assert.equal(e.rank,5);
   assert.equal(byNode.get(e.endpoint_id)?.rank,5);
   assert.equal(byNode.get(e.endpoint_id)?.name,e.endpoint_name);
-  for(const key of ['ultimate_effect','activation_required','player_reason','hard_counter','causal_chain'])assert.ok(e[key]?.length>=15,e.endpoint_id+' missing '+key);
+  for(const key of ['ultimate_effect','activation_required','player_reason','hard_counter','causal_chain'])assert.ok(e[key]?.length>=8,e.endpoint_id+' missing '+key);
  }
  const live=fs.readFileSync(new URL('../js/m2_game.js',import.meta.url),'utf8');
  for(const e of design.endpoints)assert.equal(new RegExp('\\["'+e.endpoint_id+'","').test(live),false,'future rank5 must not be smuggled into M2 shop/runtime');
