@@ -64,3 +64,23 @@ test('M3 B201 cost/benefit persists across additional Gu synergies and enemy arm
  assert.ok(results.some(x=>x.refinedTick<x.baseTick),'refinement retains at least one speed advantage');
  assert.ok(results.some(x=>x.baseHP>x.refinedHP),'refinement retains real survivability cost');
 });
+
+test('M3 G201 repeated-pattern fusion has an evidenced payoff and a first-attack vulnerability',()=>{
+ const rows=[];
+ for(const foe of [0,1,2,3,4,5]){
+  function fight(refine,extra){
+   const store=new Map(),dom=new Map(),ctx=vm.createContext({Math,Date,JSON,console,confirm:()=>true,setInterval:()=>1,clearInterval:()=>{},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)},document:{getElementById(id){if(!dom.has(id))dom.set(id,{innerHTML:'',insertAdjacentHTML(){}});return dom.get(id)}}});
+   vm.runInContext(script,ctx);const run=x=>vm.runInContext(x,ctx);
+   run('init("观复");state.round='+(foe+1)+';state.targetIndex='+foe);
+   if(refine)run('refineGu("G201")');
+   if(extra)run('{const inst=owned("S101");state.gu.push(inst);state.equip.push(inst.id)}');
+   run('startBattle();quick()');
+   return JSON.parse(JSON.stringify(run('state.lastResult')));
+  }
+  const old=fight(false,true),crafted=fight(true,true),noExtra=fight(true,false);
+  rows.push({foe:old.foe,oldWon:old.won,craftedWon:crafted.won,oldHP:old.hp,craftedHP:crafted.hp,oldTick:old.tick,craftedTick:crafted.tick,unassistedHP:noExtra.hp});
+ }
+ console.log('M3_G201_PAIRED '+JSON.stringify(rows));
+ assert.equal(new Set(rows.map(x=>x.foe)).size,6);
+ assert.ok(rows.some(x=>x.oldHP!==x.craftedHP||x.oldTick!==x.craftedTick),'fusion must change encounters');
+});
