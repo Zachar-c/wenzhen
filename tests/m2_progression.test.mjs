@@ -13,7 +13,7 @@ function session(saved){
 const schools=['百兵','晦明','玄牝','执枢','阖辟','参同','乘物','观复'];
 test('M2 is separate from M1 with six opponents and two acts',()=>{
  const g=session();g.run('init("百兵")');
- assert.equal(g.run('FOES.length'),6);
+ assert.equal(g.run('FOES.length'),7);
  assert.equal(g.run('TOTAL_ROUNDS'),6);
  assert.equal(g.run('state.gold'),13);
  assert.equal(g.store.has('wenzhen_m1_v1'),false);
@@ -263,4 +263,22 @@ test('重息蛊 protects only against a truly repeated revealed enemy move',()=>
  const b=session();b.run('init("观复");refineGu("G201");state.round=3;state.targetIndex=2;startBattle()');
  b.run('for(let i=0;i<40&&battle;i++)step()');
  assert.equal(b.run('log.some(x=>x.includes("重息辨认旧式"))'),false,'alternating sword feint sequence may not be anticipated');
+});
+
+test('M3-B optional Root Puppet hunt is reachable on final round without adding fake nodes',()=>{
+ const g=session();g.run('init("百兵")');
+ g.run('state.round=6;render()');
+ assert.equal(g.run('HUNTS[5].includes(6)'),true);
+ assert.equal(g.run('chooseTarget(6)'),true);
+ assert.equal(g.run('targetFoe().id'),'rootling');
+ assert.equal(g.run('upcomingSpoils().gu'),'G112');
+});
+test('M3-B Root Puppet heals real damage periodically, but fire DoT suppresses regeneration',()=>{
+ const heal=session();heal.run('init("百兵");state.round=6;state.targetIndex=6;state.equip=[state.gu.find(x=>x.gu==="B102").id];startBattle();battle.foe.hp-=12');
+ heal.run('for(let t=0;t<=10;t++)step()');
+ assert.equal(heal.run('log.some(x=>x.includes("枯根傀儡再生"))'),true);
+ const burn=session();burn.run('init("参同");state.round=6;state.targetIndex=6;state.equip=[state.gu.find(x=>x.gu==="T103").id];startBattle();battle.foe.hp-=12');
+ burn.run('for(let t=0;t<=10;t++)step()');
+ assert.equal(burn.run('log.some(x=>x.includes("火筹灼烧阻断枯根再生"))'),true);
+ assert.equal(burn.run('log.some(x=>x.includes("枯根傀儡再生"))'),false);
 });
