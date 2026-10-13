@@ -20,6 +20,8 @@ try{
   assert.equal(painted,4,'all shop offers must carry generated illustrations');
   const artwork=await page.locator('.shopitem>.m2-gu-illustration').evaluateAll(nodes=>nodes.map(n=>n.style.backgroundImage));
   assert.equal(new Set(artwork).size,4,'four offers must use distinct Gu artworks');
+  const ratios=await page.locator('.shopitem>.m2-r8-gu-painted').evaluateAll(els=>els.map(el=>{const b=el.getBoundingClientRect();return b.width/b.height;}));
+  assert.equal(ratios.every(r=>Math.abs(r-1)<.05),true,'illustrated Gu tiles must retain square proportions');
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
   await page.screenshot({path:`${dir}/03_inventory_${key}.png`});
   if(width===1366){
