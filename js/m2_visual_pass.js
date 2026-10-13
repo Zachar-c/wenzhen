@@ -33,6 +33,7 @@ function decorate(){
   player.dataset.portrait="true";player.style.setProperty("--cultivator-portrait",'url("'+portrait()+'")');
  }
  const stage=app.querySelector(".combat-stage");
+ if(stage&&innerWidth<=790&&!stage.dataset.visualEntered){stage.dataset.visualEntered="1";window.scrollTo({top:0,behavior:"instant"});}
  if(stage){const event=app.querySelector(".focus-event strong")?.textContent||"";
   stage.dataset.impact=/反击|饮锋|记痕/.test(event)?"counter":/护盾|规避|吸收/.test(event)?"guard":/伤害|攻击|斩击|基础攻击|造成|灼烧/.test(event)?"strike":"idle";
  }
