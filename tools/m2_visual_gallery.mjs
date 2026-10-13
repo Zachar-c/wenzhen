@@ -34,6 +34,16 @@ try{
  assert.equal(new Set(names).size,total);
  const atlasGood=await page.evaluate(()=>Promise.all(['assets/visual/m2_r8_character_atlas.webp','assets/visual/m2_r8_gu_atlas.webp'].map(src=>new Promise(ok=>{let image=new Image();image.onload=()=>ok(image.naturalWidth>0);image.onerror=()=>ok(false);image.src=src}))));
  assert.deepEqual(atlasGood,[true,true],'both painterly art files must decode offline');
+ const verifiedDimensions=await page.evaluate(async paths=>Promise.all(paths.map(src=>new Promise(done=>{
+   const image=new Image();image.onload=()=>done({width:image.naturalWidth,height:image.naturalHeight});
+   image.onerror=()=>done({width:0,height:0});image.src=src;
+ }))),[manifest.character.path,manifest.gu.path]);
+ assert.deepEqual(verifiedDimensions,[
+  {width:manifest.character.width,height:manifest.character.height},
+  {width:manifest.gu.width,height:manifest.gu.height}
+ ],'decoded atlas dimensions must match tracked provenance manifest');
+ assert.equal(manifest.gu.width/manifest.gu.tiles.length,manifest.gu.height,
+   'painted Gu tiles must be square and unwarped');
  await page.screenshot({path:output+'/07_gu_current_real_chromium_1920x1080.png',fullPage:true});
  fs.writeFileSync(output+'/gu_gallery_inventory.json',JSON.stringify({total,ids,painted:manifest.gu.tiles.map(t=>t.id),fallback:ids.filter(id=>!manifest.gu.tiles.some(t=>t.id===id))},null,2));
  assert.deepEqual(errors,[],'gallery JS errors');
