@@ -182,3 +182,38 @@ test('知几蛊 does not trigger against alternating sword feints, even after ma
  const dmg=g.run('battle?.totals.damageBySource["知几蛊"]||state.lastResult?.stats.damageBySource["知几蛊"]||0');
  assert.equal(dmg,0,'alternating different declared moves must not trigger the repeated-move Gu');
 });
+
+test('merchant sourcing pays once for a specific Library Gu and preserves the four-slot economy',()=>{
+ const g=session();g.run('init("观复")');
+ assert.equal(g.run('seekGu("G112")'),true);
+ assert.equal(g.run('state.gold'),11);
+ assert.equal(g.run('state.seekUsed'),true);
+ assert.equal(g.run('state.shelf.length'),4);
+ assert.equal(g.run('state.shelf.filter(x=>x?.gu==="G112"&&x?.seek).length'),1);
+ assert.equal(g.run('seekGu("G112")'),false);
+ assert.equal(g.run('state.gold'),11);
+ g.run('reroll()');
+ assert.equal(g.run('state.shelf.filter(x=>x?.gu==="G112"&&x?.seek).length'),1);
+ const slot=g.run('state.shelf.findIndex(x=>x?.gu==="G112"&&x?.seek)');
+ assert.equal(g.run('buy('+slot+')'),undefined);
+ assert.equal(g.run('state.gold'),7);
+ assert.equal(g.run('state.gu.some(x=>x.gu==="G112")'),true);
+});
+test('merchant lead cannot be exploited through invalid IDs, locked offers or insufficient gold',()=>{
+ const g=session();g.run('init("百兵")');
+ assert.equal(g.run('seekGu("__proto__")'),false);
+ assert.equal(g.run('state.gold'),13);
+ g.run('state.gold=5');
+ assert.equal(g.run('seekGu("G112")'),false);
+ assert.equal(g.run('state.gold'),5);
+ g.run('state.gold=13;state.shelf.forEach(x=>x.lock=true)');
+ assert.equal(g.run('seekGu("G112")'),false);
+ assert.equal(g.run('state.seekUsed'),false);
+});
+test('merchant sourcing survives reload without allowing second commission',()=>{
+ const g=session();g.run('init("观复");seekGu("G112")');
+ const resumed=session(g.store.get('wenzhen_m2_v1'));
+ assert.equal(resumed.run('state.seekUsed'),true);
+ assert.equal(resumed.run('seekGu("G112")'),false);
+ assert.equal(resumed.run('state.shelf.some(x=>x?.gu==="G112"&&x?.seek)'),true);
+});
