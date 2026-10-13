@@ -106,6 +106,23 @@ try{
     assert.match(await craft.locator('#app').innerText(),/折锋回刺|造成伤害/);
     await craftCtx.close();
   }
+  if(i===0){
+    const observerCtx=await browser.newContext({viewport:{width:1366,height:768}});
+    const observer=await observerCtx.newPage();
+    await observer.goto(new URL('../m2.html',import.meta.url).href);
+    await observer.getByRole('button',{name:'选择道途'}).last().click();
+    const btn=observer.locator('button[onclick*="G201"]');
+    assert.equal(await btn.isEnabled(),true);
+    await btn.click();
+    assert.equal(await observer.evaluate(()=>state.gu.filter(x=>x.gu==="G201").length),1);
+    assert.equal(await observer.evaluate(()=>state.gu.some(x=>x.gu==="G101"||x.gu==="G102")),false);
+    assert.equal(await observer.evaluate(()=>state.equip.length),2);
+    await observer.screenshot({path:output+'/m3_observation_recipe_1366.png'});
+    await observer.getByRole('button',{name:/迎战/}).click();
+    await observer.getByRole('button',{name:'立即结算'}).click();
+    assert.match(await observer.locator('#app').innerText(),/造成伤害|护盾吸收/);
+    await observerCtx.close();
+  }
   // Genuine purchase/equipment interaction through buttons, not JS fixture injection.
   await page.getByRole('button',{name:'购买'}).last().click();
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
