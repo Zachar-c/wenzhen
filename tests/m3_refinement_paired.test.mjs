@@ -84,3 +84,20 @@ test('M3 G201 repeated-pattern fusion has an evidenced payoff and a first-attack
  assert.equal(new Set(rows.map(x=>x.foe)).size,6);
  assert.ok(rows.some(x=>x.oldHP!==x.craftedHP||x.oldTick!==x.craftedTick),'fusion must change encounters');
 });
+
+test('M3-B Root Puppet creates a reproducible fire-versus-thorns decision, not just more HP',()=>{
+ function fight(extra){
+  const store=new Map(),dom=new Map(),ctx=vm.createContext({Math,Date,JSON,console,confirm:()=>true,setInterval:()=>1,clearInterval:()=>{},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)},document:{getElementById(id){if(!dom.has(id))dom.set(id,{innerHTML:'',insertAdjacentHTML(){}});return dom.get(id)}}});
+  vm.runInContext(script,ctx);const run=x=>vm.runInContext(x,ctx);
+  run('init("百兵");state.round=6;state.targetIndex=6');
+  run('{const x=owned('+JSON.stringify(extra)+');state.gu.push(x);state.equip.push(x.id)}');
+  run('startBattle();quick()');
+  const out=JSON.parse(JSON.stringify(run('state.lastResult')));
+  return {won:out.won,tick:out.tick,hp:out.hp,heal:out.log.filter(x=>x.includes("枯根傀儡再生")).length,suppressed:out.log.filter(x=>x.includes("火筹灼烧阻断")).length};
+ }
+ const thorns=fight('S101'),flame=fight('T103');
+ console.log('M3_ROOT_PUPPET_COUNTER '+JSON.stringify({thorns,flame}));
+ assert.equal(thorns.suppressed,0);
+ assert.ok(flame.suppressed>=1,'existing fire damage-over-time should block at least one natural regeneration tick');
+ assert.ok(flame.heal<=thorns.heal,'fire build should have no more regeneration events than same-slot thorns');
+});
