@@ -1,0 +1,482 @@
+[
+  {
+    "school": "百兵",
+    "round": 1,
+    "load": "starter",
+    "won": true,
+    "tick": 14,
+    "hp": 30,
+    "logEvents": 16,
+    "sha256_20": "bfb7b930719c8e422170"
+  },
+  {
+    "school": "百兵",
+    "round": 1,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 10,
+    "hp": 30,
+    "logEvents": 18,
+    "sha256_20": "ad58e81760bd96886305"
+  },
+  {
+    "school": "百兵",
+    "round": 2,
+    "load": "starter",
+    "won": true,
+    "tick": 26,
+    "hp": 26,
+    "logEvents": 32,
+    "sha256_20": "dc6b1991bca92f57ce57"
+  },
+  {
+    "school": "百兵",
+    "round": 2,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 14,
+    "hp": 28,
+    "logEvents": 26,
+    "sha256_20": "b66455f1fb3b1453cfb4"
+  },
+  {
+    "school": "百兵",
+    "round": 3,
+    "load": "starter",
+    "won": true,
+    "tick": 26,
+    "hp": 22,
+    "logEvents": 29,
+    "sha256_20": "597f158a217ed6d77316"
+  },
+  {
+    "school": "百兵",
+    "round": 3,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 18,
+    "hp": 28,
+    "logEvents": 30,
+    "sha256_20": "93ddd33e7016739672db"
+  },
+  {
+    "school": "晦明",
+    "round": 1,
+    "load": "starter",
+    "won": true,
+    "tick": 20,
+    "hp": 28,
+    "logEvents": 20,
+    "sha256_20": "f8515ae96f1c2a08a4b8"
+  },
+  {
+    "school": "晦明",
+    "round": 1,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 10,
+    "hp": 30,
+    "logEvents": 16,
+    "sha256_20": "631ebae5bb7ac7fe74af"
+  },
+  {
+    "school": "晦明",
+    "round": 2,
+    "load": "starter",
+    "won": true,
+    "tick": 50,
+    "hp": 20,
+    "logEvents": 48,
+    "sha256_20": "189cf3110aaaeb47d88c"
+  },
+  {
+    "school": "晦明",
+    "round": 2,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 26,
+    "hp": 24,
+    "logEvents": 35,
+    "sha256_20": "62bce1e16bc805082847"
+  },
+  {
+    "school": "晦明",
+    "round": 3,
+    "load": "starter",
+    "won": true,
+    "tick": 42,
+    "hp": 18,
+    "logEvents": 41,
+    "sha256_20": "bbf5dcb2ee7614cd5293"
+  },
+  {
+    "school": "晦明",
+    "round": 3,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 26,
+    "hp": 23,
+    "logEvents": 35,
+    "sha256_20": "c238bc1624c30dc6d7ce"
+  },
+  {
+    "school": "玄牝",
+    "round": 1,
+    "load": "starter",
+    "won": true,
+    "tick": 20,
+    "hp": 29,
+    "logEvents": 27,
+    "sha256_20": "b3c9157b4bb1c2be3816"
+  },
+  {
+    "school": "玄牝",
+    "round": 1,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 10,
+    "hp": 30,
+    "logEvents": 20,
+    "sha256_20": "e607f8cbb467e4516e16"
+  },
+  {
+    "school": "玄牝",
+    "round": 2,
+    "load": "starter",
+    "won": true,
+    "tick": 44,
+    "hp": 28,
+    "logEvents": 60,
+    "sha256_20": "f9c96b11ffcd5c724ff9"
+  },
+  {
+    "school": "玄牝",
+    "round": 2,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 26,
+    "hp": 30,
+    "logEvents": 45,
+    "sha256_20": "6824833a7a6f68556411"
+  },
+  {
+    "school": "玄牝",
+    "round": 3,
+    "load": "starter",
+    "won": true,
+    "tick": 38,
+    "hp": 27,
+    "logEvents": 55,
+    "sha256_20": "d39d093a699fa64e1340"
+  },
+  {
+    "school": "玄牝",
+    "round": 3,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 22,
+    "hp": 30,
+    "logEvents": 40,
+    "sha256_20": "f9d1096a41de95dd55a4"
+  },
+  {
+    "school": "执枢",
+    "round": 1,
+    "load": "starter",
+    "won": true,
+    "tick": 20,
+    "hp": 29,
+    "logEvents": 20,
+    "sha256_20": "01dd3780cdef3b8456bf"
+  },
+  {
+    "school": "执枢",
+    "round": 1,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 10,
+    "hp": 30,
+    "logEvents": 18,
+    "sha256_20": "75745916f24f61aab4b8"
+  },
+  {
+    "school": "执枢",
+    "round": 2,
+    "load": "starter",
+    "won": true,
+    "tick": 43,
+    "hp": 19,
+    "logEvents": 36,
+    "sha256_20": "0399f03aeb70f25aa9a0"
+  },
+  {
+    "school": "执枢",
+    "round": 2,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 18,
+    "hp": 30,
+    "logEvents": 30,
+    "sha256_20": "617b369781c4c6634bd8"
+  },
+  {
+    "school": "执枢",
+    "round": 3,
+    "load": "starter",
+    "won": true,
+    "tick": 43,
+    "hp": 21,
+    "logEvents": 41,
+    "sha256_20": "790ecda44a3c143b05f8"
+  },
+  {
+    "school": "执枢",
+    "round": 3,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 18,
+    "hp": 30,
+    "logEvents": 31,
+    "sha256_20": "1ea77cffc505cbc908f1"
+  },
+  {
+    "school": "阖辟",
+    "round": 1,
+    "load": "starter",
+    "won": true,
+    "tick": 18,
+    "hp": 27,
+    "logEvents": 21,
+    "sha256_20": "6ea39bcf48f87c8eae17"
+  },
+  {
+    "school": "阖辟",
+    "round": 1,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 14,
+    "hp": 30,
+    "logEvents": 22,
+    "sha256_20": "09738df484d9186ca31f"
+  },
+  {
+    "school": "阖辟",
+    "round": 2,
+    "load": "starter",
+    "won": true,
+    "tick": 42,
+    "hp": 26,
+    "logEvents": 52,
+    "sha256_20": "9f122631e3a3fb183c1e"
+  },
+  {
+    "school": "阖辟",
+    "round": 2,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 26,
+    "hp": 28,
+    "logEvents": 44,
+    "sha256_20": "f49caa23a6a8170b1edc"
+  },
+  {
+    "school": "阖辟",
+    "round": 3,
+    "load": "starter",
+    "won": true,
+    "tick": 34,
+    "hp": 20,
+    "logEvents": 38,
+    "sha256_20": "26af4135e8d7b8d28a59"
+  },
+  {
+    "school": "阖辟",
+    "round": 3,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 26,
+    "hp": 22,
+    "logEvents": 37,
+    "sha256_20": "228ab0661ad790f0f204"
+  },
+  {
+    "school": "参同",
+    "round": 1,
+    "load": "starter",
+    "won": true,
+    "tick": 14,
+    "hp": 30,
+    "logEvents": 24,
+    "sha256_20": "7c7f9611155fd49f33d6"
+  },
+  {
+    "school": "参同",
+    "round": 1,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 14,
+    "hp": 30,
+    "logEvents": 27,
+    "sha256_20": "9e9acc8fb02dbafe948c"
+  },
+  {
+    "school": "参同",
+    "round": 2,
+    "load": "starter",
+    "won": true,
+    "tick": 26,
+    "hp": 26,
+    "logEvents": 38,
+    "sha256_20": "f03260a8fa62fa1fb606"
+  },
+  {
+    "school": "参同",
+    "round": 2,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 18,
+    "hp": 28,
+    "logEvents": 32,
+    "sha256_20": "342e7c1c2554bb1054ed"
+  },
+  {
+    "school": "参同",
+    "round": 3,
+    "load": "starter",
+    "won": true,
+    "tick": 26,
+    "hp": 25,
+    "logEvents": 39,
+    "sha256_20": "cad180b4069f08c7b5a8"
+  },
+  {
+    "school": "参同",
+    "round": 3,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 26,
+    "hp": 25,
+    "logEvents": 45,
+    "sha256_20": "6109e8cde09ffbe42337"
+  },
+  {
+    "school": "乘物",
+    "round": 1,
+    "load": "starter",
+    "won": true,
+    "tick": 18,
+    "hp": 27,
+    "logEvents": 19,
+    "sha256_20": "a659bd86e3b0f77fcc64"
+  },
+  {
+    "school": "乘物",
+    "round": 1,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 10,
+    "hp": 30,
+    "logEvents": 19,
+    "sha256_20": "a21277a65f94f25c9ca3"
+  },
+  {
+    "school": "乘物",
+    "round": 2,
+    "load": "starter",
+    "won": true,
+    "tick": 42,
+    "hp": 26,
+    "logEvents": 39,
+    "sha256_20": "2c378b3eb4f4cd4a0043"
+  },
+  {
+    "school": "乘物",
+    "round": 2,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 20,
+    "hp": 28,
+    "logEvents": 33,
+    "sha256_20": "91f1c4e9f5739df677b1"
+  },
+  {
+    "school": "乘物",
+    "round": 3,
+    "load": "starter",
+    "won": true,
+    "tick": 36,
+    "hp": 20,
+    "logEvents": 35,
+    "sha256_20": "e867a64b6ad8fe2e5d08"
+  },
+  {
+    "school": "乘物",
+    "round": 3,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 18,
+    "hp": 28,
+    "logEvents": 31,
+    "sha256_20": "1171122f2f0ae105b0f1"
+  },
+  {
+    "school": "观复",
+    "round": 1,
+    "load": "starter",
+    "won": true,
+    "tick": 33,
+    "hp": 26,
+    "logEvents": 28,
+    "sha256_20": "a7f42cbfca512bcdbf47"
+  },
+  {
+    "school": "观复",
+    "round": 1,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 18,
+    "hp": 29,
+    "logEvents": 21,
+    "sha256_20": "89d9cdf672ccc8c3f570"
+  },
+  {
+    "school": "观复",
+    "round": 2,
+    "load": "starter",
+    "won": true,
+    "tick": 70,
+    "hp": 30,
+    "logEvents": 62,
+    "sha256_20": "aa61ca9ba7c70c51cb0a"
+  },
+  {
+    "school": "观复",
+    "round": 2,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 32,
+    "hp": 30,
+    "logEvents": 36,
+    "sha256_20": "bc7f42265c7449165ae8"
+  },
+  {
+    "school": "观复",
+    "round": 3,
+    "load": "starter",
+    "won": true,
+    "tick": 68,
+    "hp": 19,
+    "logEvents": 55,
+    "sha256_20": "e682b51d62ed427085e0"
+  },
+  {
+    "school": "观复",
+    "round": 3,
+    "load": "starter+shop4",
+    "won": true,
+    "tick": 34,
+    "hp": 27,
+    "logEvents": 36,
+    "sha256_20": "0938a9130357ea18c5cd"
+  }
+]
