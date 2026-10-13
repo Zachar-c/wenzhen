@@ -348,3 +348,7 @@ body[data-prep-tab="inventory"] .shell>div:first-child>section:nth-child(1){disp
  .book-header{height:78px}
  .book-footer{height:21px}
 }
+
+/* Tab indicator follows persisted screen choice even after rerender. */
+body[data-prep-tab="shop"] .prep-tab[data-tab="shop"],body[data-prep-tab="inventory"] .prep-tab[data-tab="inventory"]{background:linear-gradient(125deg,#bd8858,#805648);border-color:#e4c293;color:#fff4de}
+body[data-prep-tab="shop"] .prep-tab[data-tab="inventory"],body[data-prep-tab="inventory"] .prep-tab[data-tab="shop"]{background:#272737;border-color:#9a8484;color:#d9c7c5}
