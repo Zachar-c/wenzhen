@@ -70,6 +70,42 @@ try{
     assert.equal(await pg.locator('.shopitem').count(),4,'shop remains available after full-inventory tab');
     await stress.close();
   }
+  if(i===0){
+    const merchantCtx=await browser.newContext({viewport:{width:1366,height:768}});
+    const merchant=await merchantCtx.newPage();
+    await merchant.goto(new URL('../m2.html',import.meta.url).href);
+    await merchant.getByRole('button',{name:'选择道途'}).last().click();
+    await merchant.locator('#seek-gu').selectOption('G112');
+    await merchant.getByRole('button',{name:/定向寻蛊/}).click();
+    assert.match(await merchant.locator('#status').innerText(),/11 金币/);
+    assert.equal(await merchant.locator('.shopitem').count(),4);
+    assert.equal(await merchant.locator('.shopitem').filter({hasText:'知几蛊'}).count(),1);
+    await merchant.getByRole('button',{name:/本轮已委托/}).waitFor();
+    await merchant.locator('.shopitem').filter({hasText:'知几蛊'}).getByRole('button',{name:'购买'}).click();
+    assert.match(await merchant.locator('#status').innerText(),/7 金币/);
+    await merchant.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
+    assert.match(await merchant.locator('#app').innerText(),/知几蛊/);
+    await merchant.screenshot({path:output+'/m2_merchant_gu_commission.png'});
+    await merchantCtx.close();
+  }
+  if(i===0){
+    // M3 real browser refinement: click fixed recipe, inspect inventory and verify battle remains playable.
+    const craftCtx=await browser.newContext({viewport:{width:1366,height:768}});
+    const craft=await craftCtx.newPage();
+    await craft.goto(new URL('../m2.html',import.meta.url).href);
+    await craft.getByRole('button',{name:'选择道途'}).first().click();
+    assert.equal(await craft.locator('button[onclick*="B201"]').isEnabled(),true);
+    await craft.locator('button[onclick*="B201"]').click();
+    assert.equal(await craft.evaluate(()=>state.gu.some(x=>x.gu==="B101"||x.gu==="B102")),false);
+    assert.equal(await craft.evaluate(()=>state.gu.filter(x=>x.gu==="B201").length),1);
+    assert.equal(await craft.evaluate(()=>state.equip.length),2);
+    assert.match(await craft.locator('#status').innerText(),/13 金币/);
+    await craft.screenshot({path:output+'/m3_refined_prebattle_1366.png'});
+    await craft.getByRole('button',{name:/迎战/}).click();
+    await craft.getByRole('button',{name:'立即结算'}).click();
+    assert.match(await craft.locator('#app').innerText(),/折锋回刺|造成伤害/);
+    await craftCtx.close();
+  }
   // Genuine purchase/equipment interaction through buttons, not JS fixture injection.
   await page.getByRole('button',{name:'购买'}).last().click();
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
