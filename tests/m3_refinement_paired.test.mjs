@@ -10,7 +10,7 @@ function session(foeIndex,refine,seed=1729){
  const ctx=vm.createContext(sandbox);vm.runInContext(script,ctx);
  const run=s=>vm.runInContext(s,ctx);
  run('init("百兵")');
- run('state.seed='+seed+';state.rng='+seed+';state.targetIndex='+foeIndex);
+ run('state.seed='+seed+';state.rng='+seed+';state.round='+(foeIndex+1)+';state.targetIndex='+foeIndex);
  if(refine)assert.equal(run('refineGu("B201")'),true);
  run('startBattle();quick()');
  return {run,results:JSON.parse(JSON.stringify(run('state.lastResult'))),equip:JSON.parse(JSON.stringify(run('state.equip')))};
@@ -26,6 +26,7 @@ test('M3 first recipe yields a genuinely different damage/defense pattern agains
   assert.ok(b.stats.damageBySource['折锋回刺']>0,'refined Gu must express its second strike against '+a.foe);
  }
  console.log('M3_REFINEMENT_PAIRED '+JSON.stringify(scenarios));
+ assert.equal(new Set(scenarios.map(x=>x.foe)).size,6,'all six foes must actually be tested');
  assert.ok(scenarios.some(x=>x.baseAbsorb>x.refinedAbsorb),'refinement must have a defensiveness cost');
  assert.ok(scenarios.some(x=>x.refinedTick!==x.baseTick||x.refinedHp!==x.baseHp),'refinement must alter combat path');
 });
