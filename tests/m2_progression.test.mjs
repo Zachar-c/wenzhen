@@ -132,7 +132,7 @@ test('invalid slot swap never grants a free Gu or advances round',()=>{
 
 test('M2 new Gu are not starter Gu and have sourced acquisition',()=>{
  const g=session();g.run('init("百兵")');
- assert.equal(g.run('GU.length'),28);
+ assert.equal(g.run('GU.length'),29);
  assert.equal(g.run('state.gu.some(x=>x.gu==="N201"||x.gu==="N202")'),false);
  assert.equal(g.run('ENEMY_SPOILS[4].gu'),'N201');
  assert.equal(g.run('ENEMY_SPOILS[5].gu'),'N202');
@@ -242,4 +242,25 @@ test('M3 return strike occurs on a later tick and has a real combat source',()=>
  assert.equal(g.run('battle.totals.damageBySource["折锋回刺"]||0'),0);
  g.run('for(let n=0;n<8&&battle;n++)step()');
  assert.ok(g.run('battle?.totals.damageBySource["折锋回刺"]||state.lastResult?.stats.damageBySource["折锋回刺"]||0')>0);
+});
+
+test('Library G201 重息固定合炼消耗观复观察+防护，仅原有实例一只各一',()=>{
+ const g=session();g.run('init("观复")');
+ assert.equal(g.run('availableRecipes().some(r=>r.id==="G201")'),true);
+ assert.equal(g.run('refineGu("G201")'),true);
+ assert.equal(g.run('state.gu.filter(x=>x.gu==="G101"||x.gu==="G102").length'),0);
+ assert.equal(g.run('state.gu.filter(x=>x.gu==="G201").length'),1);
+ assert.equal(g.run('state.equip.length'),2);
+ assert.equal(g.run('seekGu("G201")'),false);
+ assert.equal(g.run('refineGu("G201")'),false);
+});
+test('重息蛊 protects only against a truly repeated revealed enemy move',()=>{
+ const a=session();a.run('init("观复");refineGu("G201");startBattle()');
+ a.run('for(let i=0;i<9&&battle;i++)step()');
+ assert.equal(a.run('log.some(x=>x.includes("重息辨认旧式"))'),false);
+ a.run('for(let i=0;i<12&&battle;i++)step()');
+ assert.equal(a.run('log.some(x=>x.includes("重息辨认旧式"))'),true);
+ const b=session();b.run('init("观复");refineGu("G201");state.round=3;state.targetIndex=2;startBattle()');
+ b.run('for(let i=0;i<40&&battle;i++)step()');
+ assert.equal(b.run('log.some(x=>x.includes("重息辨认旧式"))'),false,'alternating sword feint sequence may not be anticipated');
 });
