@@ -95,7 +95,7 @@ try{
     await craft.goto(new URL('../m2.html',import.meta.url).href);
     await craft.getByRole('button',{name:'选择道途'}).first().click();
     assert.equal(await craft.locator('button[onclick*="B201"]').isEnabled(),true);
-    await craft.getByRole('button',{name:/合炼（牺牲原蛊）/}).click();
+    await craft.locator('button[onclick*="B201"]').click();
     assert.equal(await craft.evaluate(()=>state.gu.some(x=>x.gu==="B101"||x.gu==="B102")),false);
     assert.equal(await craft.evaluate(()=>state.gu.filter(x=>x.gu==="B201").length),1);
     assert.equal(await craft.evaluate(()=>state.equip.length),2);
