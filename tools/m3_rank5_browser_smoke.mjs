@@ -40,6 +40,7 @@ try{
     if(cfg.school==='观复'&&phase===2)await contract(page,'B101');
     if(cfg.school==='观复'&&phase===3)await contract(page,'S101');
     if([4,8,12].includes(phase)){
+      await page.getByRole('tab',{name:/交易 · 商店/}).click();
       const index=[4,8,12].indexOf(phase),coin=[4,6,8][index];
       const before=await page.evaluate(()=>state.gold);
       const btn=page.getByRole('button',{name:cfg.stock[index],exact:true});
