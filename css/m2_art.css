@@ -1,0 +1,354 @@
+/* M2 "Xuantong Chronicle" bespoke interface: stand-alone skin, no battle logic mutation. */
+:root{
+ --bg:#0c0e19;--ink:#191722;--paper:#f3e6cf;--paper-deep:#e4d3b7;
+ --purple:#342945;--plum:#523a59;--jade:#83c0a9;--gold:#efc886;--copper:#a96b53;--ivory:#fff2d8;
+ --edge:rgba(246,212,160,.24);--edge-dark:rgba(62,43,48,.24);
+ --shadow:0 18px 48px rgba(5,5,16,.43),inset 0 1px rgba(255,237,201,.08);
+ font-family:"Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+ color-scheme:dark;background:#0c0e19;color:var(--ivory);
+}
+*{box-sizing:border-box}
+body{
+ min-height:100vh;color:var(--ivory);
+ background:
+ radial-gradient(ellipse 65% 36% at 50% -5%,rgba(174,123,166,.19),transparent 78%),
+ radial-gradient(ellipse 55% 60% at 0% 55%,rgba(90,72,126,.16),transparent 85%),
+ radial-gradient(ellipse 50% 48% at 100% 66%,rgba(69,131,122,.09),transparent 78%),
+ linear-gradient(148deg,#101321 0%,#151321 54%,#080e17 100%);
+ overflow-x:hidden;
+}
+body::before{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;opacity:.56;background-image:radial-gradient(circle at 11% 14%,#fbd8a8 0 1px,transparent 1.5px),radial-gradient(circle at 52% 34%,#d0abd8 0 1px,transparent 1.5px),radial-gradient(circle at 88% 72%,#a0bfcc 0 1px,transparent 1.5px);background-size:193px 207px,257px 269px,331px 317px}
+body::after{content:"";position:fixed;pointer-events:none;z-index:-1;left:50%;top:84px;width:min(90vw,1120px);height:540px;transform:translateX(-50%);border:1px solid rgba(199,156,110,.08);border-radius:50%;box-shadow:0 0 0 90px rgba(206,166,138,.015),0 0 0 220px rgba(201,176,196,.01)}
+h1,h2,h3,.name{font-family:"Noto Serif SC","Source Han Serif SC","Songti SC",SimSun,serif}
+h1,h2,h3{color:#f8e4c1}
+p,.small{color:#c3b7bd;line-height:1.7}
+button{transition:transform .18s ease,filter .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}
+button:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.12)}
+button:not(:disabled):active{transform:translateY(0) scale(.98)}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid #ffe1a4;outline-offset:3px}
+button+button{margin-left:0}
+.book-header{max-width:1320px;min-height:118px;margin:0 auto;padding:20px 34px 16px;border-bottom:1px solid var(--edge);display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative}
+.book-header::after{content:"";position:absolute;bottom:-2px;left:32px;width:150px;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.header-brand{display:flex;align-items:center;gap:20px}
+.brand-signet{flex:none;display:grid;place-items:center;width:65px;height:65px;border:1px solid rgba(238,198,132,.68);border-radius:18px 3px 18px 3px;color:#ffe2aa;font:32px "Songti SC",serif;transform:rotate(-6deg);background:linear-gradient(145deg,#6c3a42,#271f33);box-shadow:0 0 0 5px #f0ba7e14,0 12px 24px #03071188;text-shadow:0 2px 14px #f4c68988}
+.brand-copy{min-width:0}
+.eyebrow{font:600 10px/1.5 ui-sans-serif,system-ui,sans-serif;letter-spacing:.29em;color:#d7af7d}
+.book-header h1{font-size:38px;line-height:1.14;margin:4px 0 5px;letter-spacing:.18em;color:#f6e5c8;font-weight:600;text-shadow:0 4px 22px #ceaa7930}
+.brand-sep{color:#b88d6a;font-size:.65em}.book-header h1 em{font-style:normal;color:#e6c58e}
+.brand-copy .small{font-size:11px;letter-spacing:.26em;margin:0;color:#acb5b4}
+.header-right{display:flex;align-items:center;gap:22px;flex-wrap:wrap;justify-content:flex-end}
+.edition-badge{font:600 13px ui-sans-serif,system-ui;color:#ddc28f;letter-spacing:.17em;border-right:1px solid #b9a07c55;padding-right:18px}
+.edition-badge span{display:block;font-size:10px;margin-top:5px;color:#aa9eac;letter-spacing:.1em}
+#status{gap:9px;justify-content:flex-end}
+#status .chip{background:#262233d4;border:1px solid #b69c786e;border-radius:40px;padding:9px 14px;font-size:12px;color:#e9d1aa;box-shadow:inset 0 1px rgba(255,244,211,.06);white-space:nowrap}
+#status .chip.gold{color:#f5d38f;border-color:#d3a7638a;background:#392c2d}
+.chapter-ribbon{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:24px;height:51px;color:#a899a8;font:11px "Noto Serif SC",serif;letter-spacing:.16em}
+.chapter-ribbon b{color:#d9b892;font-weight:400}.chapter-ribbon i{height:1px;width:90px;background:linear-gradient(90deg,transparent,#ad89648c,transparent)}
+.game-main{max-width:1310px;margin:10px auto 64px;padding:0 25px;animation:appear .4s ease both}
+.game-main>h2{display:flex;align-items:center;gap:12px;font-size:30px;letter-spacing:.1em;margin:20px 0 6px;text-shadow:0 5px 24px #cfa46c24}
+.game-main>h2::before{content:"◆";color:var(--gold);font-size:16px}
+.game-main>p{color:#bdb4bc;font-size:13px;margin:6px 0 22px}
+.game-main>.panel,.game-main>.grid,.game-main>.shell,.game-main>.spoils-panel{animation:appear .38s ease both}
+.card,.panel{border:1px solid rgba(238,205,162,.3);border-radius:12px;background:linear-gradient(138deg,#302838ed,#1e2431f5 58%,#171e2cf8);box-shadow:var(--shadow);position:relative}
+.panel{padding:22px 24px;margin-bottom:18px}
+.panel::before{content:"";position:absolute;pointer-events:none;top:7px;left:7px;right:7px;bottom:7px;border:1px solid rgba(255,225,187,.055);border-radius:7px}
+.panel h3{display:flex;align-items:center;gap:10px;margin:0 0 16px;font-size:19px;letter-spacing:.1em}
+.panel h3::before{content:"◈";font-size:12px;color:#f2cb8a}
+.grid{gap:14px}
+.card{padding:18px;min-height:134px;overflow:hidden}
+.card::before{content:"";position:absolute;right:-18px;top:-25px;width:115px;height:115px;border:1px solid rgba(226,183,125,.13);border-radius:50%;box-shadow:0 0 0 19px rgba(226,183,125,.028),0 0 0 37px rgba(226,183,125,.017);pointer-events:none}
+.card.selected{border-color:#ebc18f;box-shadow:var(--shadow),0 0 0 1px rgba(255,217,152,.5),0 0 27px #deb07824;background:linear-gradient(130deg,#483746,#252937 80%)}
+.card.selected::after{content:"◆ 追猎目标";position:absolute;right:12px;top:10px;color:#ffe4a7;font-size:10px;letter-spacing:.1em}
+.name{font-size:21px;font-weight:600;color:#f5dfb8;position:relative;z-index:1}
+.meta{color:#aab6b7;font-size:12px;line-height:1.7}
+.gold{color:#f9cd82}
+.card>p{font-size:12px;position:relative}
+.card>button,.slot button{position:relative;z-index:1}
+button{background:linear-gradient(#4b414f,#302e3d);border:1px solid #978477;border-radius:7px;color:#f2dfc2;padding:10px 15px;box-shadow:inset 0 1px #faf0df0e,0 3px 8px #05081330;letter-spacing:.04em;font-weight:550}
+button:hover:not(:disabled){background:linear-gradient(#645263,#39354c);border-color:#dec08f}
+button.primary{background:linear-gradient(125deg,#cf9461,#9d5a43);border:1px solid #ecc48a;color:#fff9e6;font-weight:700;box-shadow:inset 0 1px #ffebc763,0 4px 20px #c78a6133;letter-spacing:.09em}
+button.primary:hover:not(:disabled){background:linear-gradient(125deg,#e4a66e,#b8664e);box-shadow:0 6px 30px #c8886250}
+button:disabled{opacity:.42}
+.shell{grid-template-columns:minmax(0,1.72fr) minmax(300px,1fr);gap:20px;align-items:start}
+.shell>.panel,.shell>div{min-width:0}
+.shell>.panel{margin:0}
+.shopitem{min-height:225px;display:flex;flex-direction:column;gap:4px;border-color:rgba(227,196,158,.26);background:linear-gradient(155deg,#393047,#292738 74%,#23283a);padding:20px 16px 16px}
+.shopitem::after{content:"壹 转";position:absolute;right:15px;top:22px;font:10px "Noto Serif SC",serif;color:#ceb08177;letter-spacing:.22em}
+.shopitem .name{padding-right:38px;letter-spacing:.08em}
+.shopitem .meta{flex:1;min-height:42px;padding-top:6px}
+.offer-hint{color:#96cbb6;background:#1e3b3855;border-left:2px solid #7dc4a2;padding:7px 9px;font-size:11px;line-height:1.5;min-height:47px}
+.shopitem .gold{font-size:13px;font-weight:600;margin:5px 0 0}
+.shopitem .actions{margin-top:7px;gap:7px}
+.shopitem .actions button{padding:9px 13px;flex:1;white-space:nowrap}
+.shopitem.placeholder{display:grid;place-items:center;color:#a89ba8;font:16px serif;border-style:dashed;min-height:225px}
+.shell .panel:has(.shopitem){background:linear-gradient(160deg,#292535,#191c29)}
+.shell .panel:has(.shopitem) .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.slot{position:relative;background:linear-gradient(105deg,#302d3e,#202835);border:1px solid rgba(226,196,149,.26);border-radius:7px;padding:12px 13px;margin:8px 0}
+.slot b{color:#ecd2a6;font-size:14px}
+.slot .chip{font-size:10px;background:#584652;color:#f2cfad;border-color:#9c7f72}
+.slot .meta{margin:7px 0;line-height:1.7}
+.slot button{font-size:11px;padding:7px 11px}
+.shell .panel:has(.slot){max-height:650px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#7c6873 transparent}
+.shell .panel.build-guide{background:linear-gradient(148deg,#29343c,#202837);border-color:#80b7aa4a}
+.build-compact{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.build-compact strong{background:#142b2c;border:1px solid #6c9e925e;border-radius:6px;padding:12px 7px;color:#b2dece;text-align:center;font-size:12px}
+.guide-lines{margin-top:12px;font-size:12px;color:#c5d9d2}.guide-lines p{margin:8px 0}
+.opponent-note{color:#f2ce9b;background:#503b343d;border-left:2px solid #cb9f65;padding:10px;font-size:12px}
+.spoils-panel{max-width:850px;margin:34px auto 0!important;overflow:hidden;background:radial-gradient(ellipse at 83% 22%,#bd9a7840,transparent 52%),linear-gradient(138deg,#392d40,#1c2832)!important;border-color:#e7c48c90}
+.spoils-panel h2{font-size:43px;letter-spacing:.12em}
+.spoils-panel>.slot{max-width:550px;background:#251f31}
+.spoils-panel .actions button{margin:3px 0}
+.spoils-panel select{background:#2d283b;color:#f2dfc1;border:1px solid #d1a976;padding:10px;margin:10px}
+.spoils-panel .combat-overline{color:#e9b985}
+.chip{border:1px solid #a58c8069;border-radius:16px;background:#282738;color:#eddac2}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.combat-shell{grid-template-columns:minmax(0,1.9fr) minmax(295px,1fr);gap:17px}
+.combat-title h2{color:#ffdfab;font-size:39px}
+.combat-stage{border-color:#a99178a6;background:radial-gradient(ellipse at 50% 25%,#64506d 0%,#37364d 38%,#171c2c 75%,#10131f 100%);box-shadow:0 16px 55px #0009,0 0 0 5px #af906f12;overflow:hidden}
+.combat-stage::before{content:"";position:absolute;pointer-events:none;z-index:1;inset:12px;border:1px solid rgba(231,189,140,.13);border-radius:5px}
+.combat-stage.enemy-boar{background:radial-gradient(ellipse at 50% 27%,#54675e,#2d4140 34%,#171d2b 80%)}
+.combat-stage.enemy-swordsman,.combat-stage.enemy-shadow{background:radial-gradient(ellipse at 50% 27%,#6c4a75,#332f4e 34%,#141724 80%)}
+.combat-stage.enemy-warden{background:radial-gradient(ellipse at 50% 27%,#776050,#353039 34%,#151a26 80%)}
+.arena{min-height:490px}
+.arena-floor{background:radial-gradient(ellipse at 50% 75%,#ffe5b843,transparent 70%);border-color:#eccb9250}
+.arena-light{background:radial-gradient(ellipse,#f6daaa2b,#bd93b423 40%,transparent 75%)}
+.foe-portrait{border-color:#dfbd92a1;filter:saturate(.85) sepia(.08) contrast(1.11);box-shadow:0 0 0 5px #26202dcc,0 18px 36px #000c}
+.foe-crest{filter:drop-shadow(0 0 28px #e1b3f36d)}
+.player-figure{filter:drop-shadow(0 5px 28px #9ec8df58)}
+.soul-core{box-shadow:0 0 27px 13px #ffc88c93}
+.versus-rune{color:#ffe1ae;border-color:#ecbe83;background:linear-gradient(160deg,#60434f,#29293b);box-shadow:0 0 27px #edb97e66}
+.stage-top{background:#10152263;color:#eccca2}
+.stage-bottom{background:#10152263}
+.attack-intent{background:#1b1b2de8;border-color:#b38a6d88}
+.focus-event{background:#d9b47818;border-left-color:#e8c086}
+.combat-side .panel{background:linear-gradient(145deg,#312a3e,#1e2734);border-color:#8c827c85}
+.battle-gu{background:#202435;border-color:#77697988}
+.battle-gu.ready{background:linear-gradient(105deg,#3e3844,#25363a);border-color:#c9a775ac}
+.battle-gu-glyph{border-radius:9px;transform:rotate(-6deg);background:#543e48;border-color:#d8ad81}
+.battle-gu-glyph::first-letter{transform:rotate(6deg)}
+.battle-progress div{background:#1a2830;border-color:#66878274}
+.event-strip{background:#1e2532}
+.battle-clock{color:#f6c784}
+.book-footer{max-width:1280px;margin:18px auto 0;padding:24px 30px 35px;display:flex;justify-content:space-between;border-top:1px solid #bba07730;color:#8f94a0;font:11px serif;letter-spacing:.18em}
+summary{cursor:pointer;color:#e4c193}
+@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:1000px){.game-main{min-height:66vh}.shell .panel:has(.shopitem) .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1000px){.game-main{padding:0 20px}.book-header{padding:20px}.shell{grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr)}.chapter-ribbon{gap:12px}.chapter-ribbon i{width:38px}}
+@media(max-width:790px){
+ .book-header{align-items:flex-start;gap:17px}.header-brand{gap:13px}.brand-signet{width:52px;height:52px;font-size:26px}
+ .book-header h1{font-size:29px}.header-right{width:100%;justify-content:space-between}.edition-badge{display:none}
+ .chapter-ribbon{height:auto;padding:16px 12px;font-size:10px;flex-wrap:wrap}.chapter-ribbon i{display:none}
+ .game-main{padding:0 14px;margin-top:0}.game-main>h2{font-size:25px}
+ .shell{display:block}.shell .panel:has(.shopitem) .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .combat-shell{display:block}.combat-stage{margin-bottom:15px}
+ .book-footer{padding:20px 17px;gap:20px}
+}
+@media(max-width:520px){
+ #status{justify-content:flex-start}.book-header{padding:15px}
+ .game-main{padding:0 11px}.panel{padding:17px 15px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .card{padding:14px 12px}.name{font-size:18px}
+ .shell .panel:has(.shopitem) .grid{gap:8px}
+ .shopitem{min-height:236px;padding:15px 11px}
+ .shopitem .actions button{padding:7px 6px;font-size:11px}
+ .shopitem .name{font-size:17px}.shopitem .meta{font-size:11px}
+ .chapter-ribbon b{display:none}
+ .arena{min-height:360px}.figure-portrait{height:210px}.combatant-name{font-size:11px}.hp-numbers strong{font-size:25px}
+ .versus-rune{height:35px;width:35px;font-size:16px}
+ .brand-copy .eyebrow{font-size:9px}
+ .book-footer{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+
+/* M2 visual review iteration B: increase semantic hierarchy and bring decisions into the first viewport. */
+.preflight{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(270px,.75fr);gap:16px;align-items:stretch;margin-bottom:18px}
+.preflight>.panel{margin:0;padding:19px 20px;min-width:0}
+.preflight>.panel:first-child{border-color:#c9ad8170;background:linear-gradient(125deg,#3b3444,#252d3b)}
+.preflight>.panel:last-child{background:radial-gradient(circle at 86% 0%,#a6794548,transparent 54%),linear-gradient(145deg,#403341,#2b2535);border-color:#d4ad7473}
+.preflight>.panel h3{font-size:18px;margin-bottom:7px}
+.preflight>.panel>p{font-size:12px;color:#d5c5c4;margin:6px 0 11px}
+.preflight>.panel .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.preflight>.panel .card{min-height:142px;padding:13px 15px;background:linear-gradient(140deg,#423745,#2b3040);border-color:#9c829071}
+.preflight>.panel .card.selected{background:linear-gradient(135deg,#594353,#373044);border-color:#e8bb8a}
+.preflight>.panel .card .name{font-size:20px}
+.preflight>.panel .card .meta{font-size:12px;margin:3px 0}
+.preflight>.panel .card>p{font-size:11px;margin:3px 0;color:#e6d3c4}
+.preflight>.panel .card button{padding:7px 12px;font-size:12px;margin-top:5px}
+.preflight>.panel:last-child>b{font:600 23px "Noto Serif SC",serif;display:block;margin:10px 0;color:#ffd295}
+.preflight>.panel:last-child>p:last-child{font-size:11px;color:#cfc3bf;border-top:1px solid #d8b78530;padding-top:10px}
+.game-main>p{font-size:14px;color:#d4c8cc}
+.panel{background:linear-gradient(138deg,#3a3042ed,#242b3bf5 65%,#1e2635f8);border-color:#e1b88c61}
+.card{background:linear-gradient(145deg,#3d3346,#282d3f);border-color:#e2b98d55}
+.panel h3{color:#fce2b9}
+.card .name{color:#ffe1b3}
+.meta,.shopitem .meta{color:#d3c6c7}
+p,.small{color:#d6c7cd}
+.card>p{color:#d7c7cb}
+.shopitem{background:linear-gradient(155deg,#453549,#2d2c43 72%,#263343);border-color:#d5b48a70}
+.shopitem .name{display:flex;align-items:center;gap:10px;min-height:42px;padding-right:22px}
+.shopitem .name::before{content:"蛊";display:grid;place-items:center;flex:none;width:40px;height:40px;background:linear-gradient(135deg,#82604e,#383342);border:1px solid #e6c093a8;border-radius:10px 3px 10px 3px;color:#ffe2ab;font:21px "Songti SC",serif;box-shadow:0 3px 15px #120f1b80}
+.shopitem .offer-hint{color:#bcebd4;background:#1a3b3aa3;border-left-color:#8cd4ae}
+.shell>.panel,.shell>div>.panel{border-color:#d4af8863}
+.shell .panel:has(.shopitem){background:linear-gradient(160deg,#393041,#242b39)}
+.slot{background:linear-gradient(105deg,#3d3446,#283344);border-color:#bd9b8070}
+.slot .meta{color:#dbd0cb}
+button{border-color:#c6ab958e;color:#fff0d6}
+button.primary{color:#fff9eb}
+.guide-lines p{color:#d8e9df}
+.opponent-note{color:#ffdaa1}
+.book-footer{color:#aca5ae}
+@media(min-width:1050px){
+ .game-main>h2{margin-top:10px}
+ .preflight{gap:14px}
+ .shell{margin-top:2px}
+}
+@media(max-width:900px){
+ .preflight{grid-template-columns:1fr}
+ .preflight>.panel:first-child{min-height:0}
+ .preflight>.panel:last-child>b{font-size:20px}
+}
+@media(max-width:520px){
+ .preflight{gap:10px;margin-bottom:12px}
+ .preflight>.panel{padding:15px 12px}
+ .preflight>.panel .grid{gap:7px}
+ .preflight>.panel .card{padding:11px 10px;min-height:168px}
+ .preflight>.panel .card .name{font-size:17px}
+ .preflight>.panel .card .meta{font-size:11px}
+ .preflight>.panel .card button{font-size:11px;padding:7px 9px}
+ .preflight>.panel h3{font-size:16px}
+ .shopitem .name::before{width:30px;height:30px;font-size:17px}
+ .shopitem .name{gap:6px;font-size:16px}
+}
+
+
+/* Battle protagonist: a diegetic summoned talisman rather than placeholder low-poly human. */
+.player-figure{overflow:visible;perspective:480px}
+.player-figure .soul-head,.player-figure .soul-body{display:none}
+.player-figure::before{
+ content:"道";position:absolute;z-index:2;top:74px;left:50%;transform:translateX(-50%) rotate(-4deg);
+ display:grid;place-items:center;width:156px;height:190px;color:#fff1c8;
+ font:80px/1 "Songti SC","Noto Serif SC",serif;letter-spacing:0;
+ background:
+ radial-gradient(ellipse at 50% 45%,rgba(250,213,150,.30),transparent 63%),
+ linear-gradient(165deg,rgba(89,77,102,.86),rgba(36,59,65,.97));
+ border:1px solid #e4c68da6;border-radius:48% 48% 36% 36% / 28% 28% 48% 48%;
+ box-shadow:0 0 0 5px #a7cdbb12,0 0 0 11px #dfc18c12,0 0 45px #b8dfd04d,inset 0 1px 25px #f4cb9870;
+ text-shadow:0 0 22px #f9dbaaab,0 4px 5px #171821;
+}
+.player-figure .halo{top:52px;width:220px;height:220px;border:1px dashed #e6ca96a6;box-shadow:0 0 0 14px #d5bc7614,0 0 0 27px #bbd8c40d,0 0 35px #e4c18835}
+.player-figure .halo::before,.player-figure .halo::after{
+ content:"";position:absolute;inset:23px;border:1px solid #b1e2cb6e;border-radius:50%;
+}
+.player-figure .halo::after{inset:-26px;border:1px dotted #f5c9937a;transform:rotate(18deg)}
+.player-figure .soul-core{z-index:3;top:230px;left:50%;width:16px;height:16px;box-shadow:0 0 20px 7px #e7dca39c}
+@media(max-width:520px){
+ .player-figure::before{top:40px;width:104px;height:134px;font-size:52px}
+ .player-figure .halo{top:28px;width:145px;height:145px}
+ .player-figure .soul-core{top:156px;width:12px;height:12px}
+}
+
+
+.mobile-battle-cta{display:none}
+@media(max-width:790px){
+ .game-main{padding-bottom:76px}
+ .mobile-battle-cta{
+  position:fixed;z-index:25;left:12px;right:12px;bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 10px 10px 15px;color:#f8e1b4;font-size:12px;
+  border:1px solid #e2bd8ab3;border-radius:12px;
+  background:linear-gradient(118deg,#272634f5,#473344f5);box-shadow:0 10px 34px #050511d9,0 0 0 4px #13121f88;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
+ }
+ .mobile-battle-cta .primary{flex:none;font-size:13px;padding:10px 17px}
+}
+
+
+/* Fixed-frame M2 desktop play mode. Key actions stay in view; panels switch rather than page-scroll. */
+.prep-tabs{display:flex;gap:9px;margin:5px 0 10px;align-items:center}
+.prep-tabs .prep-tab{font-size:12px;padding:8px 18px;border:1px solid #9a8484;background:#272737;color:#d9c7c5;letter-spacing:.08em}
+.prep-tabs .prep-tab.active{background:linear-gradient(125deg,#bd8858,#805648);border-color:#e4c293;color:#fff4de;box-shadow:0 0 18px #d7a46d29}
+body[data-prep-tab="shop"] .shell>div:first-child>section:nth-child(2),
+body[data-prep-tab="inventory"] .shell>div:first-child>section:nth-child(1){display:none}
+.shell>div:nth-child(2)>section:nth-child(3){display:none}
+@media(min-width:1000px) and (min-height:650px){
+ html,body{width:100%;height:100%;overflow:hidden}
+ body{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto}
+ .book-header{width:100%;max-width:1320px;min-height:0;height:91px;padding:11px 26px}
+ .brand-signet{height:48px;width:48px;font-size:24px}
+ .book-header h1{font-size:28px;margin:1px 0 2px}
+ .brand-copy .small{font-size:10px}
+ .chapter-ribbon{height:30px;font-size:10px}
+ .game-main{width:100%;height:100%;min-height:0;max-height:100%;overflow:hidden;margin:0 auto;padding:5px 24px 8px;display:flex;flex-direction:column}
+ .game-main>h2{flex:none;font-size:24px;margin:4px 0 1px;line-height:1.2}
+ .game-main>p{flex:none;font-size:11px;margin:2px 0 5px}
+ .prep-tabs{flex:none;margin:1px 0 6px}
+ .preflight{flex:none;max-height:163px;min-height:0;margin-bottom:7px}
+ .preflight>.panel{padding:10px 13px;overflow:hidden}
+ .preflight>.panel h3{font-size:14px;margin:0 0 2px}
+ .preflight>.panel>p{font-size:10px;margin:2px 0 4px;line-height:1.3}
+ .preflight>.panel .card{min-height:0;padding:8px 11px}
+ .preflight>.panel .card .name{font-size:15px}
+ .preflight>.panel .card .meta{font-size:10px;line-height:1.25;margin:1px}
+ .preflight>.panel .card>p{font-size:10px;line-height:1.3;margin:2px 0}
+ .preflight>.panel .card button{padding:4px 11px;margin:1px;font-size:10px}
+ .preflight>.panel:last-child>b{font-size:18px;margin:5px 0}
+ .preflight>.panel:last-child>p:last-child{margin:4px 0;padding-top:4px;line-height:1.35}
+ .shell{flex:1;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1.72fr) minmax(310px,1fr);gap:12px}
+ .shell>div{min-height:0;overflow:hidden;display:flex;flex-direction:column}
+ .shell>div:first-child>section{flex:1;min-height:0;overflow:auto;margin:0}
+ .shell>div:nth-child(2)>section{flex:none;min-height:0;margin-bottom:9px;padding:13px}
+ .shell>div:nth-child(2)>section:nth-child(2){flex:1;overflow:auto}
+ .shell .panel h3{font-size:15px;margin:0 0 8px}
+ .shell .panel:has(.shopitem) .grid{height:calc(100% - 75px);grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:7px}
+ .shopitem{min-height:0!important;padding:9px 12px}
+ .shopitem .name{min-height:28px;font-size:14px}
+ .shopitem .name::before{width:28px;height:28px;font-size:15px}
+ .shopitem .meta{min-height:0;font-size:10px;line-height:1.4;margin:2px 0}
+ .shopitem .offer-hint{min-height:0;padding:4px 6px;font-size:10px}
+ .shopitem .gold{margin:0;font-size:11px}
+ .shopitem .actions{margin:2px 0 0}
+ .shopitem .actions button{font-size:10px;padding:5px 8px}
+ .shell .panel:has(.shopitem)>.actions{margin-top:6px}
+ .shell .panel:has(.shopitem)>.actions button{padding:6px 10px;font-size:11px}
+ .shell .panel:has(.slot){max-height:none}
+ .shell .panel:has(.slot) .slot{padding:6px 9px;margin:4px 0}
+ .shell .panel:has(.slot) .slot .meta{font-size:10px;line-height:1.3}
+ .build-compact strong{padding:5px}
+ .guide-lines{margin-top:4px}
+ .guide-lines p{font-size:10px;line-height:1.3;margin:2px}
+ .opponent-note{font-size:10px;padding:5px;margin:4px 0}
+ .book-footer{width:100%;height:27px;min-height:0;margin:0 auto;padding:6px 24px;font-size:9px}
+ .combat-title{margin:0 0 6px}
+ .combat-title h2{font-size:28px}
+ .combat-shell{flex:1;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1.8fr) minmax(300px,1fr)}
+ .combat-stage{height:100%;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+ .stage-top,.stage-bottom{padding:7px 15px}
+ .arena{flex:1;min-height:0;padding:5px 10px}
+ .figure-portrait{height:min(31vh,235px)}
+ .player-figure::before{top:35px}
+ .player-figure .halo{top:10px}
+ .player-figure .soul-core{top:185px}
+ .attack-intent{margin:2px 12px 5px;padding:8px}
+ .focus-event{margin:0 12px 8px;min-height:42px;padding:5px}
+ .combat-side{min-height:0;overflow:auto}
+ .combat-side .panel{padding:11px;margin-bottom:8px}
+ .battle-gu{padding:5px}
+ .battle-gu-list{margin-top:6px}
+ .battle-progress{margin-top:6px}
+ .battle-progress div{padding:5px}
+ .recent-events{max-height:115px}
+}
+@media(min-width:1000px) and (min-height:650px) and (max-height:760px){
+ .preflight{max-height:132px}
+ .preflight>.panel>p:first-of-type{display:none}
+ .preflight>.panel .card>p{display:none}
+ .game-main>h2{font-size:21px}
+ .chapter-ribbon{height:23px}
+ .book-header{height:78px}
+ .book-footer{height:21px}
+}
+
+/* Tab indicator follows persisted screen choice even after rerender. */
+body[data-prep-tab="shop"] .prep-tab[data-tab="shop"],body[data-prep-tab="inventory"] .prep-tab[data-tab="inventory"]{background:linear-gradient(125deg,#bd8858,#805648);border-color:#e4c293;color:#fff4de}
+body[data-prep-tab="shop"] .prep-tab[data-tab="inventory"],body[data-prep-tab="inventory"] .prep-tab[data-tab="shop"]{background:#272737;border-color:#9a8484;color:#d9c7c5}
