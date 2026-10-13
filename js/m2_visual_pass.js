@@ -111,12 +111,12 @@ function decorate(){
      panel.className="foe-portrait m2-r8-foe-portrait";
      panel.dataset.foe=foeId;
      panel.setAttribute("role","img");
-     panel.setAttribute("aria-label","敌方人物半身插画");
+     panel.setAttribute("aria-label",(stage.querySelector(".foe .combatant-name")?.textContent||foeId)+"人物半身插画");
      crest.replaceWith(panel);
    }else if(source){
      const img=document.createElement("img");
      img.className="foe-portrait m2-foe-fallback";
-     img.alt="敌方人物剪影";
+     img.alt=(stage.querySelector(".foe .combatant-name")?.textContent||foeId)+"人物剪影";
      img.src=source;
      crest.replaceWith(img);
    }
