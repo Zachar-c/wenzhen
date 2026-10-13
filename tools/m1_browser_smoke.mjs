@@ -29,9 +29,23 @@ try{
   assert.match(await page.locator('#status').innerText(),/9 金币/);
   for(let round=1;round<=3;round++){
    await page.getByRole('button',{name:/迎战/}).click();
-   if(i===0&&round===1)await page.screenshot({path:output+'/m1_battle_desktop.png',fullPage:true});
+   assert.equal(await page.locator('.combat-stage').count(),1);
+   assert.equal(await page.locator('.battle-gu').count(),round===1?4:4);
+   if(i===0&&round===1){
+    await page.waitForTimeout(1400);
+    const portrait=page.locator('.foe-portrait');
+    assert.equal(await portrait.evaluate(el=>el.complete&&el.naturalWidth>0),true,'existing enemy art must load offline');
+    assert.match(await page.locator('.focus-event').innerText(),/战场焦点/);
+    assert.match(await page.locator('.battle-progress').innerText(),/我方已造成/);
+    await page.screenshot({path:output+'/m1_battle_desktop.png',fullPage:true});
+    await page.setViewportSize({width:390,height:844});
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true,'no mobile arena horizontal overflow');
+    await page.screenshot({path:output+'/m1_battle_mobile.png',fullPage:true});
+    await page.setViewportSize({width:1280,height:800});
+   }
    await page.getByRole('button',{name:'立即结算'}).click();
    assert.match(await page.locator('#app').innerText(),/战斗胜利|战斗失利/);
+   assert.match(await page.locator('#app').innerText(),/造成伤害|护盾吸收/);
   }
   assert.match(await page.locator('#app').innerText(),/M1 阶段结算/);
   const save=await page.evaluate(()=>JSON.parse(localStorage.getItem('wenzhen_m1_v1')));
