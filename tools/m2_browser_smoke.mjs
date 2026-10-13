@@ -79,6 +79,10 @@ try{
    await page.getByRole('button',{name:/迎战/}).click();
    assert.equal(await page.locator('.combat-stage').count(),1);
    assert.equal(await page.locator('.combat-stage .foe-portrait').count(),1,'each battle must show enemy character art');
+   if(i===0&&[3,5,6].includes(round)){
+     await page.waitForFunction(()=>!!document.querySelector('.m2-r8-foe-portrait'));
+     await page.screenshot({path:output+'/m2_visual_enemy_round_'+round+'.png'});
+   }
    assert.equal(await page.locator('.battle-gu').count(),round===1?4:4);
    if(i===0&&round===1){
     await page.waitForTimeout(1400);
