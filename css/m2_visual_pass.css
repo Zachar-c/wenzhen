@@ -100,3 +100,10 @@
 .m2-r8-gu-painted[data-tile="4"]{background-position:66.6667% center,center}
 .m2-r8-gu-painted[data-tile="5"]{background-position:83.3333% center,center}
 .m2-r8-gu-painted[data-tile="6"]{background-position:100% center,center}
+
+/* R9 image-integrity pass: WebP Gu tiles are square; never distort anatomy into portrait slots. */
+.shopitem>.m2-gu-illustration.m2-r8-gu-painted{align-self:start;aspect-ratio:1 / 1;height:auto;min-height:0;object-fit:contain}
+.m2-gu-illustration.m2-r8-gu-painted{background-size:700% auto,100% 100%;background-color:#18202b}
+.slot>.m2-gu-illustration.m2-r8-gu-painted,.battle-gu>.m2-gu-illustration.m2-r8-gu-painted{aspect-ratio:1 / 1}
+@media(min-width:1000px) and (min-height:650px){.shopitem>.m2-gu-illustration.m2-r8-gu-painted{min-height:0;height:55px}}
+@media(max-width:520px){.shopitem>.m2-gu-illustration.m2-r8-gu-painted{min-height:0;height:38px}}
