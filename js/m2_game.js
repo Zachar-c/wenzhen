@@ -1,5 +1,7 @@
 /* Wenzhen M1: self-contained offline mode. No dependency on legacy primeval-essence engine. */
 "use strict";
+// M3 is opt-in; M2's default six-fight mechanics and localStorage remain frozen.
+const M3_MODE=typeof location!=="undefined"&&new URLSearchParams(location.search).get("m3")==="rank5";
 const GU=[
 ["B101","引锋蛊","百兵","攻","造成4伤害；破绽下额外2",8,2],["B102","守柄蛊","百兵","防","敌方宣告时获得3护盾",10,0],["B103","试刃蛊","百兵","标","8 tick破绽+2；对野猪破甲6 tick",12,1],
 ["B201","折锋蛊","百兵","攻","兵锋先击4；若仍在交战，2 tick后折返追击3",12,1],
@@ -12,7 +14,21 @@ const GU=[
 ["N201","裂势蛊","百兵","攻","敌人蓄势时斩击5；专破蓄势窗口",10,0],["N202","饮锋蛊","玄牝","反","受到实际伤害后积攒血势，下一tick反击（最多6）",10,0],
 ["G101","辨兆蛊","观复","察","记录已公开攻击并减伤2",10,0],["G102","听息蛊","观复","防","准确观察时在命中前获得4护盾",10,0],["G103","记痕蛊","观复","反","听息有效吸收后下一tick反击3，重复招式+2",12,0],
 ["G112","知几蛊","观复","攻","敌方连续两次宣告同一招式后，趁真实起手刺击3；变招未明时不发动",12,0],
-["G201","重息蛊","观复","防","连续两次确认相同起手后，在命中前凝成8点护盾；首招及变招不成立",10,0]
+["G201","重息蛊","观复","防","连续两次确认相同起手后，在命中前凝成8点护盾；首招及变招不成立",10,0],
+...(M3_MODE?[
+["B202","骨节兵蛊","百兵","材","三转游节兵同转辅蛊，定向供给",99,0],
+["B301","游节兵蛊","百兵","攻","首击确实命中，才沿完好关节折角续击",12,1],
+["B302","回匣刀蛊","百兵","材","四转百节承锋同转辅蛊，定向供给",99,0],
+["B401","百节承锋蛊","百兵","攻","实体刀胚变角，尚存关节能承受一次碎节",12,1],
+["B402","归鞘轮兵蛊","百兵","材","五转万节藏锋同转辅蛊，定向供给",99,0],
+["B501","万节藏锋蛊","百兵","攻","真实第一击命中与完好关节才可连击至多三段；缴械停机",12,1],
+["G202","循痕蛊","观复","材","三转三息观机同转辅蛊，定向供给",99,0],
+["G301","三息观机蛊","观复","察","两次真实敌招记录后，在相同起手预备反击",10,0],
+["G302","回痕截式蛊","观复","材","四转观微见著同转辅蛊，定向供给",99,0],
+["G401","观微见著蛊","观复","察","同招两次真实记录后抢出一次窗口；变招无效",10,0],
+["G402","周而复始蛊","观复","材","五转万象观复同转辅蛊，定向供给",99,0],
+["G501","万象观复蛊","观复","察","同敌同招两次真实记录，仅精准化解一次可证下一式；变招失效",10,0]
+]:[])
 ].map(([id,name,school,kind,description,cd,first])=>({id,name,school,kind,description,cd,first}));
 const GM=Object.fromEntries(GU.map(g=>[g.id,g]));
 const SCHOOLS=["百兵","晦明","玄牝","执枢","阖辟","参同","乘物","观复"];
@@ -24,10 +40,22 @@ const FOES=[
 {id:"bandit",name:"裂甲悍匪",hp:38,armor:1,first:4,period:[8],moves:[{name:"破盾猛击",damage:6,windup:3,type:"charge"}]},
 {id:"shadow",name:"逐影刺客",hp:46,armor:0,first:4,period:[7,9],moves:[{name:"潜刃",damage:7,windup:2,type:"straight"},{name:"残影",damage:4,windup:4,type:"feint"}]},
 {id:"warden",name:"镇关铁卫",hp:60,armor:2,first:3,period:[8,10],moves:[{name:"重锤",damage:8,windup:4,type:"charge"},{name:"横扫",damage:6,windup:3,type:"normal"}]},
-{id:"rootling",name:"枯根傀儡",hp:54,armor:1,first:5,period:[9],moves:[{name:"腐根鞭打",damage:5,windup:3,type:"normal"}]}
+{id:"rootling",name:"枯根傀儡",hp:54,armor:1,first:5,period:[9],moves:[{name:"腐根鞭打",damage:5,windup:3,type:"normal"}]},
+...(M3_MODE?[
+{id:"disarmer",name:"卸兵游侠",hp:34,armor:0,first:5,period:[11],moves:[{name:"夺柄",damage:4,windup:4,type:"disarm"}]},
+{id:"watcher",name:"回招守卫",hp:42,armor:1,first:7,period:[11],moves:[{name:"守势反斩",damage:5,windup:4,type:"normal"}]},
+{id:"jointbeast",name:"裂节铁兽",hp:46,armor:2,first:5,period:[9],moves:[{name:"碎节撞击",damage:5,windup:3,type:"fracture"}]},
+{id:"phantom",name:"藏式影客",hp:42,armor:0,first:4,period:[8,9],moves:[{name:"斜刺",damage:5,windup:3,type:"straight"},{name:"假身换位",damage:7,windup:4,type:"feint"}]},
+{id:"duelist",name:"双锋执刀者",hp:48,armor:1,first:5,period:[9,11],moves:[{name:"半月斩",damage:5,windup:3,type:"normal"},{name:"回身横斩",damage:6,windup:4,type:"straight"}]},
+{id:"stonewall",name:"铁壁持盾将",hp:54,armor:3,first:6,period:[12],moves:[{name:"盾反",damage:5,windup:5,type:"normal"}]},
+{id:"breaker",name:"碎锋石魈",hp:58,armor:1,first:5,period:[11,9],moves:[{name:"断鞘",damage:6,windup:4,type:"disarm"},{name:"蹬踏",damage:4,windup:2,type:"normal"}]},
+{id:"pulse",name:"七息巡猎者",hp:54,armor:1,first:6,period:[8],moves:[{name:"七息短打",damage:5,windup:3,type:"normal"}]},
+{id:"upsetter",name:"乱序换式傀",hp:57,armor:1,first:5,period:[8,9,10],moves:[{name:"右封",damage:5,windup:3,type:"normal"},{name:"藏锋",damage:5,windup:3,type:"feint"},{name:"碎胚",damage:5,windup:4,type:"fracture"}]},
+{id:"gatekeeper",name:"守山断律者",hp:66,armor:2,first:5,period:[11,8,10],moves:[{name:"破兵令",damage:6,windup:4,type:"disarm"},{name:"重复镇击",damage:5,windup:4,type:"normal"},{name:"换律奇袭",damage:7,windup:3,type:"feint"}]}
+]:[])
 ];
-const STORE_KEY="wenzhen_m2_v1", META_KEY="wenzhen_m2_meta";
-const TOTAL_ROUNDS=6, CHAPTER_LENGTH=3;
+const STORE_KEY=M3_MODE?"wenzhen_m3_rank5_v1":"wenzhen_m2_v1", META_KEY=M3_MODE?"wenzhen_m3_rank5_meta":"wenzhen_m2_meta";
+const TOTAL_ROUNDS=M3_MODE?16:6, CHAPTER_LENGTH=M3_MODE?4:3;
 
 const ENEMY_SPOILS=[
  {foe:"rogue",gu:"B101",clue:"散修袖口露出金铁锋符"},
@@ -36,18 +64,31 @@ const ENEMY_SPOILS=[
  {foe:"bandit",gu:"T103",clue:"悍匪腰间藏有灼热火筹"},
  {foe:"shadow",gu:"N201",clue:"刺客背囊传出听风之鸣"},
  {foe:"warden",gu:"N202",clue:"铁卫以辨兆蛊洞察来敌"},
-{foe:"rootling",gu:"G112",clue:"傀儡核心刻有重复出手的旧式印痕"}
+{foe:"rootling",gu:"G112",clue:"傀儡核心刻有重复出手的旧式印痕"},
+...(M3_MODE?[
+{foe:"disarmer",gu:"B103",clue:"缴械令由敌人的真命中触发"},
+{foe:"watcher",gu:"G103",clue:"守卫的招式记录可作记痕佐证"},
+{foe:"jointbeast",gu:"B202",clue:"破损兽骨留下二转骨节兵"},
+{foe:"phantom",gu:"G202",clue:"影客遗留循痕观察记录"},
+{foe:"duelist",gu:"B302",clue:"连斩的刀匣可作三转辅材"},
+{foe:"stonewall",gu:"G302",clue:"盾上刻录完整的三息招式"},
+{foe:"breaker",gu:"B103",clue:"断鞘之术留下试刃蛊"},
+{foe:"pulse",gu:"G103",clue:"巡猎者携带记痕蛊"},
+{foe:"upsetter",gu:"B402",clue:"乱序傀儡里藏归鞘轮兵"},
+{foe:"gatekeeper",gu:"G402",clue:"守山人身藏周而复始四转辅蛊"}
+]:[])
 ];
-const HUNTS=[[0,1],[1,2],[2,1],[3,4],[4,5],[5,6]];
-function targetIndex(){return Number.isInteger(state.targetIndex)&&HUNTS[state.round-1]?.includes(state.targetIndex)?state.targetIndex:state.round-1}
+const HUNTS=M3_MODE?Array.from({length:16},(_,i)=>[i,i+1]):[[0,1],[1,2],[2,1],[3,4],[4,5],[5,6]];
+function availableHunts(){return (HUNTS[state.round-1]||[]).filter(i=>!M3_MODE||!(state.pastTargets||[]).includes(i))}
+function targetIndex(){const candidates=availableHunts();return Number.isInteger(state.targetIndex)&&candidates.includes(state.targetIndex)?state.targetIndex:(candidates[0]??state.round-1)}
 function targetFoe(){return FOES[targetIndex()]}
 function chooseTarget(index){
- if(!state||battle||state.inBattle||state.completed||state.pendingSpoils||!HUNTS[state.round-1]?.includes(index))return false;
+ if(!state||battle||state.inBattle||state.completed||state.pendingSpoils||!availableHunts().includes(index))return false;
  state.targetIndex=index;save();render();return true;
 }
 function huntBoard(){
  return '<section class="panel"><h3>本轮追猎 · 选择目标</h3><p>查看敌情与携蛊线索后，决定本轮夺取哪一只蛊。</p><div class="grid">'+
- HUNTS[state.round-1].map(i=>{const f=FOES[i],d=ENEMY_SPOILS[i];return '<div class="card '+(targetIndex()===i?'selected':'')+'"><div class="name">'+esc(f.name)+'</div><div class="meta">生命 '+f.hp+' / 护甲 '+f.armor+' / 首次宣告 tick '+f.first+'</div><b class="gold">'+esc(GM[d.gu].name)+'</b><p class="small">'+esc(d.clue)+'</p><button '+(targetIndex()===i?'disabled':'')+' onclick="chooseTarget('+i+')">'+(targetIndex()===i?'已选目标':'追猎此敌')+'</button></div>'}).join('')+'</div></section>';
+ availableHunts().map(i=>{const f=FOES[i],d=ENEMY_SPOILS[i];return '<div class="card '+(targetIndex()===i?'selected':'')+'"><div class="name">'+esc(f.name)+'</div><div class="meta">生命 '+f.hp+' / 护甲 '+f.armor+' / 首次宣告 tick '+f.first+'</div><b class="gold">'+esc(GM[d.gu].name)+'</b><p class="small">'+esc(d.clue)+'</p><button '+(targetIndex()===i?'disabled':'')+' onclick="chooseTarget('+i+')">'+(targetIndex()===i?'已选目标':'追猎此敌')+'</button></div>'}).join('')+'</div></section>';
 }
 function upcomingSpoils(){return ENEMY_SPOILS[targetIndex()]}
 function lootPreview(){const d=upcomingSpoils();return '<section class="panel"><h3>可追夺的蛊</h3><b class="gold">'+esc(GM[d.gu].name)+'</b><p>'+esc(d.clue)+'</p><p>战胜敌人才可夺得；夺蛊与变卖均由玩家决定。</p></section>'}
@@ -93,8 +134,8 @@ function makeId(){return "i"+(state.nextId++)}
 function owned(id){return {id:makeId(),gu:id}}
 function starters(school){return GU.filter(g=>g.school===school).slice(0,3).map(g=>owned(g.id))}
 function save(){if(state)localStorage.setItem(STORE_KEY,JSON.stringify(state))}
-function init(school){if(!SCHOOLS.includes(school))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
-function beginRound(){state.round++;state.targetIndex=state.round-1;state.gold+=5;state.free=true;state.rerolls=0;state.seekUsed=false;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school).slice(0,3);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
+function init(school){if(!SCHOOLS.includes(school)||(M3_MODE&&!["百兵","观复"].includes(school)))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,pastTargets:[],m3StockUsed:false,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
+function beginRound(){state.round++;state.targetIndex=availableHunts()[0]??state.round-1;state.m3StockUsed=false;state.gold+=5;state.free=true;state.rerolls=0;state.seekUsed=false;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school).slice(0,3);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
 const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊",note:"两段追击；失去守柄防护"},{id:"G201",inputs:["G101","G102"],label:"辨兆蛊＋听息蛊 → 重息蛊",note:"重复招式才防护；首招失守"}];
 function availableRecipes(){return M3_RECIPES.filter(r=>r.inputs.every(id=>state.gu.some(g=>g.gu===id)))}
 function refineGu(recipeId){
@@ -179,7 +220,7 @@ const gs=battle.instances.find(x=>x.gu==="G103"&&x.ready<=battle.tick),heard=Obj
 if(gs&&heard&&e.observed){cast(gs);const bonus=battle.lastConfirmed===e.type?2:0;battle.pending.push({tick:battle.tick+1,type:"counter",damage:3+bonus,source:gs.id})}
 if(e.observed)battle.lastConfirmed=e.type;
 battle.current=null}
-function startBattle(){if(battle||state.pendingSpoils||state.completed||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(targetFoe());foe.maxHp=foe.hp;battle={tick:0,hp:30,foe,totals:{damageDealt:0,damageTaken:0,healing:0,shieldAbsorbed:0,damageBySource:{},absorbedByInstance:{}},instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,gu:g.id,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},500)}
+function startBattle(){if(battle||state.pendingSpoils||state.completed||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(targetFoe());foe.maxHp=foe.hp;battle={tick:0,hp:30,foe,targetIndex:targetIndex(),observedStreak:0,lastResolvedMove:null,forecastUsed:false,weaponBroken:false,jointIntegrity:3,totals:{damageDealt:0,damageTaken:0,healing:0,shieldAbsorbed:0,damageBySource:{},absorbedByInstance:{}},instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,gu:g.id,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},500)}
 // Synthetic-only M1 interrupt hook; no starting Gu invokes it.
 function interrupt(source="synthetic"){
  if(!battle||!battle.current||battle.current.impact<=battle.tick||battle.tick<(battle.interruptImmuneUntil||0))return false;
@@ -242,7 +283,7 @@ if(b.foe.hp<=0){finish(true);return}
 if(enemy&&enemy.impact===t){hitQueued(enemy);if(b.hp<=0){finish(false);return}}
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="heal")){const before=b.hp;b.hp=Math.min(30,b.hp+e.value);if(b.totals)b.totals.healing+=b.hp-before;push("引露治疗 +"+(b.hp-before))}b.pending=b.pending.filter(x=>!(x.tick===t&&x.type==="heal"));
 if(t>=120){finish(false);return}b.tick++}
-function finish(won){clearInterval(timer);timer=null;let result={won,tick:battle.tick,hp:battle.hp,foe:battle.foe.name,log:log.slice(),stats:clone(battle.totals)};battle=null;state.lastResult=result;state.inBattle=false;state.losses+=won?0:1;if(won){const d=upcomingSpoils();state.pendingSpoils={foe:d.foe,gu:d.gu,clue:d.clue}}else if(state.losses>=3||state.round>=TOTAL_ROUNDS)endRun();else beginRound();save();render();q("app").insertAdjacentHTML("afterbegin",'<section class="panel"><h3>'+(won?'战斗胜利':'战斗失利')+' · '+esc(result.foe)+'</h3><p>结束 tick '+result.tick+' · 剩余生命 '+result.hp+'</p>'+battleReport(result.stats)+'<details><summary>展开事件日志</summary><pre class="log">'+esc(result.log.join("\n"))+'</pre></details></section>')}
+function finish(won){clearInterval(timer);timer=null;let result={won,tick:battle.tick,hp:battle.hp,foe:battle.foe.name,log:log.slice(),stats:clone(battle.totals)};if(M3_MODE){state.pastTargets??=[];if(!state.pastTargets.includes(battle.targetIndex))state.pastTargets.push(battle.targetIndex)}battle=null;state.lastResult=result;state.inBattle=false;state.losses+=won?0:1;if(won){const d=upcomingSpoils();state.pendingSpoils={foe:d.foe,gu:d.gu,clue:d.clue}}else if(state.losses>=3||state.round>=TOTAL_ROUNDS)endRun();else beginRound();save();render();q("app").insertAdjacentHTML("afterbegin",'<section class="panel"><h3>'+(won?'战斗胜利':'战斗失利')+' · '+esc(result.foe)+'</h3><p>结束 tick '+result.tick+' · 剩余生命 '+result.hp+'</p>'+battleReport(result.stats)+'<details><summary>展开事件日志</summary><pre class="log">'+esc(result.log.join("\n"))+'</pre></details></section>')}
 function renderBattle(){
  const b=battle;if(!b)return;
  const foe=targetFoe(),remain=b.current?b.current.impact-b.tick:null,shieldValue=b.shields.reduce((n,s)=>n+s.value,0);
