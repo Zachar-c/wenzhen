@@ -38,5 +38,25 @@ function decorate(){
   stage.dataset.impact=/反击|饮锋|记痕/.test(event)?"counter":/护盾|规避|吸收/.test(event)?"guard":/伤害|攻击|斩击|基础攻击|造成|灼烧/.test(event)?"strike":"idle";
  }
 }
-const app=document.getElementById("app");if(app){new MutationObserver(decorate).observe(app,{childList:true});decorate();}
+let lastCue="";
+function sceneCue(app,stage){
+ const message=(app.querySelector(".focus-event strong")?.textContent||"").trim();
+ const stamp=(app.querySelector(".battle-clock")?.textContent||"").trim();
+ const cue=stamp+"|"+message;
+ if(!message||cue===lastCue)return;
+ lastCue=cue;
+ const tone=/反击|饮锋|记痕/.test(message)?"counter":/护盾|规避|吸收|减伤/.test(message)?"guard":/治疗|恢复/.test(message)?"heal":/伤害|攻击|斩击|基础攻击|造成|灼烧|根刺|命中/.test(message)?"strike":"";
+ if(!tone)return;
+ const fx=document.createElement("div");
+ fx.className="m2-scene-cue m2-cue-"+tone;
+ fx.setAttribute("aria-hidden","true");
+ const orb=document.createElement("i"),trace=document.createElement("b");
+ fx.append(orb,trace);
+ stage.appendChild(fx);
+ fx.addEventListener("animationend",()=>fx.remove(),{once:true});
+}
+const app=document.getElementById("app");if(app){
+ const observer=new MutationObserver(()=>{decorate();const stage=app.querySelector(".combat-stage");if(stage)sceneCue(app,stage)});
+ observer.observe(app,{childList:true,subtree:false});decorate();
+}
 })();
