@@ -1,0 +1,30 @@
+name: M2 visual acceptance (isolated)
+on:
+  pull_request:
+    paths:
+      - 'm2.html'
+      - 'css/m2_visual_pass.css'
+      - 'js/m2_visual_pass.js'
+      - 'assets/visual/**'
+      - 'tools/m2_visual*.mjs'
+      - '.github/workflows/m2-visual.yml'
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - run: node tools/m2_visual_capture.mjs
+      - run: node tools/m2_visual_gallery.mjs
+      - run: node tools/m2_visual_enemy_capture.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2-visual-r8-browser-evidence
+          path: artifacts/m2-visual-pass/
+          if-no-files-found: warn
