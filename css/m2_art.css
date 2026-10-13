@@ -1,0 +1,161 @@
+/* M2 "Xuantong Chronicle" bespoke interface: stand-alone skin, no battle logic mutation. */
+:root{
+ --bg:#0c0e19;--ink:#191722;--paper:#f3e6cf;--paper-deep:#e4d3b7;
+ --purple:#342945;--plum:#523a59;--jade:#83c0a9;--gold:#efc886;--copper:#a96b53;--ivory:#fff2d8;
+ --edge:rgba(246,212,160,.24);--edge-dark:rgba(62,43,48,.24);
+ --shadow:0 18px 48px rgba(5,5,16,.43),inset 0 1px rgba(255,237,201,.08);
+ font-family:"Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+ color-scheme:dark;background:#0c0e19;color:var(--ivory);
+}
+*{box-sizing:border-box}
+body{
+ min-height:100vh;color:var(--ivory);
+ background:
+ radial-gradient(ellipse 65% 36% at 50% -5%,rgba(174,123,166,.19),transparent 78%),
+ radial-gradient(ellipse 55% 60% at 0% 55%,rgba(90,72,126,.16),transparent 85%),
+ radial-gradient(ellipse 50% 48% at 100% 66%,rgba(69,131,122,.09),transparent 78%),
+ linear-gradient(148deg,#101321 0%,#151321 54%,#080e17 100%);
+ overflow-x:hidden;
+}
+body::before{content:"";position:fixed;z-index:-1;inset:0;pointer-events:none;opacity:.56;background-image:radial-gradient(circle at 11% 14%,#fbd8a8 0 1px,transparent 1.5px),radial-gradient(circle at 52% 34%,#d0abd8 0 1px,transparent 1.5px),radial-gradient(circle at 88% 72%,#a0bfcc 0 1px,transparent 1.5px);background-size:193px 207px,257px 269px,331px 317px}
+body::after{content:"";position:fixed;pointer-events:none;z-index:-1;left:50%;top:84px;width:min(90vw,1120px);height:540px;transform:translateX(-50%);border:1px solid rgba(199,156,110,.08);border-radius:50%;box-shadow:0 0 0 90px rgba(206,166,138,.015),0 0 0 220px rgba(201,176,196,.01)}
+h1,h2,h3,.name{font-family:"Noto Serif SC","Source Han Serif SC","Songti SC",SimSun,serif}
+h1,h2,h3{color:#f8e4c1}
+p,.small{color:#c3b7bd;line-height:1.7}
+button{transition:transform .18s ease,filter .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}
+button:not(:disabled):hover{transform:translateY(-2px);filter:brightness(1.12)}
+button:not(:disabled):active{transform:translateY(0) scale(.98)}
+button:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid #ffe1a4;outline-offset:3px}
+button+button{margin-left:0}
+.book-header{max-width:1320px;min-height:118px;margin:0 auto;padding:20px 34px 16px;border-bottom:1px solid var(--edge);display:flex;align-items:center;justify-content:space-between;gap:24px;position:relative}
+.book-header::after{content:"";position:absolute;bottom:-2px;left:32px;width:150px;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+.header-brand{display:flex;align-items:center;gap:20px}
+.brand-signet{flex:none;display:grid;place-items:center;width:65px;height:65px;border:1px solid rgba(238,198,132,.68);border-radius:18px 3px 18px 3px;color:#ffe2aa;font:32px "Songti SC",serif;transform:rotate(-6deg);background:linear-gradient(145deg,#6c3a42,#271f33);box-shadow:0 0 0 5px #f0ba7e14,0 12px 24px #03071188;text-shadow:0 2px 14px #f4c68988}
+.brand-copy{min-width:0}
+.eyebrow{font:600 10px/1.5 ui-sans-serif,system-ui,sans-serif;letter-spacing:.29em;color:#d7af7d}
+.book-header h1{font-size:38px;line-height:1.14;margin:4px 0 5px;letter-spacing:.18em;color:#f6e5c8;font-weight:600;text-shadow:0 4px 22px #ceaa7930}
+.brand-sep{color:#b88d6a;font-size:.65em}.book-header h1 em{font-style:normal;color:#e6c58e}
+.brand-copy .small{font-size:11px;letter-spacing:.26em;margin:0;color:#acb5b4}
+.header-right{display:flex;align-items:center;gap:22px;flex-wrap:wrap;justify-content:flex-end}
+.edition-badge{font:600 13px ui-sans-serif,system-ui;color:#ddc28f;letter-spacing:.17em;border-right:1px solid #b9a07c55;padding-right:18px}
+.edition-badge span{display:block;font-size:10px;margin-top:5px;color:#aa9eac;letter-spacing:.1em}
+#status{gap:9px;justify-content:flex-end}
+#status .chip{background:#262233d4;border:1px solid #b69c786e;border-radius:40px;padding:9px 14px;font-size:12px;color:#e9d1aa;box-shadow:inset 0 1px rgba(255,244,211,.06);white-space:nowrap}
+#status .chip.gold{color:#f5d38f;border-color:#d3a7638a;background:#392c2d}
+.chapter-ribbon{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:24px;height:51px;color:#a899a8;font:11px "Noto Serif SC",serif;letter-spacing:.16em}
+.chapter-ribbon b{color:#d9b892;font-weight:400}.chapter-ribbon i{height:1px;width:90px;background:linear-gradient(90deg,transparent,#ad89648c,transparent)}
+.game-main{max-width:1310px;margin:10px auto 64px;padding:0 25px;animation:appear .4s ease both}
+.game-main>h2{display:flex;align-items:center;gap:12px;font-size:30px;letter-spacing:.1em;margin:20px 0 6px;text-shadow:0 5px 24px #cfa46c24}
+.game-main>h2::before{content:"◆";color:var(--gold);font-size:16px}
+.game-main>p{color:#bdb4bc;font-size:13px;margin:6px 0 22px}
+.game-main>.panel,.game-main>.grid,.game-main>.shell,.game-main>.spoils-panel{animation:appear .38s ease both}
+.card,.panel{border:1px solid rgba(238,205,162,.3);border-radius:12px;background:linear-gradient(138deg,#302838ed,#1e2431f5 58%,#171e2cf8);box-shadow:var(--shadow);position:relative}
+.panel{padding:22px 24px;margin-bottom:18px}
+.panel::before{content:"";position:absolute;pointer-events:none;top:7px;left:7px;right:7px;bottom:7px;border:1px solid rgba(255,225,187,.055);border-radius:7px}
+.panel h3{display:flex;align-items:center;gap:10px;margin:0 0 16px;font-size:19px;letter-spacing:.1em}
+.panel h3::before{content:"◈";font-size:12px;color:#f2cb8a}
+.grid{gap:14px}
+.card{padding:18px;min-height:134px;overflow:hidden}
+.card::before{content:"";position:absolute;right:-18px;top:-25px;width:115px;height:115px;border:1px solid rgba(226,183,125,.13);border-radius:50%;box-shadow:0 0 0 19px rgba(226,183,125,.028),0 0 0 37px rgba(226,183,125,.017);pointer-events:none}
+.card.selected{border-color:#ebc18f;box-shadow:var(--shadow),0 0 0 1px rgba(255,217,152,.5),0 0 27px #deb07824;background:linear-gradient(130deg,#483746,#252937 80%)}
+.card.selected::after{content:"◆ 追猎目标";position:absolute;right:12px;top:10px;color:#ffe4a7;font-size:10px;letter-spacing:.1em}
+.name{font-size:21px;font-weight:600;color:#f5dfb8;position:relative;z-index:1}
+.meta{color:#aab6b7;font-size:12px;line-height:1.7}
+.gold{color:#f9cd82}
+.card>p{font-size:12px;position:relative}
+.card>button,.slot button{position:relative;z-index:1}
+button{background:linear-gradient(#4b414f,#302e3d);border:1px solid #978477;border-radius:7px;color:#f2dfc2;padding:10px 15px;box-shadow:inset 0 1px #faf0df0e,0 3px 8px #05081330;letter-spacing:.04em;font-weight:550}
+button:hover:not(:disabled){background:linear-gradient(#645263,#39354c);border-color:#dec08f}
+button.primary{background:linear-gradient(125deg,#cf9461,#9d5a43);border:1px solid #ecc48a;color:#fff9e6;font-weight:700;box-shadow:inset 0 1px #ffebc763,0 4px 20px #c78a6133;letter-spacing:.09em}
+button.primary:hover:not(:disabled){background:linear-gradient(125deg,#e4a66e,#b8664e);box-shadow:0 6px 30px #c8886250}
+button:disabled{opacity:.42}
+.shell{grid-template-columns:minmax(0,1.72fr) minmax(300px,1fr);gap:20px;align-items:start}
+.shell>.panel,.shell>div{min-width:0}
+.shell>.panel{margin:0}
+.shopitem{min-height:225px;display:flex;flex-direction:column;gap:4px;border-color:rgba(227,196,158,.26);background:linear-gradient(155deg,#393047,#292738 74%,#23283a);padding:20px 16px 16px}
+.shopitem::after{content:"壹 转";position:absolute;right:15px;top:22px;font:10px "Noto Serif SC",serif;color:#ceb08177;letter-spacing:.22em}
+.shopitem .name{padding-right:38px;letter-spacing:.08em}
+.shopitem .meta{flex:1;min-height:42px;padding-top:6px}
+.offer-hint{color:#96cbb6;background:#1e3b3855;border-left:2px solid #7dc4a2;padding:7px 9px;font-size:11px;line-height:1.5;min-height:47px}
+.shopitem .gold{font-size:13px;font-weight:600;margin:5px 0 0}
+.shopitem .actions{margin-top:7px;gap:7px}
+.shopitem .actions button{padding:9px 13px;flex:1;white-space:nowrap}
+.shopitem.placeholder{display:grid;place-items:center;color:#a89ba8;font:16px serif;border-style:dashed;min-height:225px}
+.shell .panel:has(.shopitem){background:linear-gradient(160deg,#292535,#191c29)}
+.shell .panel:has(.shopitem) .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.slot{position:relative;background:linear-gradient(105deg,#302d3e,#202835);border:1px solid rgba(226,196,149,.26);border-radius:7px;padding:12px 13px;margin:8px 0}
+.slot b{color:#ecd2a6;font-size:14px}
+.slot .chip{font-size:10px;background:#584652;color:#f2cfad;border-color:#9c7f72}
+.slot .meta{margin:7px 0;line-height:1.7}
+.slot button{font-size:11px;padding:7px 11px}
+.shell .panel:has(.slot){max-height:650px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#7c6873 transparent}
+.shell .panel.build-guide{background:linear-gradient(148deg,#29343c,#202837);border-color:#80b7aa4a}
+.build-compact{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.build-compact strong{background:#142b2c;border:1px solid #6c9e925e;border-radius:6px;padding:12px 7px;color:#b2dece;text-align:center;font-size:12px}
+.guide-lines{margin-top:12px;font-size:12px;color:#c5d9d2}.guide-lines p{margin:8px 0}
+.opponent-note{color:#f2ce9b;background:#503b343d;border-left:2px solid #cb9f65;padding:10px;font-size:12px}
+.spoils-panel{max-width:850px;margin:34px auto 0!important;overflow:hidden;background:radial-gradient(ellipse at 83% 22%,#bd9a7840,transparent 52%),linear-gradient(138deg,#392d40,#1c2832)!important;border-color:#e7c48c90}
+.spoils-panel h2{font-size:43px;letter-spacing:.12em}
+.spoils-panel>.slot{max-width:550px;background:#251f31}
+.spoils-panel .actions button{margin:3px 0}
+.spoils-panel select{background:#2d283b;color:#f2dfc1;border:1px solid #d1a976;padding:10px;margin:10px}
+.spoils-panel .combat-overline{color:#e9b985}
+.chip{border:1px solid #a58c8069;border-radius:16px;background:#282738;color:#eddac2}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+.combat-shell{grid-template-columns:minmax(0,1.9fr) minmax(295px,1fr);gap:17px}
+.combat-title h2{color:#ffdfab;font-size:39px}
+.combat-stage{border-color:#a99178a6;background:radial-gradient(ellipse at 50% 25%,#64506d 0%,#37364d 38%,#171c2c 75%,#10131f 100%);box-shadow:0 16px 55px #0009,0 0 0 5px #af906f12;overflow:hidden}
+.combat-stage::before{content:"";position:absolute;pointer-events:none;z-index:1;inset:12px;border:1px solid rgba(231,189,140,.13);border-radius:5px}
+.combat-stage.enemy-boar{background:radial-gradient(ellipse at 50% 27%,#54675e,#2d4140 34%,#171d2b 80%)}
+.combat-stage.enemy-swordsman,.combat-stage.enemy-shadow{background:radial-gradient(ellipse at 50% 27%,#6c4a75,#332f4e 34%,#141724 80%)}
+.combat-stage.enemy-warden{background:radial-gradient(ellipse at 50% 27%,#776050,#353039 34%,#151a26 80%)}
+.arena{min-height:490px}
+.arena-floor{background:radial-gradient(ellipse at 50% 75%,#ffe5b843,transparent 70%);border-color:#eccb9250}
+.arena-light{background:radial-gradient(ellipse,#f6daaa2b,#bd93b423 40%,transparent 75%)}
+.foe-portrait{border-color:#dfbd92a1;filter:saturate(.85) sepia(.08) contrast(1.11);box-shadow:0 0 0 5px #26202dcc,0 18px 36px #000c}
+.foe-crest{filter:drop-shadow(0 0 28px #e1b3f36d)}
+.player-figure{filter:drop-shadow(0 5px 28px #9ec8df58)}
+.soul-core{box-shadow:0 0 27px 13px #ffc88c93}
+.versus-rune{color:#ffe1ae;border-color:#ecbe83;background:linear-gradient(160deg,#60434f,#29293b);box-shadow:0 0 27px #edb97e66}
+.stage-top{background:#10152263;color:#eccca2}
+.stage-bottom{background:#10152263}
+.attack-intent{background:#1b1b2de8;border-color:#b38a6d88}
+.focus-event{background:#d9b47818;border-left-color:#e8c086}
+.combat-side .panel{background:linear-gradient(145deg,#312a3e,#1e2734);border-color:#8c827c85}
+.battle-gu{background:#202435;border-color:#77697988}
+.battle-gu.ready{background:linear-gradient(105deg,#3e3844,#25363a);border-color:#c9a775ac}
+.battle-gu-glyph{border-radius:9px;transform:rotate(-6deg);background:#543e48;border-color:#d8ad81}
+.battle-gu-glyph::first-letter{transform:rotate(6deg)}
+.battle-progress div{background:#1a2830;border-color:#66878274}
+.event-strip{background:#1e2532}
+.battle-clock{color:#f6c784}
+.book-footer{max-width:1280px;margin:18px auto 0;padding:24px 30px 35px;display:flex;justify-content:space-between;border-top:1px solid #bba07730;color:#8f94a0;font:11px serif;letter-spacing:.18em}
+summary{cursor:pointer;color:#e4c193}
+@keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:1000px){.game-main{min-height:66vh}.shell .panel:has(.shopitem) .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1000px){.game-main{padding:0 20px}.book-header{padding:20px}.shell{grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr)}.chapter-ribbon{gap:12px}.chapter-ribbon i{width:38px}}
+@media(max-width:790px){
+ .book-header{align-items:flex-start;gap:17px}.header-brand{gap:13px}.brand-signet{width:52px;height:52px;font-size:26px}
+ .book-header h1{font-size:29px}.header-right{width:100%;justify-content:space-between}.edition-badge{display:none}
+ .chapter-ribbon{height:auto;padding:16px 12px;font-size:10px;flex-wrap:wrap}.chapter-ribbon i{display:none}
+ .game-main{padding:0 14px;margin-top:0}.game-main>h2{font-size:25px}
+ .shell{display:block}.shell .panel:has(.shopitem) .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .combat-shell{display:block}.combat-stage{margin-bottom:15px}
+ .book-footer{padding:20px 17px;gap:20px}
+}
+@media(max-width:520px){
+ #status{justify-content:flex-start}.book-header{padding:15px}
+ .game-main{padding:0 11px}.panel{padding:17px 15px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .card{padding:14px 12px}.name{font-size:18px}
+ .shell .panel:has(.shopitem) .grid{gap:8px}
+ .shopitem{min-height:236px;padding:15px 11px}
+ .shopitem .actions button{padding:7px 6px;font-size:11px}
+ .shopitem .name{font-size:17px}.shopitem .meta{font-size:11px}
+ .chapter-ribbon b{display:none}
+ .arena{min-height:360px}.figure-portrait{height:210px}.combatant-name{font-size:11px}.hp-numbers strong{font-size:25px}
+ .versus-rune{height:35px;width:35px;font-size:16px}
+ .brand-copy .eyebrow{font-size:9px}
+ .book-footer{font-size:9px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
