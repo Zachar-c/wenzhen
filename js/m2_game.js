@@ -235,7 +235,7 @@ function push(s){log.push('['+battle.tick+'] '+s);if(log.length>400)log.shift()}
 function fresh(){return battle.instances.filter(x=>x.ready<=battle.tick&&x.first<=battle.tick).sort((a,b)=>a.slot-b.slot)}
 function cast(x){x.ready=battle.tick+x.cd;push(GM[x.gu].name+" 触发")}
 function environmentWind(){return battle.foe.id!=="swordsman"||battle.tick%18<12}
-function direct(value,source,opts={}){if(battle.foe.hp<=0)return;let dmg=value;const target=has("weak")&&opts.consumeWeak!==false?get("weak"):null;if(target){dmg+=2;battle.states=battle.states.filter(s=>s!==target)}if(has("owner")&&!opts.periodic)dmg++;if(opts.bonus)dmg+=opts.bonus;let armor=has("broken")?0:battle.foe.armor;dmg=Math.max(1,dmg-armor);const applied=Math.min(dmg,battle.foe.hp);battle.foe.hp=Math.max(0,battle.foe.hp-dmg);if(battle.totals){battle.totals.damageDealt+=applied;battle.totals.damageBySource[source]=(battle.totals.damageBySource[source]||0)+applied}push(source+" → "+battle.foe.name+" -"+dmg+" (剩余"+battle.foe.hp+")")}
+function direct(value,source,opts={}){if(battle.foe.hp<=0)return;let dmg=value;const target=has("weak")&&opts.consumeWeak!==false?get("weak"):null;if(target){dmg+=2;battle.states=battle.states.filter(s=>s!==target)}if(has("owner")&&!opts.periodic)dmg++;if(opts.bonus)dmg+=opts.bonus;let armor=has("broken")?0:battle.foe.armor;if(opts.angle)armor=Math.max(0,armor-1);dmg=Math.max(1,dmg-armor);const applied=Math.min(dmg,battle.foe.hp);battle.foe.hp=Math.max(0,battle.foe.hp-dmg);if(battle.totals){battle.totals.damageDealt+=applied;battle.totals.damageBySource[source]=(battle.totals.damageBySource[source]||0)+applied}push(source+" → "+battle.foe.name+" -"+dmg+" (剩余"+battle.foe.hp+")");return applied}
 function hitQueued(e){let value=Math.max(0,e.damage),sources={};if(e.evade)value=Math.max(0,value-e.evade);if(e.type==="charge"&&has("gate"))value=Math.max(0,value-1);if(has("bind")){value=Math.max(0,value-2);battle.states=battle.states.filter(s=>s.type!=="bind")};if(e.reduction)value=Math.max(0,value-e.reduction);const shade=get("shade");if(shade&&!shade.used&&value>0){value=Math.max(0,value-1);shade.used=true}
 battle.shields.sort((a,b)=>a.seq-b.seq);for(const s of battle.shields){const absorb=Math.min(value,s.value);value-=absorb;s.value-=absorb;sources[s.source]=(sources[s.source]||0)+absorb}
 if(battle.totals){battle.totals.shieldAbsorbed+=Object.values(sources).reduce((sum,n)=>sum+n,0);for(const [src,n] of Object.entries(sources))battle.totals.absorbedByInstance[src]=(battle.totals.absorbedByInstance[src]||0)+n;battle.totals.damageTaken+=Math.min(value,battle.hp)}battle.shields=battle.shields.filter(s=>s.value>0);battle.hp=Math.max(0,battle.hp-value);push("敌方 "+e.name+" 命中，生命 -"+value+"；剩余 "+battle.hp);
@@ -246,6 +246,18 @@ if(value>0){
 const gs=battle.instances.find(x=>x.gu==="G103"&&x.ready<=battle.tick),heard=Object.entries(sources).filter(([k,v])=>v>0&&(k.startsWith("G102:")||k.startsWith("G201:"))).length>0;
 if(gs&&heard&&e.observed){cast(gs);const bonus=battle.lastConfirmed===e.type?2:0;battle.pending.push({tick:battle.tick+1,type:"counter",damage:3+bonus,source:gs.id})}
 if(e.observed)battle.lastConfirmed=e.type;
+if(M3_MODE){
+ if(e.type==="disarm"&&value>0){battle.weaponBroken=true;push("硬反制：真命中后缴械，实体兵胚失去，全部变节终止")}
+ if(e.type==="fracture"&&value>0){
+  const strong=battle.instances.some(x=>["B401","B501"].includes(x.gu));
+  if(strong){battle.jointIntegrity=Math.max(0,battle.jointIntegrity-1);push("关节被击断，剩余"+battle.jointIntegrity);if(!battle.jointIntegrity)battle.weaponBroken=true}
+  else if(battle.instances.some(x=>x.gu==="B301")){battle.weaponBroken=true;push("游节兵的脆弱关节被全断")}
+ }
+ const verified=e.revealed&&e.type!=="feint"&&e.type!=="hidden";
+ battle.observedStreak=verified?(battle.lastResolvedMove===e.name?battle.observedStreak+1:1):0;
+ battle.lastResolvedMove=verified?e.name:null;
+ if(!verified)push("观复证据归零：变招或隐匿节律不可继承");
+}
 battle.current=null}
 function startBattle(){if(battle||state.pendingSpoils||state.completed||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(targetFoe());foe.maxHp=foe.hp;battle={tick:0,hp:30,foe,targetIndex:targetIndex(),observedStreak:0,lastResolvedMove:null,forecastUsed:false,weaponBroken:false,jointIntegrity:3,totals:{damageDealt:0,damageTaken:0,healing:0,shieldAbsorbed:0,damageBySource:{},absorbedByInstance:{}},instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,gu:g.id,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},500)}
 // Synthetic-only M1 interrupt hook; no starting Gu invokes it.
@@ -274,7 +286,7 @@ case"T101":if(!has("sand",x.instance)){cast(x);mark("sand",x.instance,10)}break;
 case"M101":if(environmentWind()&&!has("flow",x.instance)){cast(x);mark("flow",x.instance,8)}break;
 case"G101":if(enemy&&observation(enemy)&&!enemy.observed){cast(x);enemy.observed=true;enemy.reduction=(enemy.reduction||0)+2;push("辨兆确认："+enemy.name)}break;
 }}
-for(const x of fresh().filter(x=>["Y103","S102","T102","S103","B102","Y102","H103","M103","Z103","G102","G201"].includes(x.gu))){
+for(const x of fresh().filter(x=>["Y103","S102","T102","S103","B102","Y102","H103","M103","Z103","G102","G201","G301","G401","G501"].includes(x.gu))){
 switch(x.gu){
 case"Y103":if(!has("shade",x.instance)){cast(x);mark("shade",x.instance,6,0,{attackUsed:false,used:false})}break;
 case"S102":if(b.shields.reduce((a,s)=>a+s.value,0)<2){cast(x);shield(x.gu+":"+x.instance,3,t+10)}break;
@@ -287,6 +299,14 @@ case"M103":if(enemy&&enemy.impact-enemy.windup===t){cast(x);if(enemy.type==="cha
 case"Z103":if(enemy&&enemy.impact===t+1&&has("bind")){cast(x);b.states=b.states.filter(s=>s.type!=="bind");enemy.reduction+=4;shield(x.gu+":"+x.instance,2,enemy.impact+1)}break;
 case"G102":if(enemy&&enemy.impact===t&&enemy.observed){cast(x);shield(x.gu+":"+x.instance,4,t+1)}break;
 case"G201":if(enemy&&enemy.impact===t&&enemy.revealed&&b.repeatMoveCount>=2){cast(x);enemy.observed=true;shield(x.gu+":"+x.instance,8,t+1);push("重息辨认旧式："+enemy.name)}break;
+case"G301":case"G401":case"G501":
+ if(enemy&&enemy.impact===t+1&&enemy.revealed&&enemy.type!=="feint"&&b.observedStreak>=2&&b.lastResolvedMove===enemy.name&&!b.forecastUsed){
+  cast(x);b.forecastUsed=true;enemy.observed=true;
+  if(x.gu==="G301"){enemy.reduction+=2;b.pending.push({tick:t,type:"counter",damage:3,source:x.instance});push("三息验循：先手截招，反击窗口成立")}
+  else if(x.gu==="G401"){enemy.reduction+=3;b.pending.push({tick:t,type:"counter",damage:5,source:x.instance});push("观微见著：已验证旧式，抢占一次前摇")}
+  else{enemy.reduction+=enemy.damage;push("万象观复：两次真实同招已验，精准化解下一次可见旧式")}
+ }
+ break;
 }}
 for(const x of fresh().filter(x=>["B101","B201","Y101","S101","Z102","H102","T103","M102","N201","G112"].includes(x.gu))){let bonus=0;
 if(x.gu==="N201"&&(!enemy||enemy.impact<=t))continue;if(x.gu==="G112"&&(!enemy||!enemy.revealed||b.repeatMoveCount<2||enemy.impact<=t))continue;if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())continue;if(x.gu==="Y101"){const shade=get("shade");if(shade&&!shade.attackUsed){bonus=1;shade.attackUsed=true}}
