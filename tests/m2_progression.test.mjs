@@ -82,3 +82,30 @@ test('when Gu storage is full, taking a spoil requires one chosen exchange',()=>
  assert.equal(second.run('state.gu.length'),12);
  assert.equal(second.run('state.equip.includes('+JSON.stringify(old)+')'),false);
 });
+
+test('informed hunt changes foe, acquisition and persists across reload',()=>{
+ const g=session();g.run('init("百兵")');
+ assert.match(g.dom.get('app').innerHTML,/本轮追猎/);
+ assert.equal(g.run('chooseTarget(1)'),true);
+ assert.equal(g.run('state.targetIndex'),1);
+ assert.equal(g.run('targetFoe().id'),'boar');
+ assert.equal(g.run('upcomingSpoils().gu'),'S102');
+ const resumed=session(g.store.get('wenzhen_m2_v1'));
+ assert.equal(resumed.run('state.targetIndex'),1);
+ resumed.run('startBattle()');
+ assert.equal(resumed.run('battle.foe.id'),'boar');
+ assert.equal(resumed.run('chooseTarget(0)'),false);
+ resumed.run('quick()');
+ if(resumed.run('state.pendingSpoils'))assert.equal(resumed.run('state.pendingSpoils.gu'),'S102');
+});
+test('route selection rejects inaccessible foes, unresolved rewards and extra payouts',()=>{
+ const g=session();g.run('init("百兵")');
+ assert.equal(g.run('chooseTarget(5)'),false);
+ assert.equal(g.run('state.round'),1);
+ assert.equal(g.run('chooseTarget(1)'),true);
+ const gold=g.run('state.gold');
+ assert.equal(g.run('chooseTarget(1)'),true);
+ assert.equal(g.run('state.gold'),gold);
+ g.run('startBattle();quick()');
+ if(g.run('state.pendingSpoils'))assert.equal(g.run('chooseTarget(0)'),false);
+});
