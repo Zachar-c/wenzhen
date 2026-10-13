@@ -17,7 +17,13 @@ test('top-down five-rank goals cover all eight schools and cannot leak directly 
   for(const key of ['ultimate_effect','activation_required','player_reason','hard_counter','causal_chain'])assert.ok(e[key]?.length>=8,e.endpoint_id+' missing '+key);
  }
  const live=fs.readFileSync(new URL('../js/m2_game.js',import.meta.url),'utf8');
- for(const e of design.endpoints)assert.equal(new RegExp('\\["'+e.endpoint_id+'","').test(live),false,'future rank5 must not be smuggled into M2 shop/runtime');
+ // B/G are manually translated into an explicitly opt-in M3 sandbox; the design JSON is never imported.
+ assert.match(live,/const M3_MODE=/);
+ assert.match(live,/m3.*rank5/);
+ for(const e of design.endpoints){
+  if(['B501','G501'].includes(e.endpoint_id))continue;
+  assert.equal(live.includes('["'+e.endpoint_id+'","'),false,'unapproved rank5 must stay outside runtime');
+ }
 });
 test('every backwards dependency is a real v0.6 ranked recipe without invented formula IDs',()=>{
  const recipes=new Map(catalog.recipes.map(x=>[x.id,x]));
