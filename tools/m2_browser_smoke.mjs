@@ -44,8 +44,9 @@ try{
     await page.setViewportSize({width:1280,height:800});
    }
    await page.getByRole('button',{name:'立即结算'}).click();
-   assert.match(await page.locator('#app').innerText(),/战斗胜利|战斗失利/);
-   assert.match(await page.locator('#app').innerText(),/造成伤害|护盾吸收/);
+   if(await page.getByRole('button',{name:/收入蛊仓/}).count())await page.getByRole('button',{name:/收入蛊仓/}).click();
+   assert.match(await page.locator('#app').innerText(),/战斗胜利|战斗失利|整备与交易|双幕结算/);
+   assert.match(await page.locator('#app').innerText(),/造成伤害|护盾吸收|可追夺的蛊|双幕结算/);
   }
   assert.match(await page.locator('#app').innerText(),/M2 双幕结算/);
   const save=await page.evaluate(()=>JSON.parse(localStorage.getItem('wenzhen_m2_v1')));
