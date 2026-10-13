@@ -10,8 +10,10 @@ const guAtlasPath="assets/visual/m2_r8_gu_atlas.webp";
 const uri=s=>"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
 const atlasPath="assets/visual/m2_r8_character_atlas.webp";
 let atlasReady=false;
+let mobileStageWasPresent=false;
 const atlasProbe=new Image();
-atlasProbe.onload=()=>{atlasReady=true;decorate();};
+atlasProbe.onload=()=>{atlasReady=atlasProbe.naturalWidth>=512&&atlasProbe.naturalHeight>=160;decorate();};
+atlasProbe.onerror=()=>{atlasReady=false;};
 atlasProbe.src=atlasPath;
 // Distinct silhouettes by actual Gu ID; illustrative vocabulary only, not new rules.
 const motifs={
@@ -113,7 +115,8 @@ function decorate(){
      crest.replaceWith(img);
    }
  }
- if(stage&&innerWidth<=790&&!stage.dataset.visualEntered){stage.dataset.visualEntered="1";window.scrollTo({top:0,behavior:"instant"});}
+ if(stage&&innerWidth<=790&&!mobileStageWasPresent)window.scrollTo({top:0,behavior:"instant"});
+ mobileStageWasPresent=!!stage;
  if(stage){const event=app.querySelector(".focus-event strong")?.textContent||"";
   stage.dataset.impact=/反击|饮锋|记痕/.test(event)?"counter":/护盾|规避|吸收/.test(event)?"guard":/伤害|攻击|斩击|基础攻击|造成|灼烧/.test(event)?"strike":"idle";
  }
