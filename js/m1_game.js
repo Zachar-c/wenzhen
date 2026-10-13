@@ -28,7 +28,7 @@ function makeId(){return "i"+(state.nextId++)}
 function owned(id){return {id:makeId(),gu:id}}
 function starters(school){return GU.filter(g=>g.school===school).slice(0,3).map(g=>owned(g.id))}
 function save(){if(state)localStorage.setItem(STORE_KEY,JSON.stringify(state))}
-function init(school){const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
+function init(school){if(!SCHOOLS.includes(school))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
 function beginRound(){state.round++;state.gold+=5;state.free=true;state.rerolls=0;state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer());if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}save()}
 function offer(){return {id:makeId(),gu:GU[Math.floor(rand()*GU.length)].id,lock:false}}
 function buy(i){let x=state.shelf[i];if(!x||state.gold<4||state.gu.length>=12)return;state.gold-=4;state.gu.push(owned(x.gu));state.shelf[i]=null;save();render()}
@@ -95,10 +95,10 @@ if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())co
 if(x.gu==="H102"){const gap=get("gap");if(gap){bonus=2;b.states=b.states.filter(s=>s!==gap)}}
 if(x.gu==="T103"){const sand=get("sand");if(sand){bonus=2;b.states=b.states.filter(s=>s!==sand)}}
 if(x.gu==="M102"){const flow=get("flow");if(flow){bonus=2;b.states=b.states.filter(s=>s!==flow)}}
-cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3})[x.gu],GM[x.gu].name,{bonus});
-if(x.gu==="S101"||x.gu==="T103")mark("dot",x.instance,5,1,{kind:x.gu,next:[t+2,t+4]});
-if(x.gu==="Z102")mark("bind",x.instance,8);
-if(x.gu==="H102")mark("beacon",x.instance,10);
+if(x.gu==="B101"&&has("weak"))bonus+=2;cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3})[x.gu],GM[x.gu].name,{bonus});
+if((x.gu==="S101"||x.gu==="T103")&&b.foe.hp>0)mark("dot",x.instance,5,1,{kind:x.gu,next:[t+2,t+4]});
+if(x.gu==="Z102"&&b.foe.hp>0)mark("bind",x.instance,8);
+if(x.gu==="H102"&&b.foe.hp>0)mark("beacon",x.instance,10);
 }
 if(t>=2&&(t-2)%6===0)direct(2,"基础攻击");
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="counter"))direct(e.damage,"记痕反击",{consumeWeak:false});
