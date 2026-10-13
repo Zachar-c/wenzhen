@@ -90,7 +90,7 @@ function huntBoard(){
  return '<section class="panel"><h3>本轮追猎 · 选择目标</h3><p>查看敌情与携蛊线索后，决定本轮夺取哪一只蛊。</p><div class="grid">'+
  availableHunts().map(i=>{const f=FOES[i],d=ENEMY_SPOILS[i];return '<div class="card '+(targetIndex()===i?'selected':'')+'"><div class="name">'+esc(f.name)+'</div><div class="meta">生命 '+f.hp+' / 护甲 '+f.armor+' / 首次宣告 tick '+f.first+'</div><b class="gold">'+esc(GM[d.gu].name)+'</b><p class="small">'+esc(d.clue)+'</p><button '+(targetIndex()===i?'disabled':'')+' onclick="chooseTarget('+i+')">'+(targetIndex()===i?'已选目标':'追猎此敌')+'</button></div>'}).join('')+'</div></section>';
 }
-function upcomingSpoils(){return ENEMY_SPOILS[targetIndex()]}
+function upcomingSpoils(){return ENEMY_SPOILS[M3_MODE&&state.lastTargetIndex!=null?state.lastTargetIndex:targetIndex()]}
 function lootPreview(){const d=upcomingSpoils();return '<section class="panel"><h3>可追夺的蛊</h3><b class="gold">'+esc(GM[d.gu].name)+'</b><p>'+esc(d.clue)+'</p><p>战胜敌人才可夺得；夺蛊与变卖均由玩家决定。</p></section>'}
 function endRun(){state.completed=true;const meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');if(state.lastResult?.won&&state.losses<3)meta.wins++;localStorage.setItem(META_KEY,JSON.stringify(meta))}
 function resolveSpoils(choice,replaceId,swapEquipId){
@@ -135,8 +135,35 @@ function owned(id){return {id:makeId(),gu:id}}
 function starters(school){return GU.filter(g=>g.school===school).slice(0,3).map(g=>owned(g.id))}
 function save(){if(state)localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 function init(school){if(!SCHOOLS.includes(school)||(M3_MODE&&!["百兵","观复"].includes(school)))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,pastTargets:[],m3StockUsed:false,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
-function beginRound(){state.round++;state.targetIndex=availableHunts()[0]??state.round-1;state.m3StockUsed=false;state.gold+=5;state.free=true;state.rerolls=0;state.seekUsed=false;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school).slice(0,3);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
-const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊",note:"两段追击；失去守柄防护"},{id:"G201",inputs:["G101","G102"],label:"辨兆蛊＋听息蛊 → 重息蛊",note:"重复招式才防护；首招失守"}];
+function beginRound(){state.round++;state.lastTargetIndex=null;state.targetIndex=availableHunts()[0]??state.round-1;state.m3StockUsed=false;state.gold+=5;state.free=true;state.rerolls=0;state.seekUsed=false;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school).slice(0,3);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
+const M3_RECIPES=[
+{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊",note:"两段追击；失去守柄防护"},
+{id:"G201",inputs:["G101","G102"],label:"辨兆蛊＋听息蛊 → 重息蛊",note:"重复招式才防护；首招失守"},
+...(M3_MODE?[
+{id:"B301",inputs:["B201","B202"],label:"折锋＋骨节兵 → 游节兵",note:"首击真命中才折角；缴械停机"},
+{id:"B401",inputs:["B301","B302"],label:"游节兵＋回匣刀 → 百节承锋",note:"折角续击能承受一次破节"},
+{id:"B501",inputs:["B401","B402"],label:"百节承锋＋归鞘轮兵 → 万节藏锋",note:"最多三段续击；缴械和全断节停机"},
+{id:"G301",inputs:["G201","G202"],label:"重息＋循痕 → 三息观机",note:"记录连续两次真实同招后反制"},
+{id:"G401",inputs:["G301","G302"],label:"三息观机＋回痕截式 → 观微见著",note:"真实规律换一次反击窗口"},
+{id:"G501",inputs:["G401","G402"],label:"观微见著＋周而复始 → 万象观复",note:"同敌同招两次真证，化解一次可见旧式"}
+]:[])];
+const M3_STOCK=[
+{round:4,rank:2,price:4,ids:["B202","G202"]},
+{round:8,rank:3,price:6,ids:["B302","G302"]},
+{round:12,rank:4,price:8,ids:["B402","G402"]}
+];
+const M3_ONLY=new Set(["B202","B301","B302","B401","B402","B501","G202","G301","G302","G401","G402","G501"]);
+function acquireM3Ingredient(id){
+ if(!M3_MODE||!state||battle||state.inBattle||state.completed||state.pendingSpoils||state.m3StockUsed||state.gu.length>=12)return false;
+ const contract=M3_STOCK.find(x=>x.ids.includes(id));if(!contract||state.round<contract.round||state.gold<contract.price)return false;
+ state.gold-=contract.price;state.gu.push(owned(id));state.m3StockUsed=true;save();render();return true;
+}
+function m3SupplyPanel(){
+ if(!M3_MODE)return "";
+ return '<section class="panel"><h3>五转逆推 · 定向供给</h3><p>仅验证百兵和观复。第4/8/12轮解锁二/三/四转辅蛊，每轮仅一次定向采购；可以保留旧蛊、改道或逐阶合炼。发行金币绝不沿用Library档案元石价。</p>'+
+ M3_STOCK.map(s=>'<div class="slot">第'+s.round+'轮起 · '+s.rank+'转辅蛊 · '+s.price+'金币 '+s.ids.map(id=>'<button onclick="acquireM3Ingredient(\''+id+'\')" '+(state.round<s.round||state.m3StockUsed||state.gold<s.price||state.gu.length>=12?'disabled':'')+'>'+GM[id].name+'</button>').join('')+'</div>').join('')+'</section>';
+}
+
 function availableRecipes(){return M3_RECIPES.filter(r=>r.inputs.every(id=>state.gu.some(g=>g.gu===id)))}
 function refineGu(recipeId){
  if(!state||battle||state.inBattle||state.pendingSpoils||state.completed)return false;
@@ -149,10 +176,10 @@ function refineGu(recipeId){
  if(state.equip.length<5)state.equip.push(result.id);
  save();render();return true;
 }
-function offer(){const pool=GU.filter(g=>!M3_RECIPES.some(r=>r.id===g.id));return {id:makeId(),gu:pool[Math.floor(rand()*pool.length)].id,lock:false}}
+function offer(){const pool=GU.filter(g=>!M3_RECIPES.some(r=>r.id===g.id)&&!M3_ONLY.has(g.id));return {id:makeId(),gu:pool[Math.floor(rand()*pool.length)].id,lock:false}}
 /* Merchant sourcing: one named Gu, two coins for the lead, four more for purchase. */
 function seekGu(guId){
- if(!state||battle||state.inBattle||state.completed||state.pendingSpoils||state.seekUsed||state.gold<6||state.gu.length>=12||(!Object.prototype.hasOwnProperty.call(GM,guId)||M3_RECIPES.some(r=>r.id===guId)))return false;
+ if(!state||battle||state.inBattle||state.completed||state.pendingSpoils||state.seekUsed||state.gold<6||state.gu.length>=12||(!Object.prototype.hasOwnProperty.call(GM,guId)||M3_RECIPES.some(r=>r.id===guId)||M3_ONLY.has(guId)))return false;
  const slot=state.shelf.findIndex(x=>x&&!x.lock&&!x.seek);
  if(slot<0)return false;
  state.gold-=2;state.seekUsed=true;
@@ -283,7 +310,7 @@ if(b.foe.hp<=0){finish(true);return}
 if(enemy&&enemy.impact===t){hitQueued(enemy);if(b.hp<=0){finish(false);return}}
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="heal")){const before=b.hp;b.hp=Math.min(30,b.hp+e.value);if(b.totals)b.totals.healing+=b.hp-before;push("引露治疗 +"+(b.hp-before))}b.pending=b.pending.filter(x=>!(x.tick===t&&x.type==="heal"));
 if(t>=120){finish(false);return}b.tick++}
-function finish(won){clearInterval(timer);timer=null;let result={won,tick:battle.tick,hp:battle.hp,foe:battle.foe.name,log:log.slice(),stats:clone(battle.totals)};if(M3_MODE){state.pastTargets??=[];if(!state.pastTargets.includes(battle.targetIndex))state.pastTargets.push(battle.targetIndex)}battle=null;state.lastResult=result;state.inBattle=false;state.losses+=won?0:1;if(won){const d=upcomingSpoils();state.pendingSpoils={foe:d.foe,gu:d.gu,clue:d.clue}}else if(state.losses>=3||state.round>=TOTAL_ROUNDS)endRun();else beginRound();save();render();q("app").insertAdjacentHTML("afterbegin",'<section class="panel"><h3>'+(won?'战斗胜利':'战斗失利')+' · '+esc(result.foe)+'</h3><p>结束 tick '+result.tick+' · 剩余生命 '+result.hp+'</p>'+battleReport(result.stats)+'<details><summary>展开事件日志</summary><pre class="log">'+esc(result.log.join("\n"))+'</pre></details></section>')}
+function finish(won){clearInterval(timer);timer=null;let result={won,tick:battle.tick,hp:battle.hp,foe:battle.foe.name,log:log.slice(),stats:clone(battle.totals)};if(M3_MODE){state.lastTargetIndex=battle.targetIndex;state.pastTargets??=[];if(!state.pastTargets.includes(battle.targetIndex))state.pastTargets.push(battle.targetIndex)}battle=null;state.lastResult=result;state.inBattle=false;state.losses+=won?0:1;if(won){const d=upcomingSpoils();state.pendingSpoils={foe:d.foe,gu:d.gu,clue:d.clue}}else if(state.losses>=3||state.round>=TOTAL_ROUNDS)endRun();else beginRound();save();render();q("app").insertAdjacentHTML("afterbegin",'<section class="panel"><h3>'+(won?'战斗胜利':'战斗失利')+' · '+esc(result.foe)+'</h3><p>结束 tick '+result.tick+' · 剩余生命 '+result.hp+'</p>'+battleReport(result.stats)+'<details><summary>展开事件日志</summary><pre class="log">'+esc(result.log.join("\n"))+'</pre></details></section>')}
 function renderBattle(){
  const b=battle;if(!b)return;
  const foe=targetFoe(),remain=b.current?b.current.impact-b.tick:null,shieldValue=b.shields.reduce((n,s)=>n+s.value,0);
