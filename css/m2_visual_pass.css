@@ -1,0 +1,25 @@
+/* Visual-pass component layer; no gameplay or layout/viewport contract changes. */
+.shopitem:has(>.m2-gu-illustration){display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto 1fr auto auto;column-gap:10px;align-content:start}
+.shopitem>.m2-gu-illustration{grid-column:1;grid-row:1 / 4;align-self:stretch;width:76px;min-height:94px;border-radius:7px;box-shadow:inset 0 0 0 1px #dfc89b80,0 6px 17px #0007;background-position:center;background-size:cover}
+.shopitem:has(>.m2-gu-illustration)>.name,.shopitem:has(>.m2-gu-illustration)>.meta,.shopitem:has(>.m2-gu-illustration)>.offer-hint{grid-column:2;min-width:0}
+.shopitem:has(>.m2-gu-illustration)>.gold,.shopitem:has(>.m2-gu-illustration)>.actions{grid-column:1 / -1}
+.shopitem:has(>.m2-gu-illustration) .name::before{display:none}
+.shopitem:has(>.m2-gu-illustration) .name{padding-right:0}
+.shopitem[data-gu-kind="攻"]{--gu-accent:#dfb487}.shopitem[data-gu-kind="防"]{--gu-accent:#9dcfbd}.shopitem[data-gu-kind="反"]{--gu-accent:#e3a6ac}
+.shopitem[data-gu-kind="察"],.shopitem[data-gu-kind="标"]{--gu-accent:#b5ade4}
+.shopitem[data-gu-kind]{border-top:2px solid var(--gu-accent,#d1b992)}
+.slot:has(>.m2-gu-illustration){padding-left:54px;min-height:48px}
+.slot>.m2-gu-illustration{position:absolute;top:7px;left:7px;width:38px;height:38px;border-radius:5px;background-size:cover;border:1px solid #d5b78d77}
+.battle-gu>.m2-gu-illustration{display:block;flex:none;width:45px;height:45px;border:1px solid #d6bc9a88;border-radius:6px;background-size:cover;background-position:center}
+.battle-gu.cooling>.m2-gu-illustration{filter:grayscale(.85) brightness(.62)}
+.player-figure[data-portrait]::before{content:"";top:0;left:0;transform:none;width:100%;height:100%;border:0;border-radius:0;background:var(--cultivator-portrait) center bottom/contain no-repeat;box-shadow:none}
+.player-figure[data-portrait] .halo{opacity:.45}
+.player-figure[data-portrait] .soul-core{display:none}
+.combat-stage[data-impact="strike"] .arena-light{filter:brightness(1.45);animation:m2-strike .45s ease-out}
+.combat-stage[data-impact="guard"] .player-figure{filter:drop-shadow(0 0 19px #80d4d6a8)}
+.combat-stage[data-impact="counter"] .player-figure{filter:drop-shadow(0 0 24px #ec968bba)}
+.spoils-panel .slot:has(.m2-gu-illustration){border-color:#e3ca9a}
+@keyframes m2-strike{0%{opacity:.35;transform:scale(.85)}45%{opacity:1;transform:scale(1.08)}100%{opacity:.55;transform:scale(1)}}
+@media(min-width:1000px) and (min-height:650px){.shopitem:has(>.m2-gu-illustration){grid-template-columns:55px minmax(0,1fr);column-gap:7px}.shopitem>.m2-gu-illustration{width:55px;min-height:65px}.battle-gu>.m2-gu-illustration{width:33px;height:33px}}
+@media(max-width:520px){.shopitem:has(>.m2-gu-illustration){grid-template-columns:38px minmax(0,1fr);column-gap:6px}.shopitem>.m2-gu-illustration{width:38px;min-height:53px}.shopitem .offer-hint{grid-column:1/-1!important}.shopitem:has(>.m2-gu-illustration)>.name{font-size:15px}.battle-gu>.m2-gu-illustration{width:36px;height:36px}.player-figure[data-portrait]::before{top:0;height:100%}}
+@media(prefers-reduced-motion:reduce){.combat-stage[data-impact] .arena-light{animation:none}}
