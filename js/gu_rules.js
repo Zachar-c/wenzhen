@@ -378,12 +378,12 @@ globalThis.GuRules = (() => {
   }
 
   // Web炼蛊只结算经过验证的配方；失败概率尚无可靠的运行规则时不模拟掷骰。
-  function settleForge(recipe, { owned = {}, stones = 0, playerRank = 1 } = {}, guById = {}) {
+  function settleForge(recipe, { owned = {}, stones = 0, materials = {}, playerRank = 1 } = {}, guById = {}) {
     const inputs = recipe?.inputs || recipe?.input_gu_ids;
     const output = recipe?.output || recipe?.output_gu_id;
     const cost = recipe?.stoneCost ?? recipe?.stone_cost;
     const chance = recipe?.successRollMax ?? recipe?.success_roll_max;
-    const unchanged = { owned: { ...owned }, stones };
+    const unchanged = { owned: { ...owned }, stones, materials: { ...materials } };
     if (!recipe || recipe.retired || recipe.live === false || !recipe.id
       || !Array.isArray(inputs) || !inputs.length || !inputs.every((id) => typeof id === 'string' && id)
       || typeof output !== 'string' || !output
@@ -404,6 +404,8 @@ globalThis.GuRules = (() => {
       return { ok: false, reason: 'insufficient_rank', needRank: outputRank, ...unchanged };
     }
     if (stones < cost) return { ok: false, reason: 'insufficient_stones', ...unchanged };
+    const required = recipe.materials || {};
+    if (Object.entries(required).some(([name,qty]) => !Number.isInteger(qty) || qty < 0 || (materials[name] || 0) < qty)) return { ok:false, reason:'missing_materials', ...unchanged };
     const need = inputs.reduce((counts, id) => (counts[id] = (counts[id] || 0) + 1, counts), {});
     if (Object.entries(need).some(([id, count]) => !Number.isInteger(owned[id] ?? 0)
       || (owned[id] ?? 0) < count)
@@ -413,7 +415,9 @@ globalThis.GuRules = (() => {
     const nextOwned = { ...owned };
     for (const [id, count] of Object.entries(need)) nextOwned[id] = (nextOwned[id] ?? 0) - count;
     nextOwned[output] = (nextOwned[output] ?? 0) + 1;
-    return { ok: true, reason: 'forged', output, successRate: 100, owned: nextOwned, stones: stones - cost };
+    const nextMaterials = { ...materials };
+    for (const [name,qty] of Object.entries(required)) nextMaterials[name] = (nextMaterials[name] || 0)-qty;
+    return { ok: true, reason: 'forged', output, successRate: 100, owned: nextOwned, stones: stones - cost, materials:nextMaterials };
   }
 
   function isLiveShopOffer(offer) {

@@ -10,6 +10,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const gameRoot = path.resolve(here, '..');
 const read = (p) => JSON.parse(fs.readFileSync(path.join(gameRoot, p), 'utf8'));
 const releaseGuIds = new Set(read('data/release_gu.json'));
+const xuantong = read('data/xuantong_live.json');
+for (const node of xuantong.nodes) releaseGuIds.add(node.id);
 
 const battleGuFile = read('data/gu.json');
 const guEntities = Array.isArray(battleGuFile) ? battleGuFile : (battleGuFile.entities || battleGuFile.gu || []);
@@ -271,6 +273,26 @@ if (!gu.some((entry) => entry.id === 'aptitude_gu')) {
 const baseGuIds = Object.keys(COMBAT_GU_ICON).filter(id => gu.find(e => e.id === id)?.playable !== false);
 const legacyGu = [...gu];
 gu.splice(0, gu.length, ...gu.filter(entry => releaseGuIds.has(entry.id)));
+const XUAN_ICONS = { B:'gu_sword', Y:'gu_light', S:'gu_qi', Z:'gu_qi', H:'gu_earth', T:'gu_refine', M:'gu_wind', G:'gu_qi' };
+const xuByName = Object.fromEntries(xuantong.nodes.map(n => [n.name,n]));
+const xuRuntime = xuantong.nodes.map(n => {
+  const effect = n.runtime_kind === 'recipe_component' ? {kind:'recipe_component'} : {
+    kind: n.runtime_kind,
+    ...(n.runtime_amount > 0 ? {amount:n.runtime_amount} : {}),
+  };
+  return { id:n.id, name:n.name, rank:n.rank, rarity:'common', role:n.runtime_kind==='strike'?'attack':n.runtime_kind==='shield'?'defense':n.runtime_kind==='inspect'?'recon':'logistics',
+    school:'xuantong_'+n.school_id, value:n.rank===1?8:24, cost:1, effect, icon:XUAN_ICONS[n.school_id],
+    combat:n.runtime_combat?'xuantong_active':'', battleEffect:n.runtime_combat?effect:null,
+    trueQiCost:n.rank===1?1:2, thoughtCost:1, lowRankException:false, lifeCost:0,
+    sourceClass:'original_xuantong', provenance:'C_ORIGINAL', effectNote:n.effect, buildRole:'Core',
+    playable:true, xuantongPath:n.school_id };
+});
+gu.push(...xuRuntime);
+const xuKits = xuantong.start_kits.map(k => ({
+  ...k, school_id:xuantong.schools.find(s=>s.name===k.school)?.id,
+  gu_ids:k.gu.map(name=>{ const g=xuByName[name]; if (!g) throw new Error('unknown starter '+name); return g.id; }),
+  materialInventory:Object.fromEntries(k.materials.map(m=>[m.id,m.count]))
+}));
 
 // Web首版只投影显式核验并授权的固定配方；其余历史配方留在原始资料中。
 const rawPicked = recipes.filter((r) =>
@@ -303,6 +325,13 @@ const isDominated = (r, all) => all.some((o) => {
   return stricter && oIn.length <= rIn.length;
 });
 const picked = rawPicked.filter((r) => !isDominated(r, rawPicked));
+picked.push(...xuantong.recipes.map(r=>({
+ id:r.id, kind:'fixed', inputs:r.inputs.flatMap(g=>Array(g.qty).fill(g.id)), output:r.output,
+ stoneCost:r.stone_fee, successRollMax:100,
+ materials:Object.fromEntries(r.materials.map(m=>[m.name,m.qty])),
+ source:'问真·玄同纪原创蛊方（非原著） · '+r.principle,
+ branchLabel:'原创后世道途 · 消耗活蛊与蛊材', live:true
+})));
 
 const killMoves = (v1.kill_moves || [])
   .filter(k => (k.recipe || []).every(id => baseGuIds.includes(id)))
@@ -447,12 +476,15 @@ const releaseShopOffers = ['moon_ray_gu', 'white_jade_gu', 'force_atk_4_02_gu', 
   .filter(id => !shopOffersRaw.some(offer => offer.gu_id === id && offer.kind === 'purchase' && !offer.retired && offer.mechanical !== false))
   .map(id => ({ id: `purchase_${id}`, kind: 'purchase', gu_id: id, tier: guEntityById[id].rank,
     stone_cost: { moon_ray_gu: 12, white_jade_gu: 18, force_atk_4_02_gu: 18, force_heal_3_03_gu: 16, blood_atk_3_11_gu: 18 }[id] }));
-const shopOffers = [...shopOffersRaw, ...supportShopOffers, ...releaseShopOffers]
+const xuShopOffers = xuantong.nodes.filter(n=>n.rank===1).map(n=>({
+ id:'purchase_xuantong_'+n.id, kind:'purchase', gu_id:n.id, tier:1, stone_cost:12
+}));
+const shopOffers = [...shopOffersRaw, ...supportShopOffers, ...releaseShopOffers, ...xuShopOffers]
   .filter(offer => !offer.gu_id || releaseGuIds.has(offer.gu_id))
   .filter((o) => SHOP_OFFER_KINDS.has(String(o.kind || '')))
   .filter((o) => !o.retired && o.mechanical !== false)
   .map((o) => ({ ...o, tier: o.gu_id ? gu.find(entry => entry.id === o.gu_id)?.rank || o.tier : o.tier,
-    gu_name: o.gu_id ? (names.gu?.[o.gu_id] || '') : '' }));
+    gu_name: o.gu_id ? (names.gu?.[o.gu_id] || gu.find(entry => entry.id === o.gu_id)?.name || '') : '' }));
 const shopOfferIds = new Set(shopOffers.map((o) => String(o.id)));
 const labSchool = 'light';
 const pacingLayers = Object.fromEntries(Object.entries(pacing.layers || {}).map(([layer, value]) => {
@@ -693,7 +725,7 @@ const out = {
     schoolPools: Object.fromEntries(Object.entries(schoolPools).map(([school, ids]) => [school, ids.filter(id => gu.some(entry => entry.id === id && entry.playable !== false))]).filter(([, ids]) => ids.length)),
     school: labSchool,
   },
-  gu, releaseGuIds: [...releaseGuIds], recipes: picked, killMoves: [], killMovesEnabled: false, enemies: pickedEnemies,
+  gu, releaseGuIds: [...releaseGuIds], recipes: picked, xuantong: {schools:xuantong.schools, start_kits:xuKits}, killMoves: [], killMovesEnabled: false, enemies: pickedEnemies,
   nodes, route, shopOffers, npcs, events,
   canon,
   /* Rank 主链：WORLD 真源快照（Integration 刀1）。Lab 投影只准读这里。 */

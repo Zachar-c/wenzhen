@@ -20,10 +20,10 @@ function renderAlchemy(root) {
   const rows = live.map((r) => {
     const need = countBy(r.inputs);
     const settlement = GuRules.settleForge(r, {
-      owned: state.owned, stones: state.stones, playerRank: state.cultivation,
+      owned: state.owned, stones: state.stones, materials:state.materials||{}, playerRank: state.cultivation,
     }, guByIdMap);
     const reasonText = {
-      missing_ingredients: '蛊虫不足', insufficient_stones: '元石不足',
+      missing_ingredients: '蛊虫不足', missing_materials:'蛊材不足', insufficient_stones: '元石不足',
       insufficient_rank: `修为不足 · 需${settlement.needRank}转`,
     }[settlement.reason] || '';
     const inputs = Object.entries(need).map(([id, n]) =>
@@ -41,6 +41,7 @@ function renderAlchemy(root) {
         </span>
       </div>
       ${branch}
+      ${Object.entries(r.materials||{}).length ? '<div class="meta">蛊材 · '+Object.entries(r.materials).map(([n,q])=>n+' ×'+q+'（现有 '+Number(state.materials?.[n]||0)+'）').join('、')+'</div>' : ''}
       ${r.inputs.some(id => guByIdMap[id]?.effect?.kind === 'body_training') ? '<div class="meta">已得肉身力量保留；投入锻体蛊后，失去该蛊继续增力的能力。</div>' : ''}
       <div class="meta">
         ${r.kind === 'advance' ? '升炼' : '合炼'} · 成算 ${r.successRollMax >= 100 ? '必成 · 游戏适配' : `${r.successRollMax}%`}${r.stoneCost ? ` · 元石 ${r.stoneCost}` : ''}

@@ -205,7 +205,7 @@ function renderHall(root) {
         : started
           ? ['上一局已结束：点「开始新局」从头走，或在下方「修行旧录」里用同一颗种子复走。']
           : ['先选难度再点「开始新局」：三个难度只改每段路途节点数与总节数（见下方按钮），五段结构与层主不变。',
-            '开局自带六只一转蛊。',
+            '八道可选原创开局，三只本命一转蛊、专门蛊材和起始元石。',
             '第一站通常是第 1 段的路途节点：战斗给元石与蛊虫，休整补气血与真元，市集与异闻各付代价。'];
   root.innerHTML = `
     <div class="hall-grid">
@@ -239,8 +239,13 @@ function renderHall(root) {
           <p data-resource-guide>气血、魂魄或寿元归零都会败北。护体与回血不能抵消抽魂，魂伤可在坊市付费养魂；真元不足本身不会败北，可用拳脚或等待回合回复，但敌手也会行动。</p>
         </div>
         <div class="hall-starting-kit" data-starting-kit>
-          <div class="kicker">新局行囊 · 六类开局工具</div>
-          <ul class="kit-list">${Object.entries(READY.owned).map(([id, count]) => {
+          <div class="kicker">玄同纪 · 八道择一</div>
+          <div class="difficulty-row" data-opening-schools>
+            ${(DATA.xuantong?.start_kits||[]).map(k => '<button type="button" data-opening-school="'+k.school_id+'" class="'+((state.openingPath||'B')===k.school_id?'on':'')+'"><b>'+k.school+'</b><span>元石 '+k.yuan_stones+' · '+k.gu.join('、')+'</span></button>').join('')}
+          </div>
+          <p class="muted">起始蛊材：${Object.entries(state.materials||{}).map(([n,q])=>n+' ×'+q).join('、')}</p>
+          <div class="kicker">新局行囊 · 本门蛊虫</div>
+          <ul class="kit-list">${Object.entries(state.owned).map(([id, count]) => {
             const gu = guById(id);
             return `<li><b>${gu?.name || id}</b> ×${count}<span>${gu ? effectText(gu.effect) : ''}</span></li>`;
           }).join('')}</ul>
@@ -292,6 +297,11 @@ function renderHall(root) {
           : '<div class="empty">完成一局修行后，种子、路线与结局会留在这里。</div>'}
     </section>`;
 
+  root.querySelectorAll('[data-opening-school]').forEach(button => button.addEventListener('click',()=>{
+    if (state.journey.started) return;
+    act.selectOpeningSchool(button.dataset.openingSchool);
+    draw();
+  }));
   root.querySelectorAll('[data-difficulty]').forEach((button) => {
     button.addEventListener('click', () => {
       if (button.dataset.difficulty === state.journey.difficulty) return;

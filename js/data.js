@@ -1520,6 +1520,936 @@ const DATA = {
       "lowRankException": false,
       "lifeCost": 0,
       "labOnly": true
+    },
+    {
+      "id": "B101",
+      "name": "引锋蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_B",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 3
+      },
+      "icon": "gu_sword",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 3
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "催动随身短刃胚刺击一名近敌，短刃损坏则不能用",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "B"
+    },
+    {
+      "id": "B102",
+      "name": "守柄蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_B",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "icon": "gu_sword",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "令持用兵柄卸去一次轻击，不反射伤害",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "B"
+    },
+    {
+      "id": "B103",
+      "name": "试刃蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_B",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_sword",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "验出目标护具承受一式兵击的薄弱处",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "B"
+    },
+    {
+      "id": "B201",
+      "name": "折锋蛊",
+      "rank": 2,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_B",
+      "value": 24,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 4
+      },
+      "icon": "gu_sword",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 4
+      },
+      "trueQiCost": 2,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "令短兵一击后回收，下一次出手可再刺同一近敌",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "B"
+    },
+    {
+      "id": "Y101",
+      "name": "藏晖蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_Y",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "icon": "gu_light",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "储存一缕有来源的微光，释放时照亮并灼伤近敌",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "Y"
+    },
+    {
+      "id": "Y102",
+      "name": "投影蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_Y",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "icon": "gu_light",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "在已有光源下投出自身真实轮廓，干扰一次瞄准",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "Y"
+    },
+    {
+      "id": "Y103",
+      "name": "遮灯蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_Y",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 1
+      },
+      "icon": "gu_light",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 1
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "以墨帛短暂遮住自家灯源，切断敌方识影",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "Y"
+    },
+    {
+      "id": "Y201",
+      "name": "灯影蛊",
+      "rank": 2,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_Y",
+      "value": 24,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 4
+      },
+      "icon": "gu_light",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 4
+      },
+      "trueQiCost": 2,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "固定微光与投影面，下一次受击时偏转敌人锁定",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "Y"
+    },
+    {
+      "id": "S101",
+      "name": "含芽蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_S",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "活芽刺出短须伤及近敌，须有存活木胎",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "S"
+    },
+    {
+      "id": "S102",
+      "name": "守根蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_S",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "根须缠成一层会被斩断的护面",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "S"
+    },
+    {
+      "id": "S103",
+      "name": "引露蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "logistics",
+      "school": "xuantong_S",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "recipe_component"
+      },
+      "icon": "gu_qi",
+      "combat": "",
+      "battleEffect": null,
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "牵引现有湿露滋润一道已受伤的根须",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "S"
+    },
+    {
+      "id": "S201",
+      "name": "养根蛊",
+      "rank": 2,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_S",
+      "value": 24,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 4
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 4
+      },
+      "trueQiCost": 2,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "生根在受击后固定损坏根须，减少下一次损失",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "S"
+    },
+    {
+      "id": "Z101",
+      "name": "识主蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_Z",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "辨别一只己方已炼化蛊的主人识别印记",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "Z"
+    },
+    {
+      "id": "Z102",
+      "name": "系令蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_Z",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "限定自己下一次拳脚或己方攻击蛊的合法目标，不产生额外攻击",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "Z"
+    },
+    {
+      "id": "Z103",
+      "name": "解扣蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "logistics",
+      "school": "xuantong_Z",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "recipe_component"
+      },
+      "icon": "gu_qi",
+      "combat": "",
+      "battleEffect": null,
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "解除自己亲手附上的一条临时系令",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "Z"
+    },
+    {
+      "id": "Z201",
+      "name": "验印蛊",
+      "rank": 2,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_Z",
+      "value": 24,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 2,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "识别自己与他人授权印纹的区别，无法凭此破解",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "Z"
+    },
+    {
+      "id": "H101",
+      "name": "认隙蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_H",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_earth",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "识别眼前两处障碍之间实际存在的窄隙",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "H"
+    },
+    {
+      "id": "H102",
+      "name": "定标蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_H",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "icon": "gu_earth",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "投出一枚随身界石击中近敌并在实物落点留下界标",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "H"
+    },
+    {
+      "id": "H103",
+      "name": "掩扉蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_H",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "icon": "gu_earth",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "在已固定界石旁合拢一道短时护障",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "H"
+    },
+    {
+      "id": "H201",
+      "name": "隙门蛊",
+      "rank": 2,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_H",
+      "value": 24,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 4
+      },
+      "icon": "gu_earth",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 4
+      },
+      "trueQiCost": 2,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "连认隙与引门开一处近距小门射出随身石粒",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "H"
+    },
+    {
+      "id": "T101",
+      "name": "试砂蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_T",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_refine",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "辨明手上两种已知砂材的粗细，不推衍未知方",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "T"
+    },
+    {
+      "id": "T102",
+      "name": "护炉蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_T",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "icon": "gu_refine",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "撑起一面会损坏的炉泥薄障",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "T"
+    },
+    {
+      "id": "T103",
+      "name": "火筹蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_T",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "icon": "gu_refine",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "放出一撮限量炉火灼伤近敌",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "T"
+    },
+    {
+      "id": "T201",
+      "name": "定炉蛊",
+      "rank": 2,
+      "rarity": "common",
+      "role": "logistics",
+      "school": "xuantong_T",
+      "value": 24,
+      "cost": 1,
+      "effect": {
+        "kind": "recipe_component"
+      },
+      "icon": "gu_refine",
+      "combat": "",
+      "battleEffect": null,
+      "trueQiCost": 2,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "以试砂和护炉限定某一已知炼方的炉泥损耗",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "T"
+    },
+    {
+      "id": "M101",
+      "name": "试流蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_M",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_wind",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "投出微量导砂探一条实际可通的气流路径",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "M"
+    },
+    {
+      "id": "M102",
+      "name": "听风蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_M",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "icon": "gu_wind",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "识别近身风向并放出一枚小风羽划击",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "M"
+    },
+    {
+      "id": "M103",
+      "name": "踏脉蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_M",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "icon": "gu_wind",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "循坚实地面纹路避开一次近地冲击",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "M"
+    },
+    {
+      "id": "M201",
+      "name": "借风蛊",
+      "rank": 2,
+      "rarity": "common",
+      "role": "attack",
+      "school": "xuantong_M",
+      "value": 24,
+      "cost": 1,
+      "effect": {
+        "kind": "strike",
+        "amount": 4
+      },
+      "icon": "gu_wind",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "strike",
+        "amount": 4
+      },
+      "trueQiCost": 2,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "沿已辨风向引导实物羽刃一击，风息则停",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "M"
+    },
+    {
+      "id": "G101",
+      "name": "辨兆蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_G",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "辨别敌人刚露出的一个真实起手征兆",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "G"
+    },
+    {
+      "id": "G102",
+      "name": "听息蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_G",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 2
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "听敌气息间隙以护住下一次轻击",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "G"
+    },
+    {
+      "id": "G103",
+      "name": "记痕蛊",
+      "rank": 1,
+      "rarity": "common",
+      "role": "recon",
+      "school": "xuantong_G",
+      "value": 8,
+      "cost": 1,
+      "effect": {
+        "kind": "inspect"
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "inspect"
+      },
+      "trueQiCost": 1,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "记下一道实见攻击轨迹，使下一记拳脚试探原落点",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "G"
+    },
+    {
+      "id": "G201",
+      "name": "重息蛊",
+      "rank": 2,
+      "rarity": "common",
+      "role": "defense",
+      "school": "xuantong_G",
+      "value": 24,
+      "cost": 1,
+      "effect": {
+        "kind": "shield",
+        "amount": 4
+      },
+      "icon": "gu_qi",
+      "combat": "xuantong_active",
+      "battleEffect": {
+        "kind": "shield",
+        "amount": 4
+      },
+      "trueQiCost": 2,
+      "thoughtCost": 1,
+      "lowRankException": false,
+      "lifeCost": 0,
+      "sourceClass": "original_xuantong",
+      "provenance": "C_ORIGINAL",
+      "effectNote": "记录两次相同起手后提高下次防备的准度",
+      "buildRole": "Core",
+      "playable": true,
+      "xuantongPath": "G"
     }
   ],
   "releaseGuIds": [
@@ -1542,7 +2472,39 @@ const DATA = {
     "gold_atk_4_14_gu",
     "gold_atk_5_15_gu",
     "aptitude_gu",
-    "blood_atk_3_11_gu"
+    "blood_atk_3_11_gu",
+    "B101",
+    "B102",
+    "B103",
+    "B201",
+    "Y101",
+    "Y102",
+    "Y103",
+    "Y201",
+    "S101",
+    "S102",
+    "S103",
+    "S201",
+    "Z101",
+    "Z102",
+    "Z103",
+    "Z201",
+    "H101",
+    "H102",
+    "H103",
+    "H201",
+    "T101",
+    "T102",
+    "T103",
+    "T201",
+    "M101",
+    "M102",
+    "M103",
+    "M201",
+    "G101",
+    "G102",
+    "G103",
+    "G201"
   ],
   "recipes": [
     {
@@ -1583,8 +2545,507 @@ const DATA = {
       "branchAxis": null,
       "closes": [],
       "delays": []
+    },
+    {
+      "id": "F-B-2-01",
+      "kind": "fixed",
+      "inputs": [
+        "B101",
+        "B102"
+      ],
+      "output": "B201",
+      "stoneCost": 18,
+      "successRollMax": 100,
+      "materials": {
+        "玄铁屑": 1
+      },
+      "source": "问真·玄同纪原创蛊方（非原著） · 以玄铁屑作媒，把引锋蛊与守柄蛊的实在作用凝成折锋蛊：令短兵一击后回收，下一次出手可再刺同一近敌",
+      "branchLabel": "原创后世道途 · 消耗活蛊与蛊材",
+      "live": true
+    },
+    {
+      "id": "F-Y-2-01",
+      "kind": "fixed",
+      "inputs": [
+        "Y101",
+        "Y102"
+      ],
+      "output": "Y201",
+      "stoneCost": 18,
+      "successRollMax": 100,
+      "materials": {
+        "灯脂": 1
+      },
+      "source": "问真·玄同纪原创蛊方（非原著） · 以灯脂作媒，把藏晖蛊与投影蛊的实在作用凝成灯影蛊：固定微光与投影面，下一次受击时偏转敌人锁定",
+      "branchLabel": "原创后世道途 · 消耗活蛊与蛊材",
+      "live": true
+    },
+    {
+      "id": "F-S-2-01",
+      "kind": "fixed",
+      "inputs": [
+        "S101",
+        "S102"
+      ],
+      "output": "S201",
+      "stoneCost": 18,
+      "successRollMax": 100,
+      "materials": {
+        "春息露": 1
+      },
+      "source": "问真·玄同纪原创蛊方（非原著） · 以春息露作媒，把含芽蛊与守根蛊的实在作用凝成养根蛊：生根在受击后固定损坏根须，减少下一次损失",
+      "branchLabel": "原创后世道途 · 消耗活蛊与蛊材",
+      "live": true
+    },
+    {
+      "id": "F-Z-2-01",
+      "kind": "fixed",
+      "inputs": [
+        "Z101",
+        "Z102"
+      ],
+      "output": "Z201",
+      "stoneCost": 18,
+      "successRollMax": 100,
+      "materials": {
+        "契纹纸": 1
+      },
+      "source": "问真·玄同纪原创蛊方（非原著） · 以契纹纸作媒，把识主蛊与系令蛊的实在作用凝成验印蛊：识别自己与他人授权印纹的区别，无法凭此破解",
+      "branchLabel": "原创后世道途 · 消耗活蛊与蛊材",
+      "live": true
+    },
+    {
+      "id": "F-H-2-01",
+      "kind": "fixed",
+      "inputs": [
+        "H101",
+        "H102"
+      ],
+      "output": "H201",
+      "stoneCost": 18,
+      "successRollMax": 100,
+      "materials": {
+        "界石": 1
+      },
+      "source": "问真·玄同纪原创蛊方（非原著） · 以界石作媒，把认隙蛊与定标蛊的实在作用凝成隙门蛊：连认隙与引门开一处近距小门射出随身石粒",
+      "branchLabel": "原创后世道途 · 消耗活蛊与蛊材",
+      "live": true
+    },
+    {
+      "id": "F-T-2-01",
+      "kind": "fixed",
+      "inputs": [
+        "T101",
+        "T102"
+      ],
+      "output": "T201",
+      "stoneCost": 18,
+      "successRollMax": 100,
+      "materials": {
+        "丹砂": 1
+      },
+      "source": "问真·玄同纪原创蛊方（非原著） · 以丹砂作媒，把试砂蛊与护炉蛊的实在作用凝成定炉蛊：以试砂和护炉限定某一已知炼方的炉泥损耗",
+      "branchLabel": "原创后世道途 · 消耗活蛊与蛊材",
+      "live": true
+    },
+    {
+      "id": "F-M-2-01",
+      "kind": "fixed",
+      "inputs": [
+        "M101",
+        "M102"
+      ],
+      "output": "M201",
+      "stoneCost": 18,
+      "successRollMax": 100,
+      "materials": {
+        "风羽": 1
+      },
+      "source": "问真·玄同纪原创蛊方（非原著） · 以风羽作媒，把试流蛊与听风蛊的实在作用凝成借风蛊：沿已辨风向引导实物羽刃一击，风息则停",
+      "branchLabel": "原创后世道途 · 消耗活蛊与蛊材",
+      "live": true
+    },
+    {
+      "id": "F-G-2-01",
+      "kind": "fixed",
+      "inputs": [
+        "G101",
+        "G102"
+      ],
+      "output": "G201",
+      "stoneCost": 18,
+      "successRollMax": 100,
+      "materials": {
+        "旧年轮": 1
+      },
+      "source": "问真·玄同纪原创蛊方（非原著） · 以旧年轮作媒，把辨兆蛊与听息蛊的实在作用凝成重息蛊：记录两次相同起手后提高下次防备的准度",
+      "branchLabel": "原创后世道途 · 消耗活蛊与蛊材",
+      "live": true
     }
   ],
+  "xuantong": {
+    "schools": [
+      {
+        "id": "B",
+        "name": "百兵道",
+        "principle": "百兵有形，持用有法：真实器胚与操持方式决定效果；失去兵材或握持便不能凭空御兵。",
+        "risks": "敌人击碎器胚、夺去操持条件；换材需重新炼制。"
+      },
+      {
+        "id": "Y",
+        "name": "晦明道",
+        "principle": "晦明相待而生影：照明、遮挡、投影面缺一不可；影不直接等于黑暗与实体。",
+        "risks": "黑暗无光、目标不投影、光源被移走；幻影不承受真实撞击。"
+      },
+      {
+        "id": "S",
+        "name": "玄牝道",
+        "principle": "生有根、养有料、蜕有余：蛊与木胎都是具体活物；不凭空创造生命。",
+        "risks": "活体遭毒害、断水，或对手一击烧毁根部；魂和肉不能随意互换。"
+      },
+      {
+        "id": "Z",
+        "name": "执枢道",
+        "principle": "执枢非全能：必须有真实的主人、已授之令或可夺之权；命令不能取代蛊自身能力。",
+        "risks": "无权对象拒绝指令，断令遭反噬；不能未经许可改写誓约或盗取一切。"
+      },
+      {
+        "id": "H",
+        "name": "阖辟道",
+        "principle": "阖则有界、辟则有门：具名位置与有限时间窗共同约束开闭，不任意瞬移。",
+        "risks": "标记被拆、距离过远、计时终了；并不倒流时间。"
+      },
+      {
+        "id": "T",
+        "name": "参同道",
+        "principle": "参异求同、坎离守位：只改变已知配方中确有条件的反应，不是万物任意合炼。",
+        "risks": "材料比例失衡、反应时窗错过、炉体破裂；不得使用万能减费。"
+      },
+      {
+        "id": "M",
+        "name": "乘物道",
+        "principle": "乘物而不役物：必须先有流、风、地势等实际介质，才能借其路而行。",
+        "risks": "绝缘介质、静风、泥地阻断；不能“所有伤害统一转导”。"
+      },
+      {
+        "id": "G",
+        "name": "观复道",
+        "principle": "观其往复，察其已见之兆：预测必须有可观测周期，绝不直接支配天意与概率。",
+        "risks": "敌人变招、节律被隐藏、事件不可重复；不保底改概率。"
+      }
+    ],
+    "start_kits": [
+      {
+        "school": "百兵道",
+        "yuan_stones": 95,
+        "rank": 1,
+        "battle_slots": 3,
+        "true_essence_max": 6,
+        "true_essence_initial": 6,
+        "gu": [
+          "引锋蛊",
+          "守柄蛊",
+          "试刃蛊"
+        ],
+        "materials": [
+          {
+            "id": "玄铁屑",
+            "count": 3
+          },
+          {
+            "id": "韧骨节",
+            "count": 2
+          },
+          {
+            "id": "短刃胚",
+            "count": 1
+          }
+        ],
+        "known_formula_ids": [
+          "F-B-2-01"
+        ],
+        "starter_gu_count": 3,
+        "combat_baseline": "三只蛊各有实际用途，所有开局均有既有拳脚普通攻击保底；不得补充流派共鸣槽。",
+        "school_id": "B",
+        "gu_ids": [
+          "B101",
+          "B102",
+          "B103"
+        ],
+        "materialInventory": {
+          "玄铁屑": 3,
+          "韧骨节": 2,
+          "短刃胚": 1
+        }
+      },
+      {
+        "school": "晦明道",
+        "yuan_stones": 100,
+        "rank": 1,
+        "battle_slots": 3,
+        "true_essence_max": 6,
+        "true_essence_initial": 6,
+        "gu": [
+          "藏晖蛊",
+          "投影蛊",
+          "遮灯蛊"
+        ],
+        "materials": [
+          {
+            "id": "灯脂",
+            "count": 3
+          },
+          {
+            "id": "墨帛",
+            "count": 2
+          }
+        ],
+        "known_formula_ids": [
+          "F-Y-2-01"
+        ],
+        "starter_gu_count": 3,
+        "combat_baseline": "三只蛊各有实际用途，所有开局均有既有拳脚普通攻击保底；不得补充流派共鸣槽。",
+        "school_id": "Y",
+        "gu_ids": [
+          "Y101",
+          "Y102",
+          "Y103"
+        ],
+        "materialInventory": {
+          "灯脂": 3,
+          "墨帛": 2
+        }
+      },
+      {
+        "school": "玄牝道",
+        "yuan_stones": 85,
+        "rank": 1,
+        "battle_slots": 3,
+        "true_essence_max": 6,
+        "true_essence_initial": 6,
+        "gu": [
+          "含芽蛊",
+          "守根蛊",
+          "引露蛊"
+        ],
+        "materials": [
+          {
+            "id": "春息露",
+            "count": 3
+          },
+          {
+            "id": "木胎壳",
+            "count": 2
+          }
+        ],
+        "known_formula_ids": [
+          "F-S-2-01"
+        ],
+        "starter_gu_count": 3,
+        "combat_baseline": "三只蛊各有实际用途，所有开局均有既有拳脚普通攻击保底；不得补充流派共鸣槽。",
+        "school_id": "S",
+        "gu_ids": [
+          "S101",
+          "S102",
+          "S103"
+        ],
+        "materialInventory": {
+          "春息露": 3,
+          "木胎壳": 2
+        }
+      },
+      {
+        "school": "执枢道",
+        "yuan_stones": 105,
+        "rank": 1,
+        "battle_slots": 3,
+        "true_essence_max": 6,
+        "true_essence_initial": 6,
+        "gu": [
+          "识主蛊",
+          "系令蛊",
+          "解扣蛊"
+        ],
+        "materials": [
+          {
+            "id": "信印泥",
+            "count": 2
+          },
+          {
+            "id": "契纹纸",
+            "count": 3
+          }
+        ],
+        "known_formula_ids": [
+          "F-Z-2-01"
+        ],
+        "starter_gu_count": 3,
+        "combat_baseline": "三只蛊各有实际用途，所有开局均有既有拳脚普通攻击保底；不得补充流派共鸣槽。",
+        "school_id": "Z",
+        "gu_ids": [
+          "Z101",
+          "Z102",
+          "Z103"
+        ],
+        "materialInventory": {
+          "信印泥": 2,
+          "契纹纸": 3
+        }
+      },
+      {
+        "school": "阖辟道",
+        "yuan_stones": 90,
+        "rank": 1,
+        "battle_slots": 3,
+        "true_essence_max": 6,
+        "true_essence_initial": 6,
+        "gu": [
+          "认隙蛊",
+          "定标蛊",
+          "掩扉蛊"
+        ],
+        "materials": [
+          {
+            "id": "界石",
+            "count": 3
+          },
+          {
+            "id": "刻沙",
+            "count": 2
+          }
+        ],
+        "known_formula_ids": [
+          "F-H-2-01"
+        ],
+        "starter_gu_count": 3,
+        "combat_baseline": "三只蛊各有实际用途，所有开局均有既有拳脚普通攻击保底；不得补充流派共鸣槽。",
+        "school_id": "H",
+        "gu_ids": [
+          "H101",
+          "H102",
+          "H103"
+        ],
+        "materialInventory": {
+          "界石": 3,
+          "刻沙": 2
+        }
+      },
+      {
+        "school": "参同道",
+        "yuan_stones": 100,
+        "rank": 1,
+        "battle_slots": 3,
+        "true_essence_max": 6,
+        "true_essence_initial": 6,
+        "gu": [
+          "试砂蛊",
+          "护炉蛊",
+          "火筹蛊"
+        ],
+        "materials": [
+          {
+            "id": "丹砂",
+            "count": 2
+          },
+          {
+            "id": "定炉泥",
+            "count": 3
+          }
+        ],
+        "known_formula_ids": [
+          "F-T-2-01"
+        ],
+        "starter_gu_count": 3,
+        "combat_baseline": "三只蛊各有实际用途，所有开局均有既有拳脚普通攻击保底；不得补充流派共鸣槽。",
+        "school_id": "T",
+        "gu_ids": [
+          "T101",
+          "T102",
+          "T103"
+        ],
+        "materialInventory": {
+          "丹砂": 2,
+          "定炉泥": 3
+        }
+      },
+      {
+        "school": "乘物道",
+        "yuan_stones": 100,
+        "rank": 1,
+        "battle_slots": 3,
+        "true_essence_max": 6,
+        "true_essence_initial": 6,
+        "gu": [
+          "试流蛊",
+          "听风蛊",
+          "踏脉蛊"
+        ],
+        "materials": [
+          {
+            "id": "导砂",
+            "count": 2
+          },
+          {
+            "id": "风羽",
+            "count": 3
+          }
+        ],
+        "known_formula_ids": [
+          "F-M-2-01"
+        ],
+        "starter_gu_count": 3,
+        "combat_baseline": "三只蛊各有实际用途，所有开局均有既有拳脚普通攻击保底；不得补充流派共鸣槽。",
+        "school_id": "M",
+        "gu_ids": [
+          "M101",
+          "M102",
+          "M103"
+        ],
+        "materialInventory": {
+          "导砂": 2,
+          "风羽": 3
+        }
+      },
+      {
+        "school": "观复道",
+        "yuan_stones": 105,
+        "rank": 1,
+        "battle_slots": 3,
+        "true_essence_max": 6,
+        "true_essence_initial": 6,
+        "gu": [
+          "辨兆蛊",
+          "听息蛊",
+          "记痕蛊"
+        ],
+        "materials": [
+          {
+            "id": "旧年轮",
+            "count": 2
+          },
+          {
+            "id": "听息简",
+            "count": 3
+          }
+        ],
+        "known_formula_ids": [
+          "F-G-2-01"
+        ],
+        "starter_gu_count": 3,
+        "combat_baseline": "三只蛊各有实际用途，所有开局均有既有拳脚普通攻击保底；不得补充流派共鸣槽。",
+        "school_id": "G",
+        "gu_ids": [
+          "G101",
+          "G102",
+          "G103"
+        ],
+        "materialInventory": {
+          "旧年轮": 2,
+          "听息简": 3
+        }
+      }
+    ]
+  },
   "killMoves": [],
   "killMovesEnabled": false,
   "enemies": [
@@ -5810,7 +7271,7 @@ const DATA = {
       "gu_id": "aptitude_gu",
       "tier": 1,
       "stone_cost": 20,
-      "gu_name": ""
+      "gu_name": "资质机缘（原创）"
     },
     {
       "id": "lab_shop_gold_atk_2_12_gu",
@@ -5891,6 +7352,198 @@ const DATA = {
       "tier": 3,
       "stone_cost": 18,
       "gu_name": "血月蛊"
+    },
+    {
+      "id": "purchase_xuantong_B101",
+      "kind": "purchase",
+      "gu_id": "B101",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "引锋蛊"
+    },
+    {
+      "id": "purchase_xuantong_B102",
+      "kind": "purchase",
+      "gu_id": "B102",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "守柄蛊"
+    },
+    {
+      "id": "purchase_xuantong_B103",
+      "kind": "purchase",
+      "gu_id": "B103",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "试刃蛊"
+    },
+    {
+      "id": "purchase_xuantong_Y101",
+      "kind": "purchase",
+      "gu_id": "Y101",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "藏晖蛊"
+    },
+    {
+      "id": "purchase_xuantong_Y102",
+      "kind": "purchase",
+      "gu_id": "Y102",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "投影蛊"
+    },
+    {
+      "id": "purchase_xuantong_Y103",
+      "kind": "purchase",
+      "gu_id": "Y103",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "遮灯蛊"
+    },
+    {
+      "id": "purchase_xuantong_S101",
+      "kind": "purchase",
+      "gu_id": "S101",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "含芽蛊"
+    },
+    {
+      "id": "purchase_xuantong_S102",
+      "kind": "purchase",
+      "gu_id": "S102",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "守根蛊"
+    },
+    {
+      "id": "purchase_xuantong_S103",
+      "kind": "purchase",
+      "gu_id": "S103",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "引露蛊"
+    },
+    {
+      "id": "purchase_xuantong_Z101",
+      "kind": "purchase",
+      "gu_id": "Z101",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "识主蛊"
+    },
+    {
+      "id": "purchase_xuantong_Z102",
+      "kind": "purchase",
+      "gu_id": "Z102",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "系令蛊"
+    },
+    {
+      "id": "purchase_xuantong_Z103",
+      "kind": "purchase",
+      "gu_id": "Z103",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "解扣蛊"
+    },
+    {
+      "id": "purchase_xuantong_H101",
+      "kind": "purchase",
+      "gu_id": "H101",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "认隙蛊"
+    },
+    {
+      "id": "purchase_xuantong_H102",
+      "kind": "purchase",
+      "gu_id": "H102",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "定标蛊"
+    },
+    {
+      "id": "purchase_xuantong_H103",
+      "kind": "purchase",
+      "gu_id": "H103",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "掩扉蛊"
+    },
+    {
+      "id": "purchase_xuantong_T101",
+      "kind": "purchase",
+      "gu_id": "T101",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "试砂蛊"
+    },
+    {
+      "id": "purchase_xuantong_T102",
+      "kind": "purchase",
+      "gu_id": "T102",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "护炉蛊"
+    },
+    {
+      "id": "purchase_xuantong_T103",
+      "kind": "purchase",
+      "gu_id": "T103",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "火筹蛊"
+    },
+    {
+      "id": "purchase_xuantong_M101",
+      "kind": "purchase",
+      "gu_id": "M101",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "试流蛊"
+    },
+    {
+      "id": "purchase_xuantong_M102",
+      "kind": "purchase",
+      "gu_id": "M102",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "听风蛊"
+    },
+    {
+      "id": "purchase_xuantong_M103",
+      "kind": "purchase",
+      "gu_id": "M103",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "踏脉蛊"
+    },
+    {
+      "id": "purchase_xuantong_G101",
+      "kind": "purchase",
+      "gu_id": "G101",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "辨兆蛊"
+    },
+    {
+      "id": "purchase_xuantong_G102",
+      "kind": "purchase",
+      "gu_id": "G102",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "听息蛊"
+    },
+    {
+      "id": "purchase_xuantong_G103",
+      "kind": "purchase",
+      "gu_id": "G103",
+      "tier": 1,
+      "stone_cost": 12,
+      "gu_name": "记痕蛊"
     }
   ],
   "npcs": [
@@ -10751,7 +12404,7 @@ const DATA = {
     "covered": [
       {
         "name": "真实蛊实体",
-        "detail": "20 只当前主游戏投影蛊定义；生产、锻体、舍利与资质蛊不进入战斗列表。数量不代表原著语义已逐只核验",
+        "detail": "52 只当前主游戏投影蛊定义；生产、锻体、舍利与资质蛊不进入战斗列表。数量不代表原著语义已逐只核验",
         "source": "data/gu.json（806 实体）与当前投影白名单"
       },
       {
@@ -10992,5 +12645,5 @@ const DATA = {
       }
     ]
   },
-  "contentVersion": "e192a933ef0d0d39cd749e07d3813faa0489914043d39541f2526cca77801f05"
+  "contentVersion": "7fa4530656fc8e9581f5ad932c65b8454a7d4a60b70d1d314863b9e03889de97"
 };

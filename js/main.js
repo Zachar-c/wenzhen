@@ -264,8 +264,11 @@ function bootFromSave() {
 }
 
 let state;
+let openingSchoolChoice = null; // 旧存档/旧局流程保持可用；选择八道后应用对应资源包。
 
 function fresh(difficulty = 'normal', seed) {
+  const kit = DATA.xuantong?.start_kits?.find(k => k.school_id === openingSchoolChoice);
+  const openingOwned = kit ? Object.fromEntries(kit.gu_ids.map(id=>[id,1])) : { ...READY.owned };
   const runSeed = resolveRunSeed(seed);
   const thoughts = HumanRules.BASELINE.thoughtMax;
   const qiMax = RunRules.essenceMax(READY.cultivation, READY.aptitude, {
@@ -295,18 +298,18 @@ function fresh(difficulty = 'normal', seed) {
   };
   return {
     // seed 必须写在 READY 展开之后：禁止 READY.seed 覆盖已选择种子。
-    ...READY, guCare: { ...READY.guCare }, solidCare: GuRules.solidCareState(null, READY.owned, 0), seed: runSeed, owned: { ...READY.owned }, wild: { ...READY.wild }, equipped: [], customMoveRecipes: [], killmoveDraft: [], battle: null, qiMax, qi: qiMax,
+    ...READY, openingPath:kit?.school_id||null, school:kit?'xuantong_'+kit.school_id:READY.school, stones:kit?.yuan_stones??READY.stones, materials:{...(kit?.materialInventory||{})}, guCare: { ...READY.guCare }, solidCare: GuRules.solidCareState(null, openingOwned, 0), seed: runSeed, owned: { ...openingOwned }, wild: { ...READY.wild }, equipped: [], customMoveRecipes: [], killmoveDraft: [], battle: null, qiMax, qi: qiMax,
     thought: thoughts, thoughtMax: thoughts, modifierLedger: [],
     journey, prepFor: null, reward: null, ending: null, shopSold: [], restUsed: false, journal: [],
     page: 'hall', lootPity: 0,
-    combatLoadout: Object.keys(READY.owned).filter(id => DATA.gu.some(g => g.id === id && g.combat && g.combat !== 'none')).slice(0, 3),
+    combatLoadout: Object.keys(openingOwned).filter(id => DATA.gu.some(g => g.id === id && g.combat && g.combat !== 'none')).slice(0, 3),
     combatSlotBonus: 0, shopRefreshCount: 0, battlePlan: 'balanced',
     battleWins: 0, buildBoons: [], pendingBuildBoon: false,
     globalCodexIds: [], knownFacts: [], travelSoulDebt: null,
     eventLog: [{
       id: 'event_0000', time: 0, nodeId: journey.nodeId, action: 'run_started',
       reason: 'new_run',
-      after: { stones: READY.stones, owned: { ...READY.owned }, wild: { ...READY.wild } },
+      after: { stones: kit?.yuan_stones??READY.stones, owned: { ...openingOwned }, wild: { ...READY.wild }, materials:{...(kit?.materialInventory||{})} },
     }],
   };
 }
@@ -1582,11 +1585,12 @@ const act = {
   forge(recipeId) {
     if (!isPreparing()) return;
     const recipe = GuRules.liveRecipes(DATA.recipes).find(r => r.id === recipeId);
-    const result = GuRules.settleForge(recipe, {owned:state.owned, stones:state.stones, playerRank:state.cultivation}, GU_BY_ID);
-    if (!result.ok) return toast(({insufficient_rank:'修为不足以承载成蛊', insufficient_stones:'元石不足', missing_ingredients:'合炼组件不足'})[result.reason] || '配方暂不可用', 'bad');
+    const result = GuRules.settleForge(recipe, {owned:state.owned, stones:state.stones, materials:state.materials||{}, playerRank:state.cultivation}, GU_BY_ID);
+    if (!result.ok) return toast(({insufficient_rank:'修为不足以承载成蛊', insufficient_stones:'元石不足', missing_ingredients:'合炼组件不足',missing_materials:'蛊材不足'})[result.reason] || '配方暂不可用', 'bad');
     const wasEquipped = Array.isArray(state.combatLoadout) && recipe.inputs.some(id => state.combatLoadout.includes(id));
     state.owned = result.owned;
     state.stones = result.stones;
+    state.materials = result.materials;
     if (Array.isArray(state.combatLoadout)) {
       state.combatLoadout = state.combatLoadout.filter(id => state.owned[id] > 0);
       if (wasEquipped && !state.combatLoadout.includes(result.output) && state.combatLoadout.length < BuildRules.slots(state.combatSlotBonus)) state.combatLoadout.push(result.output);
@@ -1744,6 +1748,11 @@ const act = {
     draw();
   },
 
+  selectOpeningSchool(id) {
+    if (isInProgressRun() || !DATA.xuantong?.schools.some(s=>s.id===id)) return;
+    openingSchoolChoice = id;
+    state = fresh(state.journey.difficulty || 'normal');
+  },
   startRun(difficulty = 'normal', seedOverride) {
     if (!confirmAbandon('开始新局将放弃当前局，确定？')) {
       skipPersistOnce = true;
