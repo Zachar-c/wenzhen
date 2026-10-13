@@ -44,7 +44,14 @@ try{
     await page.setViewportSize({width:1280,height:800});
    }
    await page.getByRole('button',{name:'立即结算'}).click();
-   if(await page.getByRole('button',{name:/收入蛊仓/}).count())await page.getByRole('button',{name:/收入蛊仓/}).click();
+   if(i===0&&round===1&&await page.getByRole('button',{name:/夺蛊并替换/}).count()){
+    const before=await page.evaluate(()=>JSON.parse(localStorage.getItem('wenzhen_m2_v1')).equip);
+    await page.screenshot({path:output+'/m2_spoils_swap.png',fullPage:true});
+    await page.getByRole('button',{name:/夺蛊并替换/}).first().click();
+    const after=await page.evaluate(()=>JSON.parse(localStorage.getItem('wenzhen_m2_v1')).equip);
+    assert.equal(after.length,before.length);
+    assert.notEqual(after[0],before[0],'loot should immediately replace the chosen equipped Gu');
+   }else if(await page.getByRole('button',{name:/收入蛊仓/}).count())await page.getByRole('button',{name:/收入蛊仓/}).click();
    assert.match(await page.locator('#app').innerText(),/战斗胜利|战斗失利|整备与交易|双幕结算/);
    assert.match(await page.locator('#app').innerText(),/造成伤害|护盾吸收|可追夺的蛊|双幕结算/);
   }
