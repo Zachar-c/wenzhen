@@ -1,29 +1,42 @@
 {
-  "version": "m2-visual-r11",
-  "status": "vertical-slice-in-progress",
+  "version": "m2-visual-r11.1",
+  "status": "vertical-slice-asset-contract",
   "provenance": {
-    "type": "candidate-atlas-retained-for-pipeline-validation",
+    "type": "pipeline-contract",
     "date": "2026-10-13",
-    "license_status": "pending_project_review",
-    "claim": "temporary candidates only; not commercial final art"
+    "claim": "candidate atlas retained only as fallback until independent assets land"
   },
   "vertical_slice": {
     "scene": "月光蛊_vs_逐影刺客",
-    "goal": "one complete combat visual slice before full expansion"
+    "goal": "replace atlas prototype with independently addressable production assets"
   },
   "character": {
-    "current_candidate": "assets/visual/m2_r8_character_atlas.webp",
-    "status": "replace-with-final-independent-assets",
-    "required": ["player_idle", "player_attack", "shadow_assassin_idle", "shadow_assassin_attack"]
+    "fallback": "assets/visual/m2_r8_character_atlas.webp",
+    "required_assets": {
+      "player": ["idle", "attack", "hit"],
+      "shadow_assassin": ["idle", "attack", "hit"]
+    },
+    "state": "fallback-only"
   },
   "gu": {
-    "pilot": ["Y101", "B101", "G101", "S101"],
-    "status": "replace-pilot-atlas-with-independent-files",
-    "required": "one-file-per-gu-card"
+    "pilot": {
+      "Y101": "yueguang",
+      "B101": "yin_feng",
+      "S101": "bai_yu",
+      "G101": "xiao_guang"
+    },
+    "required_layout": "one-file-per-gu-card",
+    "states": ["normal", "active", "cooldown"],
+    "state": "migration-ready"
+  },
+  "effects": {
+    "slash": "required",
+    "shield": "required",
+    "counter": "required"
   },
   "acceptance": {
     "commercial_visual_approval": false,
     "gameplay_mutation": false,
-    "next_gate": "browser screenshot review of complete vertical slice"
+    "next_gate": "integrate independent pilot assets and capture browser battle slice"
   }
 }
