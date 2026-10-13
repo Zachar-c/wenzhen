@@ -132,7 +132,7 @@ test('invalid slot swap never grants a free Gu or advances round',()=>{
 
 test('M2 new Gu are not starter Gu and have sourced acquisition',()=>{
  const g=session();g.run('init("百兵")');
- assert.equal(g.run('GU.length'),27);
+ assert.equal(g.run('GU.length'),28);
  assert.equal(g.run('state.gu.some(x=>x.gu==="N201"||x.gu==="N202")'),false);
  assert.equal(g.run('ENEMY_SPOILS[4].gu'),'N201');
  assert.equal(g.run('ENEMY_SPOILS[5].gu'),'N202');
@@ -216,4 +216,30 @@ test('merchant sourcing survives reload without allowing second commission',()=>
  assert.equal(resumed.run('state.seekUsed'),true);
  assert.equal(resumed.run('seekGu("G112")'),false);
  assert.equal(resumed.run('state.shelf.some(x=>x?.gu==="G112"&&x?.seek)'),true);
+});
+
+test('M3 fixed recipe consumes exact two Gu instances, equips result, and is not repeatable',()=>{
+ const g=session();g.run('init("百兵")');
+ const gold=g.run('state.gold');
+ assert.equal(g.run('availableRecipes().length'),1);
+ assert.equal(g.run('refineGu("B201")'),true);
+ assert.equal(g.run('state.gu.some(x=>x.gu==="B101"||x.gu==="B102")'),false);
+ assert.equal(g.run('state.gu.some(x=>x.gu==="B201")'),true);
+ assert.equal(g.run('state.equip.some(id=>state.gu.find(x=>x.id===id)?.gu==="B201")'),true);
+ assert.equal(g.run('state.gold'),gold);
+ assert.equal(g.run('refineGu("B201")'),false);
+});
+test('M3 crafted Gu cannot be commissioned through merchant or randomly purchased',()=>{
+ const g=session();g.run('init("百兵")');
+ assert.equal(g.run('seekGu("B201")'),false);
+ assert.equal(g.run('state.gold'),13);
+ assert.equal(g.run('M3_RECIPES[0].inputs.join(",")'),'B101,B102');
+ assert.equal(g.run('state.shelf.some(x=>x.gu==="B201")'),false);
+});
+test('M3 return strike occurs on a later tick and has a real combat source',()=>{
+ const g=session();g.run('init("百兵");refineGu("B201");startBattle()');
+ g.run('step();step()');
+ assert.equal(g.run('battle.totals.damageBySource["折锋回刺"]||0'),0);
+ g.run('for(let n=0;n<8&&battle;n++)step()');
+ assert.ok(g.run('battle?.totals.damageBySource["折锋回刺"]||state.lastResult?.stats.damageBySource["折锋回刺"]||0')>0);
 });
