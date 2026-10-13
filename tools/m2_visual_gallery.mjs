@@ -18,13 +18,14 @@ try{
   document.querySelector('#app').style.cssText+='height:auto;max-height:none;overflow:visible';
  });
  await page.addStyleTag({content:'.m2-gallery{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.m2-gallery .shopitem{min-height:190px;grid-template-columns:96px minmax(0,1fr)}.m2-gallery .shopitem>.m2-gu-illustration{width:96px;min-height:120px}.m2-gallery .shopitem .name{font-size:16px}.m2-gallery .offer-hint{font-size:11px}.m2-gallery .shopitem .meta{font-size:12px}'});
- await page.waitForFunction(()=>document.querySelectorAll('.m2-gallery .shopitem[data-gu-painted]').length===26);
+ const total=await page.evaluate(()=>GU.length);
+ await page.waitForFunction(expected=>document.querySelectorAll('.m2-gallery .shopitem[data-gu-painted]').length===expected,total);
  assert.equal(await page.locator('.m2-gallery .m2-r8-gu-painted').count(),7,'seven genuine Gu illustration matches');
  const names=await page.locator('.m2-gallery .shopitem[data-gu-painted]').evaluateAll(nodes=>nodes.map(n=>n.dataset.guPainted));
- assert.equal(new Set(names).size,26);
+ assert.equal(new Set(names).size,total);
  const atlasGood=await page.evaluate(()=>Promise.all(['assets/visual/m2_r8_character_atlas.webp','assets/visual/m2_r8_gu_atlas.webp'].map(src=>new Promise(ok=>{let image=new Image();image.onload=()=>ok(image.naturalWidth>0);image.onerror=()=>ok(false);image.src=src}))));
  assert.deepEqual(atlasGood,[true,true],'both painterly art files must decode offline');
  await page.screenshot({path:output+'/07_gu_26_real_chromium_1920x1080.png',fullPage:true});
  assert.deepEqual(errors,[],'gallery JS errors');
- console.log('M2_ART_GALLERY_OK '+names.length+' GU, 7 painted, 2 decoded atlases');
+ console.log('M2_ART_GALLERY_OK '+names.length+' current Gu, 7 painted, 2 decoded atlases');
 }finally{await browser.close()}
