@@ -29,7 +29,7 @@ function owned(id){return {id:makeId(),gu:id}}
 function starters(school){return GU.filter(g=>g.school===school).slice(0,3).map(g=>owned(g.id))}
 function save(){if(state)localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 function init(school){if(!SCHOOLS.includes(school))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
-function beginRound(){state.round++;state.gold+=5;state.free=true;state.rerolls=0;state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer());if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}save()}
+function beginRound(){state.round++;state.gold+=5;state.free=true;state.rerolls=0;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
 function offer(){return {id:makeId(),gu:GU[Math.floor(rand()*GU.length)].id,lock:false}}
 function buy(i){let x=state.shelf[i];if(!x||state.gold<4||state.gu.length>=12)return;state.gold-=4;state.gu.push(owned(x.gu));state.shelf[i]=null;save();render()}
 function sell(id){const x=state.gu.find(z=>z.id===id);if(!x)return;state.equip=state.equip.filter(z=>z!==id);state.gu=state.gu.filter(z=>z.id!==id);state.gold+=2;save();render()}
@@ -49,20 +49,20 @@ function restart(){if(!confirm('放弃现有 M1 进度并重新开局？'))retur
 function has(type,source){return battle.states.some(s=>s.type===type&&(!source||s.source===source)&&s.until>battle.tick)}
 function get(type,source){return battle.states.find(s=>s.type===type&&(!source||s.source===source)&&s.until>battle.tick)}
 function mark(type,source,duration,value=0,extra={}){battle.states=battle.states.filter(s=>!(s.type===type&&s.source===source));battle.states.push({type,source,at:battle.tick,until:battle.tick+duration,value,...extra});push("状态 "+type+" ("+duration+" tick)")}
-function shield(source,value,until){const available=12-battle.shields.reduce((a,s)=>a+s.value,0);const v=Math.max(0,Math.min(value,available));if(v){battle.shields.push({source,value:v,until,seq:battle.seq++});push("护盾 +"+v+" ["+GM[source.split(':')[0]]?.name||source+"]")}return v}
+function shield(source,value,until){const available=12-battle.shields.reduce((a,s)=>a+s.value,0);const v=Math.max(0,Math.min(value,available));if(v){battle.shields.push({source,value:v,until,seq:battle.seq++});push("护盾 +"+v+" ["+(GM[source.split(':')[0]]?.name||source)+"]")}return v}
 function push(s){log.push('['+battle.tick+'] '+s);if(log.length>400)log.shift()}
 function fresh(){return battle.instances.filter(x=>x.ready<=battle.tick&&x.first<=battle.tick).sort((a,b)=>a.slot-b.slot)}
 function cast(x){x.ready=battle.tick+x.cd;push(GM[x.gu].name+" 触发")}
 function environmentWind(){return battle.foe.id!=="swordsman"||battle.tick%18<12}
 function direct(value,source,opts={}){if(battle.foe.hp<=0)return;let dmg=value;const target=has("weak")&&opts.consumeWeak!==false?get("weak"):null;if(target){dmg+=2;battle.states=battle.states.filter(s=>s!==target)}if(has("owner")&&!opts.periodic)dmg++;if(opts.bonus)dmg+=opts.bonus;let armor=has("broken")?0:battle.foe.armor;dmg=Math.max(1,dmg-armor);battle.foe.hp=Math.max(0,battle.foe.hp-dmg);push(source+" → "+battle.foe.name+" -"+dmg+" (剩余"+battle.foe.hp+")")}
-function hitQueued(e){let value=Math.max(0,e.damage),sources={};if(e.type==="charge"&&has("gate"))value=Math.max(0,value-1);if(has("bind")){value=Math.max(0,value-2);battle.states=battle.states.filter(s=>s.type!=="bind")};if(e.reduction)value=Math.max(0,value-e.reduction);if(e.evade)value=Math.max(0,value-e.evade);const shade=get("shade");if(shade&&!shade.used){value=Math.max(0,value-1);shade.used=true}
+function hitQueued(e){let value=Math.max(0,e.damage),sources={};if(e.evade)value=Math.max(0,value-e.evade);if(e.type==="charge"&&has("gate"))value=Math.max(0,value-1);if(has("bind")){value=Math.max(0,value-2);battle.states=battle.states.filter(s=>s.type!=="bind")};if(e.reduction)value=Math.max(0,value-e.reduction);const shade=get("shade");if(shade&&!shade.used&&value>0){value=Math.max(0,value-1);shade.used=true}
 battle.shields.sort((a,b)=>a.seq-b.seq);for(const s of battle.shields){const absorb=Math.min(value,s.value);value-=absorb;s.value-=absorb;sources[s.source]=(sources[s.source]||0)+absorb}
 battle.shields=battle.shields.filter(s=>s.value>0);battle.hp=Math.max(0,battle.hp-value);push("敌方 "+e.name+" 命中，生命 -"+value+"；剩余 "+battle.hp);
 const gs=battle.instances.find(x=>x.gu==="G103"&&x.ready<=battle.tick),heard=Object.entries(sources).filter(([k,v])=>v>0&&k.startsWith("G102:")).length>0;
 if(gs&&heard&&e.observed){cast(gs);const bonus=battle.lastConfirmed===e.type?2:0;battle.pending.push({tick:battle.tick+1,type:"counter",damage:3+bonus,source:gs.id})}
 if(e.observed)battle.lastConfirmed=e.type;
 battle.current=null}
-function startBattle(){if(battle||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(FOES[state.round-1]);battle={tick:0,hp:30,foe,instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},200)}
+function startBattle(){if(battle||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(FOES[state.round-1]);battle={tick:0,hp:30,foe,instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},500)}
 function observation(e){return e.type!=="feint"||battle.tick>=e.impact-2}
 function step(){if(!battle)return;const b=battle,t=b.tick;
 b.states=b.states.filter(s=>s.until>t);b.shields=b.shields.filter(s=>s.until>t&&s.value>0);
@@ -87,7 +87,7 @@ case"B102":if(enemy&&enemy.impact>t&&enemy.impact-enemy.windup===t){cast(x);shie
 case"Y102":if(enemy&&enemy.impact-enemy.windup===t){cast(x);enemy.evade+=4;push("投影预备规避4")}break;
 case"H103":if(enemy&&enemy.impact-enemy.windup===t&&has("beacon")){cast(x);shield(x.gu+":"+x.instance,3,enemy.impact+1);if(enemy.type==="charge")mark("gate",x.instance,enemy.windup+1)}break;
 case"M103":if(enemy&&enemy.impact-enemy.windup===t){cast(x);if(enemy.type==="charge")enemy.evade+=4;else shield(x.gu+":"+x.instance,3,enemy.impact+1)}break;
-case"Z103":if(enemy&&enemy.impact===t+1&&has("bind")){cast(x);b.states=b.states.filter(s=>s.type!=="bind");enemy.reduction+=2;shield(x.gu+":"+x.instance,2,enemy.impact+1)}break;
+case"Z103":if(enemy&&enemy.impact===t+1&&has("bind")){cast(x);b.states=b.states.filter(s=>s.type!=="bind");enemy.reduction+=4;shield(x.gu+":"+x.instance,2,enemy.impact+1)}break;
 case"G102":if(enemy&&enemy.impact===t&&enemy.observed){cast(x);shield(x.gu+":"+x.instance,4,t+1)}break;
 }}
 for(const x of fresh().filter(x=>["B101","Y101","S101","Z102","H102","T103","M102"].includes(x.gu))){let bonus=0;
