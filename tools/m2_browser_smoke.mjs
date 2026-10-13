@@ -38,6 +38,7 @@ try{
   }
   // Genuine purchase/equipment interaction through buttons, not JS fixture injection.
   await page.getByRole('button',{name:'购买'}).last().click();
+  await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
   await page.getByRole('button',{name:'装备'}).last().click();
   assert.match(await page.locator('#status').innerText(),/9 金币/);
   for(let round=1;round<=6;round++){
