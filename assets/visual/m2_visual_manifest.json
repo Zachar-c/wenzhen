@@ -1,6 +1,6 @@
 {
-  "version": "m2-visual-r11.1",
-  "status": "vertical-slice-asset-contract",
+  "version": "m2-visual-r11.2",
+  "status": "vertical-slice-asset-integration",
   "provenance": {
     "type": "pipeline-contract",
     "date": "2026-10-13",
@@ -8,7 +8,8 @@
   },
   "vertical_slice": {
     "scene": "月光蛊_vs_逐影刺客",
-    "goal": "replace atlas prototype with independently addressable production assets"
+    "goal": "replace atlas prototype with independently addressable production assets",
+    "current_gate": "independent-pilot-assets"
   },
   "character": {
     "fallback": "assets/visual/m2_r8_character_atlas.webp",
@@ -16,7 +17,7 @@
       "player": ["idle", "attack", "hit"],
       "shadow_assassin": ["idle", "attack", "hit"]
     },
-    "state": "fallback-only"
+    "state": "asset-generation-pending"
   },
   "gu": {
     "pilot": {
@@ -27,7 +28,8 @@
     },
     "required_layout": "one-file-per-gu-card",
     "states": ["normal", "active", "cooldown"],
-    "state": "migration-ready"
+    "state": "integration-ready",
+    "atlas_policy": "fallback-only"
   },
   "effects": {
     "slash": "required",
@@ -37,6 +39,6 @@
   "acceptance": {
     "commercial_visual_approval": false,
     "gameplay_mutation": false,
-    "next_gate": "integrate independent pilot assets and capture browser battle slice"
+    "next_gate": "land independent pilot assets and capture browser battle slice"
   }
 }
