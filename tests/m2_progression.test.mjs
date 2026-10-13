@@ -109,3 +109,23 @@ test('route selection rejects inaccessible foes, unresolved rewards and extra pa
  g.run('startBattle();quick()');
  if(g.run('state.pendingSpoils'))assert.equal(g.run('chooseTarget(0)'),false);
 });
+
+test('claimed Gu can replace one equipped slot immediately without destroying old Gu',()=>{
+ const g=session();g.run('init("玄牝");startBattle();quick()');
+ const former=g.run('state.equip[0]'),before=g.run('state.gu.length');
+ assert.equal(g.run('resolveSpoils("claim",null,state.equip[0])'),true);
+ assert.equal(g.run('state.gu.length'),before+1);
+ assert.equal(g.run('state.gu.some(x=>x.id==='+JSON.stringify('')+'+state.equip[0])'),true);
+ assert.equal(g.run('state.equip.includes('+JSON.stringify(former)+')'),false);
+ assert.equal(g.run('state.gu.some(x=>x.id==='+JSON.stringify(former)+')'),true);
+ assert.equal(g.run('state.equip.length'),3);
+});
+test('invalid slot swap never grants a free Gu or advances round',()=>{
+ const g=session();g.run('init("百兵");startBattle();quick()');
+ const gold=g.run('state.gold'),length=g.run('state.gu.length');
+ assert.equal(g.run('resolveSpoils("claim",null,"unknown")'),false);
+ assert.equal(g.run('state.gu.length'),length);
+ assert.equal(g.run('state.gold'),gold);
+ assert.equal(g.run('state.round'),1);
+ assert.equal(g.run('state.pendingSpoils.gu'),'B101');
+});
