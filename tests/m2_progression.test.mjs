@@ -152,3 +152,23 @@ test('饮锋 counters only on actual incoming HP damage',()=>{
  assert.ok(g.run('battle.totals.damageTaken')>0);
  assert.ok(g.run('battle.totals.damageBySource["饮锋反击"]||0')>0);
 });
+
+test('知几蛊 from Library cannot attack on first visible enemy move',()=>{
+ const g=session();g.run('init("观复")');
+ g.run('state.equip=[];const x=owned("G112");state.gu.push(x);state.equip=[x.id];startBattle()');
+ g.run('for(let i=0;i<8;i++)step()');
+ assert.equal(g.run('battle.totals.damageBySource["知几蛊"]||0'),0);
+});
+test('知几蛊 acts after second same declared attack, not fabricated precognition',()=>{
+ const g=session();g.run('init("观复")');
+ g.run('state.equip=[];const x=owned("G112");state.gu.push(x);state.equip=[x.id];startBattle()');
+ g.run('for(let i=0;i<18&&battle;i++)step()');
+ const result=g.run('battle?.totals.damageBySource["知几蛊"]||state.lastResult?.stats.damageBySource["知几蛊"]||0');
+ assert.ok(result>0);
+});
+test('M2 research Gu remains nonstarter but is in shop offer population',()=>{
+ const g=session();g.run('init("观复")');
+ assert.equal(g.run('state.gu.some(x=>x.gu==="G112")'),false);
+ assert.equal(g.run('GU.some(x=>x.id==="G112")'),true);
+ assert.equal(g.run('GM.G112.school'),'观复');
+});
