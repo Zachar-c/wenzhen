@@ -247,3 +247,18 @@ button.primary{color:#fff9eb}
  .player-figure .halo{top:28px;width:145px;height:145px}
  .player-figure .soul-core{top:156px;width:12px;height:12px}
 }
+
+
+.mobile-battle-cta{display:none}
+@media(max-width:790px){
+ .game-main{padding-bottom:76px}
+ .mobile-battle-cta{
+  position:fixed;z-index:25;left:12px;right:12px;bottom:12px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 10px 10px 15px;color:#f8e1b4;font-size:12px;
+  border:1px solid #e2bd8ab3;border-radius:12px;
+  background:linear-gradient(118deg,#272634f5,#473344f5);box-shadow:0 10px 34px #050511d9,0 0 0 4px #13121f88;
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
+ }
+ .mobile-battle-cta .primary{flex:none;font-size:13px;padding:10px 17px}
+}
