@@ -32,9 +32,17 @@ try{
   await page.getByRole('button',{name:/迎战/}).click();
   await page.locator('.player-figure[data-portrait]').waitFor();
   assert.equal(await page.locator('.battle-gu>.m2-gu-illustration').count()>0,true,'battle cards must be painted');
+  await page.evaluate(()=>window.scrollTo(0,0));
   await page.screenshot({path:`${dir}/05_battle_${key}.png`});
+  if(width<600){
+   const arena=await page.locator('.combat-stage').boundingBox();
+   assert.ok(arena&&arena.y<height&&arena.y+arena.height>0,`mobile battle stage should intersect viewport: ${JSON.stringify(arena)}`);
+  }
   await page.getByRole('button',{name:'立即结算'}).click();
-  if(await page.locator('.spoils-panel').count())await page.screenshot({path:`${dir}/06_spoils_${key}.png`});
+  if(await page.locator('.spoils-panel').count()){
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:`${dir}/06_spoils_${key}.png`});
+  }
   const metrics=await page.evaluate(()=>({scrollW:document.documentElement.scrollWidth,innerW:innerWidth,scrollH:document.documentElement.scrollHeight,innerH:innerHeight,portrait:!!document.querySelector('.player-figure[data-portrait]')}));
   assert.equal(metrics.scrollW<=metrics.innerW+2,true,`${key} no horizontal overflow`);
   if(width>=1000)assert.equal(metrics.scrollH<=metrics.innerH+2,true,`${key} no desktop document scroll`);
