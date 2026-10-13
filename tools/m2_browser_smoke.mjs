@@ -78,6 +78,7 @@ try{
   for(let round=1;round<=6;round++){
    await page.getByRole('button',{name:/迎战/}).click();
    assert.equal(await page.locator('.combat-stage').count(),1);
+   assert.equal(await page.locator('.combat-stage .foe-portrait').count(),1,'each battle must show enemy character art');
    assert.equal(await page.locator('.battle-gu').count(),round===1?4:4);
    if(i===0&&round===1){
     await page.waitForTimeout(1400);
