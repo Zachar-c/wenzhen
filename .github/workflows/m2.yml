@@ -7,6 +7,7 @@ on:
       - 'm2.html'
       - 'js/m2_game.js'
       - 'tests/m2*.test.mjs'
+      - 'tools/m2_browser_smoke.mjs'
       - '.github/workflows/m2.yml'
 jobs:
   test:
@@ -19,3 +20,20 @@ jobs:
       - run: node --test tests/m2*.test.mjs
       - run: node --test tests/m1*.test.mjs
       - run: node tools/m1_goldens.mjs --verify
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - run: node tools/m2_browser_smoke.mjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m2-browser-evidence
+          path: artifacts/m2-browser/
+          if-no-files-found: ignore
