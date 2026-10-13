@@ -23,3 +23,25 @@
 @media(min-width:1000px) and (min-height:650px){.shopitem:has(>.m2-gu-illustration){grid-template-columns:55px minmax(0,1fr);column-gap:7px}.shopitem>.m2-gu-illustration{width:55px;min-height:65px}.battle-gu>.m2-gu-illustration{width:33px;height:33px}}
 @media(max-width:520px){.shopitem:has(>.m2-gu-illustration){grid-template-columns:38px minmax(0,1fr);column-gap:6px}.shopitem>.m2-gu-illustration{width:38px;min-height:53px}.shopitem .offer-hint{grid-column:1/-1!important}.shopitem:has(>.m2-gu-illustration)>.name{font-size:15px}.battle-gu>.m2-gu-illustration{width:36px;height:36px}.player-figure[data-portrait]::before{top:0;height:100%}}
 @media(prefers-reduced-motion:reduce){.combat-stage[data-impact] .arena-light{animation:none}}
+
+/* R3 mobile battle: stage is the primary event; avoid burying it below telemetry. */
+@media(max-width:790px){
+ .combat-title{display:flex;align-items:center;justify-content:space-between;margin:2px 0 8px}
+ .combat-title h2{font-size:24px;margin:0}
+ .combat-stage{margin:0 0 12px;min-height:0}
+ .combat-stage .arena{min-height:240px}
+ .combat-stage .figure-portrait{height:190px}
+ .combat-stage .stage-top,.combat-stage .stage-bottom{padding:6px 10px;font-size:10px}
+ .combat-stage .attack-intent{margin:4px 8px;padding:7px 9px}
+ .combat-stage .focus-event{margin:0 8px 8px;padding:8px}
+ .combat-side .panel{margin:0 0 10px}
+}
+@media(max-width:520px){
+ .combat-stage .arena{min-height:220px;padding:5px}
+ .combat-stage .figure-portrait{height:170px}
+ .combat-stage .combatant-name{font-size:10px}
+ .combat-stage .hp-numbers strong{font-size:20px}
+ .combat-stage .versus-rune{width:30px;height:30px;font-size:15px}
+ .combat-side .battle-gu-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+ .combat-side .battle-gu{min-width:0}
+}
