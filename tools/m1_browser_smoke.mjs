@@ -1,0 +1,44 @@
+// Headless Chromium interaction proof for M1: eight schools x three real DOM battles.
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { chromium } from 'playwright';
+const output='artifacts/m1-browser';
+fs.mkdirSync(output,{recursive:true});
+const schools=['百兵','晦明','玄牝','执枢','阖辟','参同','乘物','观复'];
+const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+try{
+ for(let i=0;i<schools.length;i++){
+  const ctx=await browser.newContext({viewport:{width:1280,height:800}});
+  const page=await ctx.newPage(), errors=[];
+  page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto(new URL('../m1.html',import.meta.url).href);
+  await page.getByRole('button',{name:'选择道途'}).nth(i).click();
+  assert.match(await page.locator('#status').innerText(),/13 金币/);
+  assert.equal(await page.locator('.shopitem').count(),4);
+  if(i===0){
+   await page.screenshot({path:output+'/m1_shop_desktop.png',fullPage:true});
+   await page.setViewportSize({width:390,height:844});
+   await page.screenshot({path:output+'/m1_shop_mobile.png',fullPage:true});
+   await page.setViewportSize({width:1280,height:800});
+  }
+  // Genuine purchase/equipment interaction through buttons, not JS fixture injection.
+  await page.getByRole('button',{name:'购买'}).last().click();
+  await page.getByRole('button',{name:'装备'}).last().click();
+  assert.match(await page.locator('#status').innerText(),/9 金币/);
+  for(let round=1;round<=3;round++){
+   await page.getByRole('button',{name:/迎战/}).click();
+   if(i===0&&round===1)await page.screenshot({path:output+'/m1_battle_desktop.png',fullPage:true});
+   await page.getByRole('button',{name:'立即结算'}).click();
+   assert.match(await page.locator('#app').innerText(),/战斗胜利|战斗失利/);
+  }
+  assert.match(await page.locator('#app').innerText(),/M1 阶段结算/);
+  const save=await page.evaluate(()=>JSON.parse(localStorage.getItem('wenzhen_m1_v1')));
+  assert.equal(save.completed,true);
+  assert.equal(save.round,3);
+  assert.equal(save.inBattle,false);
+  if(i===0)await page.screenshot({path:output+'/m1_stage_result.png',fullPage:true});
+  assert.deepEqual(errors,[],schools[i]+' browser errors');
+  console.log('BROWSER_OK '+schools[i]+' 3 battles, purchased/equipped, completed; losses='+save.losses);
+  await ctx.close();
+ }
+} finally {await browser.close()}
