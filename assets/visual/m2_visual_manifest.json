@@ -1,0 +1,74 @@
+{
+  "version": "m2-visual-r9",
+  "status": "candidate",
+  "provenance": {
+    "type": "ai-generated-cropped-collage",
+    "date": "2026-10-13",
+    "license_status": "pending_project_review",
+    "claim": "visual concept cropped into candidate atlases; not final commercial illustration"
+  },
+  "character": {
+    "path": "assets/visual/m2_r8_character_atlas.webp",
+    "width": 512,
+    "height": 160,
+    "tiles": [
+      {
+        "index": 0,
+        "id": "player"
+      },
+      {
+        "index": 1,
+        "id": "swordsman"
+      },
+      {
+        "index": 2,
+        "id": "shadow"
+      },
+      {
+        "index": 3,
+        "id": "warden"
+      }
+    ]
+  },
+  "gu": {
+    "path": "assets/visual/m2_r8_gu_atlas.webp",
+    "width": 672,
+    "height": 96,
+    "tiles": [
+      {
+        "index": 0,
+        "id": "B101"
+      },
+      {
+        "index": 1,
+        "id": "T103"
+      },
+      {
+        "index": 2,
+        "id": "Y101"
+      },
+      {
+        "index": 3,
+        "id": "M102"
+      },
+      {
+        "index": 4,
+        "id": "Y102"
+      },
+      {
+        "index": 5,
+        "id": "S101"
+      },
+      {
+        "index": 6,
+        "id": "G101"
+      }
+    ],
+    "fallback": "data-driven SVG for other GU IDs"
+  },
+  "acceptance": {
+    "pixel_art": "candidate_only",
+    "commercial_visual_approval": false,
+    "gameplay_mutation": false
+  }
+}
