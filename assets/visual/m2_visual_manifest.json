@@ -1,74 +1,29 @@
 {
-  "version": "m2-visual-r9",
-  "status": "candidate",
+  "version": "m2-visual-r11",
+  "status": "vertical-slice-in-progress",
   "provenance": {
-    "type": "ai-generated-cropped-collage",
+    "type": "candidate-atlas-retained-for-pipeline-validation",
     "date": "2026-10-13",
     "license_status": "pending_project_review",
-    "claim": "visual concept cropped into candidate atlases; not final commercial illustration"
+    "claim": "temporary candidates only; not commercial final art"
+  },
+  "vertical_slice": {
+    "scene": "月光蛊_vs_逐影刺客",
+    "goal": "one complete combat visual slice before full expansion"
   },
   "character": {
-    "path": "assets/visual/m2_r8_character_atlas.webp",
-    "width": 512,
-    "height": 160,
-    "tiles": [
-      {
-        "index": 0,
-        "id": "player"
-      },
-      {
-        "index": 1,
-        "id": "swordsman"
-      },
-      {
-        "index": 2,
-        "id": "shadow"
-      },
-      {
-        "index": 3,
-        "id": "warden"
-      }
-    ]
+    "current_candidate": "assets/visual/m2_r8_character_atlas.webp",
+    "status": "replace-with-final-independent-assets",
+    "required": ["player_idle", "player_attack", "shadow_assassin_idle", "shadow_assassin_attack"]
   },
   "gu": {
-    "path": "assets/visual/m2_r8_gu_atlas.webp",
-    "width": 672,
-    "height": 96,
-    "tiles": [
-      {
-        "index": 0,
-        "id": "B101"
-      },
-      {
-        "index": 1,
-        "id": "T103"
-      },
-      {
-        "index": 2,
-        "id": "Y101"
-      },
-      {
-        "index": 3,
-        "id": "M102"
-      },
-      {
-        "index": 4,
-        "id": "Y102"
-      },
-      {
-        "index": 5,
-        "id": "S101"
-      },
-      {
-        "index": 6,
-        "id": "G101"
-      }
-    ],
-    "fallback": "data-driven SVG for other GU IDs"
+    "pilot": ["Y101", "B101", "G101", "S101"],
+    "status": "replace-pilot-atlas-with-independent-files",
+    "required": "one-file-per-gu-card"
   },
   "acceptance": {
-    "pixel_art": "candidate_only",
     "commercial_visual_approval": false,
-    "gameplay_mutation": false
+    "gameplay_mutation": false,
+    "next_gate": "browser screenshot review of complete vertical slice"
   }
 }
