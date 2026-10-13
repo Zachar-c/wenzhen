@@ -41,3 +41,26 @@ test('refining after pre-equipping duplicates consumes only one of each componen
  assert.equal(run('state.gu.filter(x=>x.gu==="B102").length'),1);
  assert.equal(run('state.gu.filter(x=>x.gu==="B201").length'),1);
 });
+
+test('M3 B201 cost/benefit persists across additional Gu synergies and enemy armor',()=>{
+ const results=[];
+ for(const variant of [['S101'],['G102'],['S101','G102']]){
+  for(const foe of [1,3,4,5]){
+   function fight(refine){
+    const store=new Map(),dom=new Map(),ctx=vm.createContext({Math,Date,JSON,console,confirm:()=>true,setInterval:()=>1,clearInterval:()=>{},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,String(v)),removeItem:k=>store.delete(k)},document:{getElementById(id){if(!dom.has(id))dom.set(id,{innerHTML:'',insertAdjacentHTML(){}});return dom.get(id)}}});
+    vm.runInContext(script,ctx);const run=x=>vm.runInContext(x,ctx);
+    run('init("百兵");state.round='+(foe+1)+';state.targetIndex='+foe);
+    if(refine)run('refineGu("B201")');
+    for(const id of variant)run('{const copy=owned('+JSON.stringify(id)+');state.gu.push(copy);state.equip.push(copy.id)}');
+    run('startBattle();quick()');
+    return JSON.parse(JSON.stringify(run('state.lastResult')));
+   }
+   const base=fight(false),refined=fight(true);
+   results.push({foe:base.foe,extra:variant.join('+'),baseWon:base.won,refinedWon:refined.won,baseHP:base.hp,refinedHP:refined.hp,baseTick:base.tick,refinedTick:refined.tick});
+  }
+ }
+ console.log('M3_B201_EXTENDED '+JSON.stringify(results));
+ assert.equal(results.length,12);
+ assert.ok(results.some(x=>x.refinedTick<x.baseTick),'refinement retains at least one speed advantage');
+ assert.ok(results.some(x=>x.baseHP>x.refinedHP),'refinement retains real survivability cost');
+});
