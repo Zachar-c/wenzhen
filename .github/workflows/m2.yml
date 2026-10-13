@@ -1,0 +1,21 @@
+name: M2 playable verification
+on:
+  push:
+    branches: [feat/m2-extended-run]
+  pull_request:
+    paths:
+      - 'm2.html'
+      - 'js/m2_game.js'
+      - 'tests/m2*.test.mjs'
+      - '.github/workflows/m2.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/m2*.test.mjs
+      - run: node --test tests/m1*.test.mjs
+      - run: node tools/m1_goldens.mjs --verify
