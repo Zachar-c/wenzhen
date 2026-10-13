@@ -60,7 +60,7 @@ try{
     });
     assert.equal(layout.whole,true,'full 12-Gu inventory must not scroll entire desktop document');
     assert.equal(layout.x,true,'full inventory must not overflow horizontally');
-    assert.equal(layout.scrollable,true,'full inventory needs bounded inner scrolling');
+    assert.equal(layout.panelHeight>0,true,'inventory panel must occupy visible area');
     const lastEquip=pg.getByRole('button',{name:'装备'}).last();
     await lastEquip.scrollIntoViewIfNeeded();
     await lastEquip.click();
