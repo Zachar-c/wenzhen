@@ -7,6 +7,7 @@ on:
       - 'm2.html'
       - 'js/m2_game.js'
       - 'tests/m2*.test.mjs'
+      - 'tests/m3*.test.mjs'
       - 'tools/m2_browser_smoke.mjs'
       - '.github/workflows/m2.yml'
 jobs:
@@ -17,7 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test tests/m2*.test.mjs
+      - run: node --test tests/m2*.test.mjs tests/m3*.test.mjs
       - run: node --test tests/m1*.test.mjs
       - run: node tools/m1_goldens.mjs --verify
   browser:
