@@ -123,6 +123,22 @@ try{
     assert.match(await observer.locator('#app').innerText(),/造成伤害|护盾吸收/);
     await observerCtx.close();
   }
+  if(i===0){
+    // M3-B optional real encounter: force only round selection, then use actual hunt/attack UI.
+    const rootCtx=await browser.newContext({viewport:{width:1366,height:768}});
+    const root=await rootCtx.newPage();
+    await root.goto(new URL('../m2.html',import.meta.url).href);
+    await root.getByRole('button',{name:'选择道途'}).nth(5).click();
+    await root.evaluate(()=>{state.round=6;state.targetIndex=5;save();render()});
+    await root.locator('.preflight .card').filter({hasText:'枯根傀儡'}).getByRole('button',{name:/追猎此敌/}).click();
+    assert.equal(await root.evaluate(()=>targetFoe().id),'rootling');
+    assert.match(await root.locator('#app').innerText(),/火筹灼烧期间/);
+    await root.screenshot({path:output+'/m3_rootling_hunt_1366.png'});
+    await root.getByRole('button',{name:/迎战/}).click();
+    await root.getByRole('button',{name:'立即结算'}).click();
+    assert.match(await root.locator('#app').innerText(),/造成伤害|护盾吸收/);
+    await rootCtx.close();
+  }
   // Genuine purchase/equipment interaction through buttons, not JS fixture injection.
   await page.getByRole('button',{name:'购买'}).last().click();
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
