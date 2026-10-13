@@ -23,7 +23,8 @@ const FOES=[
 {id:"swordsman",name:"变招刀客",hp:32,armor:0,first:5,period:[9,10],moves:[{name:"直斩",damage:5,windup:3,type:"straight"},{name:"变招",damage:6,windup:4,type:"feint"}]},
 {id:"bandit",name:"裂甲悍匪",hp:38,armor:1,first:4,period:[8],moves:[{name:"破盾猛击",damage:6,windup:3,type:"charge"}]},
 {id:"shadow",name:"逐影刺客",hp:46,armor:0,first:4,period:[7,9],moves:[{name:"潜刃",damage:7,windup:2,type:"straight"},{name:"残影",damage:4,windup:4,type:"feint"}]},
-{id:"warden",name:"镇关铁卫",hp:60,armor:2,first:3,period:[8,10],moves:[{name:"重锤",damage:8,windup:4,type:"charge"},{name:"横扫",damage:6,windup:3,type:"normal"}]}
+{id:"warden",name:"镇关铁卫",hp:60,armor:2,first:3,period:[8,10],moves:[{name:"重锤",damage:8,windup:4,type:"charge"},{name:"横扫",damage:6,windup:3,type:"normal"}]},
+{id:"rootling",name:"枯根傀儡",hp:54,armor:1,first:5,period:[9],moves:[{name:"腐根鞭打",damage:5,windup:3,type:"normal"}]}
 ];
 const STORE_KEY="wenzhen_m2_v1", META_KEY="wenzhen_m2_meta";
 const TOTAL_ROUNDS=6, CHAPTER_LENGTH=3;
@@ -34,9 +35,10 @@ const ENEMY_SPOILS=[
  {foe:"swordsman",gu:"Y102",clue:"刀客身后有无法对齐的投影"},
  {foe:"bandit",gu:"T103",clue:"悍匪腰间藏有灼热火筹"},
  {foe:"shadow",gu:"N201",clue:"刺客背囊传出听风之鸣"},
- {foe:"warden",gu:"N202",clue:"铁卫以辨兆蛊洞察来敌"}
+ {foe:"warden",gu:"N202",clue:"铁卫以辨兆蛊洞察来敌"},
+{foe:"rootling",gu:"G112",clue:"傀儡核心刻有重复出手的旧式印痕"}
 ];
-const HUNTS=[[0,1],[1,2],[2,1],[3,4],[4,5],[5,4]];
+const HUNTS=[[0,1],[1,2],[2,1],[3,4],[4,5],[5,4,6]];
 function targetIndex(){return Number.isInteger(state.targetIndex)&&HUNTS[state.round-1]?.includes(state.targetIndex)?state.targetIndex:state.round-1}
 function targetFoe(){return FOES[targetIndex()]}
 function chooseTarget(index){
@@ -135,7 +137,7 @@ const SYNERGY=[
  [["G101","G102","G103"],"辨兆→听息→记痕：有效吸收后反击"],
  [["S101","T103"],"含芽+火筹：两路持续伤害"]
 ];
-const FOE_HINTS={rogue:"散修：2 tick 蓄势；伤害3",boar:"野猪：护甲1；冲撞5，破甲和规避各有用途",swordsman:"刀客：变招在命中前2 tick才公开轨迹",bandit:"悍匪：护甲1、猛击频繁",shadow:"刺客：高频直斩与变招",warden:"铁卫：护甲2、高生命，考验持续输出"};
+const FOE_HINTS={rogue:"散修：2 tick 蓄势；伤害3",boar:"野猪：护甲1；冲撞5，破甲和规避各有用途",swordsman:"刀客：变招在命中前2 tick才公开轨迹",bandit:"悍匪：护甲1、猛击频繁",shadow:"刺客：高频直斩与变招",warden:"铁卫：护甲2、高生命，考验持续输出",rootling:"枯根傀儡：每10 tick 回复3生命；火筹灼烧期间再生被抑制"};
 const RUNE_GLYPHS={攻:"刃",防:"盾",标:"印",辅:"隐",疗:"生",察:"观",反:"返"};
 function equippedGu(){return state.equip.map(id=>state.gu.find(g=>g.id===id)?.gu).filter(Boolean)}
 function synergyFor(ids){const set=new Set(ids);return SYNERGY.filter(([required])=>required.every(x=>set.has(x))).map(x=>x[1])}
@@ -176,7 +178,7 @@ const gs=battle.instances.find(x=>x.gu==="G103"&&x.ready<=battle.tick),heard=Obj
 if(gs&&heard&&e.observed){cast(gs);const bonus=battle.lastConfirmed===e.type?2:0;battle.pending.push({tick:battle.tick+1,type:"counter",damage:3+bonus,source:gs.id})}
 if(e.observed)battle.lastConfirmed=e.type;
 battle.current=null}
-function startBattle(){if(battle||state.pendingSpoils||state.completed||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(targetFoe());battle={tick:0,hp:30,foe,totals:{damageDealt:0,damageTaken:0,healing:0,shieldAbsorbed:0,damageBySource:{},absorbedByInstance:{}},instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,gu:g.id,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},500)}
+function startBattle(){if(battle||state.pendingSpoils||state.completed||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(targetFoe());foe.maxHp=foe.hp;battle={tick:0,hp:30,foe,totals:{damageDealt:0,damageTaken:0,healing:0,shieldAbsorbed:0,damageBySource:{},absorbedByInstance:{}},instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,gu:g.id,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},500)}
 // Synthetic-only M1 interrupt hook; no starting Gu invokes it.
 function interrupt(source="synthetic"){
  if(!battle||!battle.current||battle.current.impact<=battle.tick||battle.tick<(battle.interruptImmuneUntil||0))return false;
@@ -234,6 +236,7 @@ for(const e of b.pending.filter(x=>x.tick===t&&x.type==="blood"))direct(e.damage
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="returnBlade"))direct(e.damage,"折锋回刺",{consumeWeak:false});
 b.pending=b.pending.filter(x=>!(x.tick===t&&["counter","blood","returnBlade"].includes(x.type)));
 for(const s of [...b.states].filter(x=>x.type==="dot"&&x.next.includes(t))){direct(s.value,s.kind==="S101"?"根刺":"灼烧",{consumeWeak:false,periodic:true});s.next=s.next.filter(n=>n!==t)}
+if(b.foe.id==="rootling"&&t>0&&t%10===0&&b.foe.hp>0){const burning=b.states.some(s=>s.type==="dot"&&s.kind==="T103");if(!burning){const heal=Math.min(3,b.foe.maxHp-b.foe.hp);b.foe.hp+=heal;if(heal>0)push("枯根傀儡再生 +"+heal)}else push("火筹灼烧阻断枯根再生")}
 if(b.foe.hp<=0){finish(true);return}
 if(enemy&&enemy.impact===t){hitQueued(enemy);if(b.hp<=0){finish(false);return}}
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="heal")){const before=b.hp;b.hp=Math.min(30,b.hp+e.value);if(b.totals)b.totals.healing+=b.hp-before;push("引露治疗 +"+(b.hp-before))}b.pending=b.pending.filter(x=>!(x.tick===t&&x.type==="heal"));
