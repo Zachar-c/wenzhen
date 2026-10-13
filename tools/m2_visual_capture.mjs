@@ -18,6 +18,8 @@ try{
   await page.screenshot({path:`${dir}/02_shop_${key}.png`});
   const painted=await page.locator('.shopitem>.m2-gu-illustration').count();
   assert.equal(painted,4,'all shop offers must carry generated illustrations');
+  const artwork=await page.locator('.shopitem>.m2-gu-illustration').evaluateAll(nodes=>nodes.map(n=>n.style.backgroundImage));
+  assert.equal(new Set(artwork).size,4,'four offers must use distinct Gu artworks');
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
   await page.screenshot({path:`${dir}/03_inventory_${key}.png`});
   if(width===1366){
