@@ -47,6 +47,22 @@ function art(g){
 function portrait(){
  return uri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360"><defs><linearGradient id="coat"><stop stop-color="#aab3c0"/><stop offset=".48" stop-color="#52607b"/><stop offset="1" stop-color="#1c293e"/></linearGradient><radialGradient id="glow"><stop stop-color="#f2d7b2" stop-opacity=".46"/><stop offset="1" stop-color="#f2d7b2" stop-opacity="0"/></radialGradient></defs><circle cx="150" cy="170" r="140" fill="url(#glow)"/><path d="M73 349 Q64 252 119 209 L179 207 Q238 261 226 349Z" fill="url(#coat)" stroke="#c4b5a6" stroke-width="2"/><path d="M119 210 L151 294 L180 210 L166 350 H134Z" fill="#e5d1ba" opacity=".84"/><path d="M123 74 Q147 27 186 71 Q205 102 187 204 L213 267 Q156 289 89 262 L106 181Z" fill="#151d31" stroke="#918ca2" stroke-width="2"/><path d="M115 91 Q125 67 153 66 Q189 69 189 107 L181 173 Q165 200 146 189 Q120 174 116 145Z" fill="#ead4bf"/><path d="M114 112 Q150 102 179 74 Q171 43 140 49 Q103 62 104 126Z" fill="#252a40"/><path d="M124 126 l19 -3 M160 123 l20 1" stroke="#494253" stroke-width="3"/><path d="M144 156 Q154 160 163 154" stroke="#a26970" fill="none"/><path d="M183 85 Q210 122 202 206" stroke="#a19ba9" stroke-width="8" fill="none"/><path d="M69 348 Q44 283 94 248 M230 348 Q253 284 204 249" stroke="#c2b5a2" stroke-width="18" fill="none"/><path d="M93 250 Q111 232 122 215 M209 247 Q192 231 179 214" stroke="#e8d9ba" stroke-width="4" fill="none"/><circle cx="154" cy="240" r="7" fill="#e6ca8c"/></svg>`);
 }
+
+/* Portrait fallback only for foes whose M2 template currently uses a text crest.
+   Draws distinct costume/weapon silhouettes. Existing photographic PNGs remain untouched. */
+function foePortrait(id){
+ const profile={
+  swordsman:{coat:"#61788d",edge:"#d7cfbd",weapon:"sword",hat:"topknot"},
+  shadow:{coat:"#473958",edge:"#c2adce",weapon:"dagger",hat:"hood"},
+  warden:{coat:"#786b59",edge:"#e4ba83",weapon:"hammer",hat:"helmet"}
+ }[id];
+ if(!profile)return null;
+ const {coat,edge,weapon,hat}=profile;
+ const head=hat==="helmet"?'<path d="M92 62 Q150 13 208 62 L213 119 L87 119Z" fill="#48505b" stroke="'+edge+'" stroke-width="4"/><path d="M120 87 H180" stroke="'+edge+'" stroke-width="5"/>':hat==="hood"?'<path d="M80 139 Q62 24 150 23 Q239 29 220 139 L194 177 L107 177Z" fill="#25283c" stroke="'+edge+'" stroke-width="3"/>':'<path d="M109 74 Q100 34 145 37 Q160 15 176 38 Q213 42 196 80 L175 107 L118 103Z" fill="#212b38" stroke="'+edge+'" stroke-width="3"/><path d="M154 37 L169 15 L182 46" stroke="'+edge+'" stroke-width="5" fill="none"/>';
+ const arm=weapon==="hammer"?'<path d="M230 117 L243 305" stroke="#d5bb91" stroke-width="13"/><rect x="202" y="78" width="68" height="55" rx="8" fill="#4c5662" stroke="'+edge+'" stroke-width="5"/>':weapon==="dagger"?'<path d="M220 194 L264 123 L247 199Z" fill="#cfdbdf" stroke="'+edge+'" stroke-width="3"/>':'<path d="M220 295 L256 30 L267 12 L264 67 L233 300Z" fill="#cadce2" stroke="'+edge+'" stroke-width="3"/><path d="M206 247 L256 257" stroke="'+edge+'" stroke-width="8"/>';
+ return uri('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 360"><defs><radialGradient id="mist"><stop stop-color="'+edge+'" stop-opacity=".36"/><stop offset="1" stop-color="'+edge+'" stop-opacity="0"/></radialGradient></defs><circle cx="150" cy="150" r="145" fill="url(#mist)"/><path d="M76 360 Q60 233 113 203 L187 203 Q245 235 224 360Z" fill="'+coat+'" stroke="'+edge+'" stroke-width="3"/><path d="M105 213 L150 288 L194 211 M150 290 V360" stroke="'+edge+'" stroke-width="4" opacity=".75" fill="none"/><path d="M118 90 Q144 74 180 90 L190 155 Q162 205 136 186 Q107 168 111 129Z" fill="#d6bdab" stroke="#8b858a" stroke-width="2"/>'+head+'<path d="M123 132 L144 130 M161 130 L183 128" stroke="#404052" stroke-width="4"/><path d="M147 162 Q155 165 166 160" stroke="#725766" stroke-width="2" fill="none"/>'+arm+'<path d="M72 348 Q58 274 105 246 M228 348 Q237 275 194 247" stroke="'+coat+'" stroke-width="26" fill="none"/><path d="M72 346 Q58 274 105 246 M228 346 Q237 275 194 247" stroke="'+edge+'" stroke-width="2" fill="none" opacity=".7"/></svg>');
+}
+
 function decorate(){
  const app=document.getElementById("app");if(!app)return;
  for(const el of app.querySelectorAll(".shopitem:not(.placeholder),.slot,.battle-gu")){
@@ -64,6 +80,18 @@ function decorate(){
   player.dataset.portrait="true";player.style.setProperty("--cultivator-portrait",'url("'+portrait()+'")');
  }
  const stage=app.querySelector(".combat-stage");
+ const crest=stage?.querySelector(".foe-crest");
+ if(crest){
+   const foeId=(stage.className.match(/enemy-([a-z]+)/)||[])[1];
+   const source=foePortrait(foeId);
+   if(source){
+     const img=document.createElement("img");
+     img.className="foe-portrait m2-foe-fallback";
+     img.alt="敌方人物剪影";
+     img.src=source;
+     crest.replaceWith(img);
+   }
+ }
  if(stage&&innerWidth<=790&&!stage.dataset.visualEntered){stage.dataset.visualEntered="1";window.scrollTo({top:0,behavior:"instant"});}
  if(stage){const event=app.querySelector(".focus-event strong")?.textContent||"";
   stage.dataset.impact=/反击|饮锋|记痕/.test(event)?"counter":/护盾|规避|吸收/.test(event)?"guard":/伤害|攻击|斩击|基础攻击|造成|灼烧/.test(event)?"strike":"idle";
