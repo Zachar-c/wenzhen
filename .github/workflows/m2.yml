@@ -9,6 +9,7 @@ on:
       - 'js/m2_visual_pass.js'
       - 'tools/m2_visual_capture.mjs'
       - 'tools/m2_visual_gallery.mjs'
+      - 'tools/m2_visual_events.mjs'
       - 'assets/visual/**'
       - 'js/m2_game.js'
       - 'tests/m2*.test.mjs'
@@ -40,6 +41,8 @@ jobs:
         run: node tools/m2_visual_capture.mjs
       - if: always()
         run: node tools/m2_visual_gallery.mjs
+      - if: always()
+        run: node tools/m2_visual_events.mjs
       - if: always()
         uses: actions/upload-artifact@v4
         with:
