@@ -47,7 +47,7 @@ try{
    assert.match(await page.locator('#app').innerText(),/战斗胜利|战斗失利/);
    assert.match(await page.locator('#app').innerText(),/造成伤害|护盾吸收/);
   }
-  assert.match(await page.locator('#app').innerText(),/M2 阶段结算/);
+  assert.match(await page.locator('#app').innerText(),/M2 双幕结算/);
   const save=await page.evaluate(()=>JSON.parse(localStorage.getItem('wenzhen_m2_v1')));
   assert.equal(save.completed,true);
   assert.equal(save.round,6);
