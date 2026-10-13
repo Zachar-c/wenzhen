@@ -62,7 +62,7 @@ const gs=battle.instances.find(x=>x.gu==="G103"&&x.ready<=battle.tick),heard=Obj
 if(gs&&heard&&e.observed){cast(gs);const bonus=battle.lastConfirmed===e.type?2:0;battle.pending.push({tick:battle.tick+1,type:"counter",damage:3+bonus,source:gs.id})}
 if(e.observed)battle.lastConfirmed=e.type;
 battle.current=null}
-function startBattle(){if(battle||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(FOES[state.round-1]);battle={tick:0,hp:30,foe,instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},500)}
+function startBattle(){if(battle||state.equip.length===0)return;state.inBattle=true;save();const foe=clone(FOES[state.round-1]);battle={tick:0,hp:30,foe,instances:state.equip.map((id,slot)=>{let g=GM[state.gu.find(x=>x.id===id).gu];return {...g,gu:g.id,instance:id,slot,ready:g.first}}),states:[],shields:[],pending:[],current:null,nextDeclare:foe.first,moveIndex:0,lastConfirmed:null,seq:0};log=[];renderBattle();timer=setInterval(()=>{step();renderBattle()},500)}
 function observation(e){return e.type!=="feint"||battle.tick>=e.impact-2}
 function step(){if(!battle)return;const b=battle,t=b.tick;
 b.states=b.states.filter(s=>s.until>t);b.shields=b.shields.filter(s=>s.until>t&&s.value>0);
