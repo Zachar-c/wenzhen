@@ -4,6 +4,7 @@ const GU=[
 ["B101","引锋蛊","百兵","攻","造成4伤害；破绽下额外2",8,2],["B102","守柄蛊","百兵","防","敌方宣告时获得3护盾",10,0],["B103","试刃蛊","百兵","标","8 tick破绽+2；对野猪破甲6 tick",12,1],
 ["B201","折锋蛊","百兵","攻","兵锋先击4；若仍在交战，2 tick后折返追击3",12,1],
 ["Y101","藏晖蛊","晦明","攻","微光下造成3伤害；遮灯期间+1",8,2],["Y102","投影蛊","晦明","防","有光敌方宣告时规避最多4伤害",12,0],["Y103","遮灯蛊","晦明","辅","遮灯6 tick；藏晖+1、承伤-1",12,0],
+["Y201","灯影蛊","晦明","防","光源仍在且敌人真实攻击公开时，为本次攻击预备6点偏转；遮灯断光则失效",12,0],
 ["S101","含芽蛊","玄牝","攻","造成2伤害，后续+2/+4 tick各1根刺",8,2],["S102","守根蛊","玄牝","防","护盾低于2时获得3护盾，持续10",10,0],["S103","引露蛊","玄牝","疗","恢复3生命；满血时给予2护盾",12,0],
 ["Z101","识主蛊","执枢","标","标记10 tick；直接伤害+1",14,1],["Z102","系令蛊","执枢","攻","识主下伤害3；敌方下一击-2",10,2],["Z103","解扣蛊","执枢","防","命中前1 tick解除系令，减伤2并护盾2",12,0],
 ["H101","认隙蛊","阖辟","标","8 tick标记；下次定标额外2",12,1],["H102","定标蛊","阖辟","攻","造成3伤害，建立10 tick界标",8,2],["H103","掩扉蛊","阖辟","防","有界标，敌宣告时护盾3；冲撞再减1",10,0],
@@ -92,7 +93,7 @@ function starters(school){return GU.filter(g=>g.school===school).slice(0,3).map(
 function save(){if(state)localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 function init(school){if(!SCHOOLS.includes(school))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
 function beginRound(){state.round++;state.targetIndex=state.round-1;state.gold+=5;state.free=true;state.rerolls=0;state.seekUsed=false;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school).slice(0,3);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
-const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊"}];
+const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊"},{id:"Y201",inputs:["Y101","Y102"],label:"藏晖蛊＋投影蛊 → 灯影蛊"}];
 function availableRecipes(){return M3_RECIPES.filter(r=>r.inputs.every(id=>state.gu.some(g=>g.gu===id)))}
 function refineGu(recipeId){
  if(!state||battle||state.inBattle||state.pendingSpoils||state.completed)return false;
@@ -202,7 +203,7 @@ case"T101":if(!has("sand",x.instance)){cast(x);mark("sand",x.instance,10)}break;
 case"M101":if(environmentWind()&&!has("flow",x.instance)){cast(x);mark("flow",x.instance,8)}break;
 case"G101":if(enemy&&observation(enemy)&&!enemy.observed){cast(x);enemy.observed=true;enemy.reduction=(enemy.reduction||0)+2;push("辨兆确认："+enemy.name)}break;
 }}
-for(const x of fresh().filter(x=>["Y103","S102","T102","S103","B102","Y102","H103","M103","Z103","G102"].includes(x.gu))){
+for(const x of fresh().filter(x=>["Y103","S102","T102","S103","B102","Y102","Y201","H103","M103","Z103","G102"].includes(x.gu))){
 switch(x.gu){
 case"Y103":if(!has("shade",x.instance)){cast(x);mark("shade",x.instance,6,0,{attackUsed:false,used:false})}break;
 case"S102":if(b.shields.reduce((a,s)=>a+s.value,0)<2){cast(x);shield(x.gu+":"+x.instance,3,t+10)}break;
@@ -210,6 +211,7 @@ case"T102":if(b.shields.reduce((a,s)=>a+s.value,0)<2){cast(x);shield(x.gu+":"+x.
 case"S103":if(b.hp<30){cast(x);b.pending.push({tick:t,type:"heal",value:3})}else if(b.shields.reduce((a,s)=>a+s.value,0)<2){cast(x);shield(x.gu+":"+x.instance,2,t+8)}break;
 case"B102":if(enemy&&enemy.impact>t&&enemy.impact-enemy.windup===t){cast(x);shield(x.gu+":"+x.instance,3,enemy.impact+1)}break;
 case"Y102":if(enemy&&enemy.impact-enemy.windup===t){cast(x);enemy.evade+=4;push("投影预备规避4")}break;
+case"Y201":if(enemy&&enemy.impact>t&&enemy.revealed&&!has("shade")){cast(x);enemy.evade+=6;push("灯影依明光偏转6")}break;
 case"H103":if(enemy&&enemy.impact-enemy.windup===t&&has("beacon")){cast(x);shield(x.gu+":"+x.instance,3,enemy.impact+1);if(enemy.type==="charge")mark("gate",x.instance,enemy.windup+1)}break;
 case"M103":if(enemy&&enemy.impact-enemy.windup===t){cast(x);if(enemy.type==="charge")enemy.evade+=4;else shield(x.gu+":"+x.instance,3,enemy.impact+1)}break;
 case"Z103":if(enemy&&enemy.impact===t+1&&has("bind")){cast(x);b.states=b.states.filter(s=>s.type!=="bind");enemy.reduction+=4;shield(x.gu+":"+x.instance,2,enemy.impact+1)}break;
