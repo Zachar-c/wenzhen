@@ -249,9 +249,9 @@ function renderBattle(){
  const enemyAct=b.current?(b.current.type==="feint"&&!b.current.revealed?"轨迹未明 · 变招蓄势":b.current.name+" · "+remain+" tick后命中"):"尚未宣告";
  const progress=b.current?Math.max(0,Math.min(100,100*(1-remain/b.current.windup))):0;
  const field=b.foe.id==="boar"?"潮湿岩地":b.foe.id==="swordsman"?"流风断续":"干地微光";
- const glyph=b.foe.id==="boar"?"兽":b.foe.id==="swordsman"||b.foe.id==="shadow"?"斩":b.foe.id==="warden"?"镇":"行";
+ const glyph=b.foe.id==="boar"?"兽":b.foe.id==="swordsman"||b.foe.id==="shadow"?"斩":b.foe.id==="warden"?"镇":b.foe.id==="rootling"?"根":"行";
  const art=b.foe.id==="boar"?"assets/enemies/enemy_iron_hide_boar.png":b.foe.id==="rogue"||b.foe.id==="bandit"?"assets/enemies/enemy_sanxiu.png":null;
- const foeArt=art?'<img class="foe-portrait" alt="'+esc(foe.name)+'立绘" src="'+art+'">':'<div class="foe-crest" aria-hidden="true"><i></i><span>变招</span></div>';
+ const foeArt=art?'<img class="foe-portrait" alt="'+esc(foe.name)+'立绘" src="'+art+'">':'<div class="foe-crest" aria-hidden="true"><i></i><span>'+esc(b.foe.id==="warden"?"镇关":b.foe.id==="rootling"?"枯根":"变招") +'</span></div>';
  const flash=log.slice(-1)[0]||"[0] 战斗准备",recent=log.slice(-5).reverse().map(line=>{
   const tone=line.includes("命中")?"tone-danger":line.includes("护盾")||line.includes("规避")?"tone-guard":line.includes("→")?"tone-damage":"tone-neutral";
   return '<div class="event-strip '+tone+'">'+esc(line)+'</div>';
