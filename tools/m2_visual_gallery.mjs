@@ -2,6 +2,12 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {chromium} from 'playwright';
+const manifest=JSON.parse(fs.readFileSync(new URL('../assets/visual/m2_visual_manifest.json',import.meta.url),'utf8'));
+assert.equal(manifest.acceptance.commercial_visual_approval,false,'candidate assets are not commercial-approved');
+assert.equal(manifest.gu.tiles.length,7,'seven painted Gu');
+assert.deepEqual(manifest.gu.tiles.map(x=>x.index),[0,1,2,3,4,5,6]);
+assert.equal(new Set(manifest.gu.tiles.map(x=>x.id)).size,7);
+assert.deepEqual(manifest.character.tiles.map(x=>x.index),[0,1,2,3]);
 const output='artifacts/m2-visual-pass';fs.mkdirSync(output,{recursive:true});
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 try{
@@ -19,6 +25,8 @@ try{
  });
  await page.addStyleTag({content:'.m2-gallery{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}.m2-gallery .shopitem{min-height:190px;grid-template-columns:96px minmax(0,1fr)}.m2-gallery .shopitem>.m2-gu-illustration{width:96px;min-height:120px}.m2-gallery .shopitem .name{font-size:16px}.m2-gallery .offer-hint{font-size:11px}.m2-gallery .shopitem .meta{font-size:12px}'});
  const total=await page.evaluate(()=>GU.length);
+ const ids=await page.evaluate(()=>GU.map(g=>g.id));
+ assert.equal(manifest.gu.tiles.every(x=>ids.includes(x.id)),true,'candidate tile IDs must all be active Gu');
  await page.waitForFunction(expected=>document.querySelectorAll('.m2-gallery .shopitem[data-gu-painted]').length===expected,total);
  assert.equal(await page.locator('.m2-gallery .m2-r8-gu-painted').count(),7,'seven genuine Gu illustration matches');
  const names=await page.locator('.m2-gallery .shopitem[data-gu-painted]').evaluateAll(nodes=>nodes.map(n=>n.dataset.guPainted));
