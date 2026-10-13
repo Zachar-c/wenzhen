@@ -9,7 +9,8 @@ const GU=[
 ["T101","试砂蛊","参同","标","10 tick试砂；下次火筹额外2",12,1],["T102","护炉蛊","参同","防","护盾低于2时获得3（有试砂+1），持续10",10,0],["T103","火筹蛊","参同","攻","伤害3并灼烧，后续+2/+4各1",8,2],
 ["M101","试流蛊","乘物","标","有风时标记8 tick；下次听风+2",12,1],["M102","听风蛊","乘物","攻","有风时造成3伤害",8,2],["M103","踏脉蛊","乘物","防","敌宣告时护盾3；冲撞改规避4",10,0],
 ["N201","裂势蛊","百兵","攻","敌人蓄势时斩击5；专破蓄势窗口",10,0],["N202","饮锋蛊","玄牝","反","受到实际伤害后积攒血势，下一tick反击（最多6）",10,0],
-["G101","辨兆蛊","观复","察","记录已公开攻击并减伤2",10,0],["G102","听息蛊","观复","防","准确观察时在命中前获得4护盾",10,0],["G103","记痕蛊","观复","反","听息有效吸收后下一tick反击3，重复招式+2",12,0]
+["G101","辨兆蛊","观复","察","记录已公开攻击并减伤2",10,0],["G102","听息蛊","观复","防","准确观察时在命中前获得4护盾",10,0],["G103","记痕蛊","观复","反","听息有效吸收后下一tick反击3，重复招式+2",12,0],
+["G112","知几蛊","观复","攻","敌方连续两次宣告同一招式后，趁真实起手刺击3；变招未明时不发动",12,0]
 ].map(([id,name,school,kind,description,cd,first])=>({id,name,school,kind,description,cd,first}));
 const GM=Object.fromEntries(GU.map(g=>[g.id,g]));
 const SCHOOLS=["百兵","晦明","玄牝","执枢","阖辟","参同","乘物","观复"];
@@ -167,7 +168,7 @@ function observation(e){return e.type!=="feint"||battle.tick>=e.impact-2}
 function step(){if(!battle)return;const b=battle,t=b.tick;
 b.states=b.states.filter(s=>s.until>t);b.shields=b.shields.filter(s=>s.until>t&&s.value>0);
 if(b.current&&b.current.type==="feint"&&t===b.current.impact-2){b.current.revealed=true;push("变招轨迹公开")}
-if(!b.current&&t>=b.nextDeclare){let move=b.foe.moves[b.moveIndex%b.foe.moves.length];b.current={...move,impact:t+move.windup,id:"attack"+b.seq++,observed:false,evade:0,reduction:0,revealed:move.type!=="feint"};push("敌方宣告："+move.name+"，"+move.windup+" tick后命中");b.moveIndex++;b.nextDeclare=t+b.foe.period[(b.moveIndex-1)%b.foe.period.length]}
+if(!b.current&&t>=b.nextDeclare){let move=b.foe.moves[b.moveIndex%b.foe.moves.length];b.repeatMoveCount=b.lastDeclaredMove===move.name?(b.repeatMoveCount||0)+1:1;b.lastDeclaredMove=move.name;b.current={...move,impact:t+move.windup,id:"attack"+b.seq++,observed:false,evade:0,reduction:0,revealed:move.type!=="feint"};push("敌方宣告："+move.name+"，"+move.windup+" tick后命中");b.moveIndex++;b.nextDeclare=t+b.foe.period[(b.moveIndex-1)%b.foe.period.length]}
 const enemy=b.current;
 for(const x of fresh().filter(x=>["B103","Z101","H101","T101","M101","G101"].includes(x.gu))){switch(x.gu){
 case"B103":if(!has("weak",x.instance)){cast(x);mark("weak",x.instance,8);if(b.foe.id==="boar")mark("broken",x.instance,6)}break;
@@ -190,12 +191,12 @@ case"M103":if(enemy&&enemy.impact-enemy.windup===t){cast(x);if(enemy.type==="cha
 case"Z103":if(enemy&&enemy.impact===t+1&&has("bind")){cast(x);b.states=b.states.filter(s=>s.type!=="bind");enemy.reduction+=4;shield(x.gu+":"+x.instance,2,enemy.impact+1)}break;
 case"G102":if(enemy&&enemy.impact===t&&enemy.observed){cast(x);shield(x.gu+":"+x.instance,4,t+1)}break;
 }}
-for(const x of fresh().filter(x=>["B101","Y101","S101","Z102","H102","T103","M102","N201"].includes(x.gu))){let bonus=0;
-if(x.gu==="N201"&&(!enemy||enemy.impact<=t))continue;if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())continue;if(x.gu==="Y101"){const shade=get("shade");if(shade&&!shade.attackUsed){bonus=1;shade.attackUsed=true}}
+for(const x of fresh().filter(x=>["B101","Y101","S101","Z102","H102","T103","M102","N201","G112"].includes(x.gu))){let bonus=0;
+if(x.gu==="N201"&&(!enemy||enemy.impact<=t))continue;if(x.gu==="G112"&&(!enemy||!enemy.revealed||b.repeatMoveCount<2||enemy.impact<=t))continue;if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())continue;if(x.gu==="Y101"){const shade=get("shade");if(shade&&!shade.attackUsed){bonus=1;shade.attackUsed=true}}
 if(x.gu==="H102"){const gap=get("gap");if(gap){bonus=2;b.states=b.states.filter(s=>s!==gap)}}
 if(x.gu==="T103"){const sand=get("sand");if(sand){bonus=2;b.states=b.states.filter(s=>s!==sand)}}
 if(x.gu==="M102"){const flow=get("flow");if(flow){bonus=2;b.states=b.states.filter(s=>s!==flow)}}
-cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3,N201:5})[x.gu],GM[x.gu].name,{bonus});
+cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3,N201:5,G112:3})[x.gu],GM[x.gu].name,{bonus});
 if((x.gu==="S101"||x.gu==="T103")&&b.foe.hp>0)mark("dot",x.instance,5,1,{kind:x.gu,next:[t+2,t+4]});
 if(x.gu==="Z102"&&b.foe.hp>0)mark("bind",x.instance,8);
 if(x.gu==="H102"&&b.foe.hp>0)mark("beacon",x.instance,10);
