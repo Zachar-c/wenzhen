@@ -262,3 +262,89 @@ button.primary{color:#fff9eb}
  }
  .mobile-battle-cta .primary{flex:none;font-size:13px;padding:10px 17px}
 }
+
+
+/* Fixed-frame M2 desktop play mode. Key actions stay in view; panels switch rather than page-scroll. */
+.prep-tabs{display:flex;gap:9px;margin:5px 0 10px;align-items:center}
+.prep-tabs .prep-tab{font-size:12px;padding:8px 18px;border:1px solid #9a8484;background:#272737;color:#d9c7c5;letter-spacing:.08em}
+.prep-tabs .prep-tab.active{background:linear-gradient(125deg,#bd8858,#805648);border-color:#e4c293;color:#fff4de;box-shadow:0 0 18px #d7a46d29}
+body[data-prep-tab="shop"] .shell>div:first-child>section:nth-child(2),
+body[data-prep-tab="inventory"] .shell>div:first-child>section:nth-child(1){display:none}
+.shell>div:nth-child(2)>section:nth-child(3){display:none}
+@media(min-width:1000px) and (min-height:650px){
+ html,body{width:100%;height:100%;overflow:hidden}
+ body{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto}
+ .book-header{width:100%;max-width:1320px;min-height:0;height:91px;padding:11px 26px}
+ .brand-signet{height:48px;width:48px;font-size:24px}
+ .book-header h1{font-size:28px;margin:1px 0 2px}
+ .brand-copy .small{font-size:10px}
+ .chapter-ribbon{height:30px;font-size:10px}
+ .game-main{width:100%;height:100%;min-height:0;max-height:100%;overflow:hidden;margin:0 auto;padding:5px 24px 8px;display:flex;flex-direction:column}
+ .game-main>h2{flex:none;font-size:24px;margin:4px 0 1px;line-height:1.2}
+ .game-main>p{flex:none;font-size:11px;margin:2px 0 5px}
+ .prep-tabs{flex:none;margin:1px 0 6px}
+ .preflight{flex:none;max-height:163px;min-height:0;margin-bottom:7px}
+ .preflight>.panel{padding:10px 13px;overflow:hidden}
+ .preflight>.panel h3{font-size:14px;margin:0 0 2px}
+ .preflight>.panel>p{font-size:10px;margin:2px 0 4px;line-height:1.3}
+ .preflight>.panel .card{min-height:0;padding:8px 11px}
+ .preflight>.panel .card .name{font-size:15px}
+ .preflight>.panel .card .meta{font-size:10px;line-height:1.25;margin:1px}
+ .preflight>.panel .card>p{font-size:10px;line-height:1.3;margin:2px 0}
+ .preflight>.panel .card button{padding:4px 11px;margin:1px;font-size:10px}
+ .preflight>.panel:last-child>b{font-size:18px;margin:5px 0}
+ .preflight>.panel:last-child>p:last-child{margin:4px 0;padding-top:4px;line-height:1.35}
+ .shell{flex:1;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1.72fr) minmax(310px,1fr);gap:12px}
+ .shell>div{min-height:0;overflow:hidden;display:flex;flex-direction:column}
+ .shell>div:first-child>section{flex:1;min-height:0;overflow:auto;margin:0}
+ .shell>div:nth-child(2)>section{flex:none;min-height:0;margin-bottom:9px;padding:13px}
+ .shell>div:nth-child(2)>section:nth-child(2){flex:1;overflow:auto}
+ .shell .panel h3{font-size:15px;margin:0 0 8px}
+ .shell .panel:has(.shopitem) .grid{height:calc(100% - 75px);grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:7px}
+ .shopitem{min-height:0!important;padding:9px 12px}
+ .shopitem .name{min-height:28px;font-size:14px}
+ .shopitem .name::before{width:28px;height:28px;font-size:15px}
+ .shopitem .meta{min-height:0;font-size:10px;line-height:1.4;margin:2px 0}
+ .shopitem .offer-hint{min-height:0;padding:4px 6px;font-size:10px}
+ .shopitem .gold{margin:0;font-size:11px}
+ .shopitem .actions{margin:2px 0 0}
+ .shopitem .actions button{font-size:10px;padding:5px 8px}
+ .shell .panel:has(.shopitem)>.actions{margin-top:6px}
+ .shell .panel:has(.shopitem)>.actions button{padding:6px 10px;font-size:11px}
+ .shell .panel:has(.slot){max-height:none}
+ .shell .panel:has(.slot) .slot{padding:6px 9px;margin:4px 0}
+ .shell .panel:has(.slot) .slot .meta{font-size:10px;line-height:1.3}
+ .build-compact strong{padding:5px}
+ .guide-lines{margin-top:4px}
+ .guide-lines p{font-size:10px;line-height:1.3;margin:2px}
+ .opponent-note{font-size:10px;padding:5px;margin:4px 0}
+ .book-footer{width:100%;height:27px;min-height:0;margin:0 auto;padding:6px 24px;font-size:9px}
+ .combat-title{margin:0 0 6px}
+ .combat-title h2{font-size:28px}
+ .combat-shell{flex:1;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1.8fr) minmax(300px,1fr)}
+ .combat-stage{height:100%;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+ .stage-top,.stage-bottom{padding:7px 15px}
+ .arena{flex:1;min-height:0;padding:5px 10px}
+ .figure-portrait{height:min(31vh,235px)}
+ .player-figure::before{top:35px}
+ .player-figure .halo{top:10px}
+ .player-figure .soul-core{top:185px}
+ .attack-intent{margin:2px 12px 5px;padding:8px}
+ .focus-event{margin:0 12px 8px;min-height:42px;padding:5px}
+ .combat-side{min-height:0;overflow:auto}
+ .combat-side .panel{padding:11px;margin-bottom:8px}
+ .battle-gu{padding:5px}
+ .battle-gu-list{margin-top:6px}
+ .battle-progress{margin-top:6px}
+ .battle-progress div{padding:5px}
+ .recent-events{max-height:115px}
+}
+@media(min-width:1000px) and (min-height:650px) and (max-height:760px){
+ .preflight{max-height:132px}
+ .preflight>.panel>p:first-of-type{display:none}
+ .preflight>.panel .card>p{display:none}
+ .game-main>h2{font-size:21px}
+ .chapter-ribbon{height:23px}
+ .book-header{height:78px}
+ .book-footer{height:21px}
+}
