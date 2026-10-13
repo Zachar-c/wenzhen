@@ -33,6 +33,7 @@ try{
   if(width===1366){await page.reload();await page.getByRole('tab',{name:/交易 · 商店/}).click()}
   await page.getByRole('button',{name:/迎战/}).click();
   await page.locator('.player-figure[data-portrait]').waitFor();
+  assert.equal(await page.locator('.combat-stage .foe-portrait').count(),1,'enemy portrait must exist in first battle');
   assert.equal(await page.locator('.battle-gu>.m2-gu-illustration').count()>0,true,'battle cards must be painted');
   await page.evaluate(()=>window.scrollTo(0,0));
   await page.screenshot({path:`${dir}/05_battle_${key}.png`});
@@ -49,6 +50,7 @@ try{
   assert.equal(metrics.scrollW<=metrics.innerW+2,true,`${key} no horizontal overflow`);
   if(width>=1000)assert.equal(metrics.scrollH<=metrics.innerH+2,true,`${key} no desktop document scroll`);
   assert.deepEqual(errors,[],`${key} page errors`);
+  assert.equal(await page.locator('.m2-scene-cue').count()<=1,true,'effects must not accumulate in DOM');
   findings.push({size:key,painted,metrics,errors});
   await ctx.close();
  }
