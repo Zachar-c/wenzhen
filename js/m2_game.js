@@ -2,6 +2,7 @@
 "use strict";
 const GU=[
 ["B101","引锋蛊","百兵","攻","造成4伤害；破绽下额外2",8,2],["B102","守柄蛊","百兵","防","敌方宣告时获得3护盾",10,0],["B103","试刃蛊","百兵","标","8 tick破绽+2；对野猪破甲6 tick",12,1],
+["B201","折锋蛊","百兵","攻","兵锋先击4；若仍在交战，2 tick后折返追击3",12,1],
 ["Y101","藏晖蛊","晦明","攻","微光下造成3伤害；遮灯期间+1",8,2],["Y102","投影蛊","晦明","防","有光敌方宣告时规避最多4伤害",12,0],["Y103","遮灯蛊","晦明","辅","遮灯6 tick；藏晖+1、承伤-1",12,0],
 ["S101","含芽蛊","玄牝","攻","造成2伤害，后续+2/+4 tick各1根刺",8,2],["S102","守根蛊","玄牝","防","护盾低于2时获得3护盾，持续10",10,0],["S103","引露蛊","玄牝","疗","恢复3生命；满血时给予2护盾",12,0],
 ["Z101","识主蛊","执枢","标","标记10 tick；直接伤害+1",14,1],["Z102","系令蛊","执枢","攻","识主下伤害3；敌方下一击-2",10,2],["Z103","解扣蛊","执枢","防","命中前1 tick解除系令，减伤2并护盾2",12,0],
@@ -91,10 +92,23 @@ function starters(school){return GU.filter(g=>g.school===school).slice(0,3).map(
 function save(){if(state)localStorage.setItem(STORE_KEY,JSON.stringify(state))}
 function init(school){if(!SCHOOLS.includes(school))return;const index=SCHOOLS.indexOf(school),meta=JSON.parse(localStorage.getItem(META_KEY)||'{"runs":0,"wins":0}');state={school,round:0,gold:8,losses:0,seed:((Date.now()^Math.floor(Math.random()*999999))>>>0),rng:1,nextId:1,gu:[],equip:[],shelf:[],free:true,rerolls:0,completed:false,runNo:meta.runs+1};state.rng=state.seed||1;state.gu=starters(school);state.equip=state.gu.map(x=>x.id);meta.runs++;localStorage.setItem(META_KEY,JSON.stringify(meta));beginRound();render()}
 function beginRound(){state.round++;state.targetIndex=state.round-1;state.gold+=5;state.free=true;state.rerolls=0;state.seekUsed=false;if(state.runNo===1&&state.round===1){const x=GU.filter(g=>g.school===state.school).slice(0,3);state.shelf=x.map(g=>({id:makeId(),gu:g.id,lock:false}));state.shelf.push({id:makeId(),gu:EXTRA[SCHOOLS.indexOf(state.school)],lock:false})}else{state.shelf=Array.from({length:4},(_,i)=>state.shelf?.[i]?.lock?state.shelf[i]:offer())}save()}
-function offer(){return {id:makeId(),gu:GU[Math.floor(rand()*GU.length)].id,lock:false}}
+const M3_RECIPES=[{id:"B201",inputs:["B101","B102"],label:"引锋蛊＋守柄蛊 → 折锋蛊"}];
+function availableRecipes(){return M3_RECIPES.filter(r=>r.inputs.every(id=>state.gu.some(g=>g.gu===id)))}
+function refineGu(recipeId){
+ if(!state||battle||state.inBattle||state.pendingSpoils||state.completed)return false;
+ const recipe=M3_RECIPES.find(r=>r.id===recipeId);
+ if(!recipe||!recipe.inputs.every(id=>state.gu.some(g=>g.gu===id)))return false;
+ const used=[];
+ for(const id of recipe.inputs){const inst=state.gu.find(g=>g.gu===id&&!used.includes(g.id));if(!inst)return false;used.push(inst.id)}
+ state.gu=state.gu.filter(g=>!used.includes(g.id));state.equip=state.equip.filter(id=>!used.includes(id));
+ const result=owned(recipe.id);state.gu.push(result);
+ if(state.equip.length<5)state.equip.push(result.id);
+ save();render();return true;
+}
+function offer(){const pool=GU.filter(g=>!M3_RECIPES.some(r=>r.id===g.id));return {id:makeId(),gu:pool[Math.floor(rand()*pool.length)].id,lock:false}}
 /* Merchant sourcing: one named Gu, two coins for the lead, four more for purchase. */
 function seekGu(guId){
- if(!state||battle||state.inBattle||state.completed||state.pendingSpoils||state.seekUsed||state.gold<6||state.gu.length>=12||!Object.prototype.hasOwnProperty.call(GM,guId))return false;
+ if(!state||battle||state.inBattle||state.completed||state.pendingSpoils||state.seekUsed||state.gold<6||state.gu.length>=12||(!Object.prototype.hasOwnProperty.call(GM,guId)||M3_RECIPES.some(r=>r.id===guId)))return false;
  const slot=state.shelf.findIndex(x=>x&&!x.lock&&!x.seek);
  if(slot<0)return false;
  state.gold-=2;state.seekUsed=true;
@@ -128,6 +142,7 @@ function buildGuide(){const ids=equippedGu(),active=synergyFor(ids);
 return '<div class="build-compact"><strong>攻击 '+ids.filter(x=>GM[x].kind==="攻").length+'</strong><strong>防护/观察 '+ids.filter(x=>["防","疗","察"].includes(GM[x].kind)).length+'</strong><strong>联动 '+active.length+'</strong></div><div class="guide-lines">'+(active.length?active.map(x=>'<p>◆ '+esc(x)+'</p>').join(''):'<p>尚未形成已识别的联动，可在货架补齐。</p>')+'</div><p class="opponent-note">'+esc(FOE_HINTS[targetFoe().id])+'</p>'}
 function offerHint(gu){const before=new Set(synergyFor(equippedGu())),next=synergyFor([...equippedGu(),gu]).filter(x=>!before.has(x));return '<div class="offer-hint">'+(next.length?'新增联动：'+esc(next[0]):'不新增联动 · 可替换或叠放')+'</div>'}
 function battleReport(stats){if(!stats)return '';const best=Object.entries(stats.damageBySource||{}).sort((a,b)=>b[1]-a[1]);return '<div class="battle-report"><div><small>造成伤害</small><strong>'+stats.damageDealt+'</strong></div><div><small>护盾吸收</small><strong>'+stats.shieldAbsorbed+'</strong></div><div><small>实际失血</small><strong>'+stats.damageTaken+'</strong></div><div><small>实际治疗</small><strong>'+stats.healing+'</strong></div></div><p class="report-sources">主要来源：'+(best.slice(0,3).map(([k,v])=>esc(k)+' '+v).join(' / ')||'无')+'</p>'}
+function refinementPanel(){return '<section class="panel"><h3>固定蛊方 · 不消耗金币</h3><p>炼蛊会永久消耗两只指定旧蛊，形成一个新的出战能力。</p>'+M3_RECIPES.map(r=>'<div class="slot"><b>'+esc(r.label)+'</b><button onclick="refineGu(\''+r.id+'\')" '+(!availableRecipes().includes(r)?'disabled':'')+'>合炼（牺牲原蛊）</button></div>').join('')+'</section>'}
 function guCard(inst){const g=GM[inst.gu];return '<div class="slot"><b>'+esc(g.name)+'</b> <span class="chip">'+g.kind+'</span><div class="meta">'+esc(g.description)+' · 冷却'+g.cd+' tick</div><button onclick="equip(\''+inst.id+'\')">'+(state.equip.includes(inst.id)?"卸下":"装备")+'</button><button onclick="sell(\''+inst.id+'\')">出售 +2</button></div>'}
 function setPrepTab(tab){if(!["shop","inventory"].includes(tab))return;document.body.dataset.prepTab=tab;document.querySelectorAll(".prep-tab").forEach(b=>{const active=b.dataset.tab===tab;b.classList.toggle("active",active);b.setAttribute("aria-selected",String(active))})}
 function render(){if(!state){const data=localStorage.getItem(STORE_KEY);if(data){try{state=JSON.parse(data)}catch{localStorage.removeItem(STORE_KEY)}}}
@@ -138,7 +153,7 @@ if(state.completed){q("app").innerHTML='<section class="panel"><h2>M2 双幕结�
 if(battle){renderBattle();return}if(state.inBattle){startBattle();return}
 let cost=state.free?0:Math.min(4,state.rerolls+2);
 if(document.body&&!["shop","inventory"].includes(document.body.dataset.prepTab))document.body.dataset.prepTab="shop";
-q("app").innerHTML='<h2>第'+state.round+'轮 · '+(state.round<=CHAPTER_LENGTH?'第一幕':'第二幕')+'整备与交易</h2><p>下一战：'+targetFoe().name+' · 每场生命30 · 已出战负载 '+state.equip.length+'/5 · 蛊仓 '+state.gu.length+'/12</p>'+'<nav class="prep-tabs" aria-label="整备功能"><button class="prep-tab active" data-tab="shop" role="tab" aria-selected="true" onclick="setPrepTab(\'shop\')">交易 · 商店</button><button class="prep-tab" data-tab="inventory" role="tab" aria-selected="false" onclick="setPrepTab(\'inventory\')">构筑 · 蛊仓</button></nav><div class="mobile-battle-cta"><span>第'+state.round+'场 · '+esc(targetFoe().name)+'</span><button class="primary" onclick="startBattle()">开始对战 →</button></div><div class="preflight">'+huntBoard()+lootPreview()+'</div><div class="shell"><div><section class="panel"><h3>四槽货架</h3><div class="grid">'+state.shelf.map((x,i)=>!x?'<div class="card shopitem placeholder">已售出</div>':'<div class="card shopitem"><div class="name">'+GM[x.gu].name+'</div><div class="meta">'+GM[x.gu].description+'</div>'+offerHint(x.gu)+'<div class="gold">价格 4</div><div class="actions"><button onclick="buy('+i+')" '+(state.gold<4||state.gu.length>=12?'disabled':'')+'>购买</button><button onclick="lock('+i+')">'+(x.lock?'已锁定 · 解锁':'锁定')+'</button></div></div>').join('')+'</div><div class="actions"><label>商人寻蛊 · 委托费2，寻得后仍须花4购买（每轮一次） <select id="seek-gu">'+GU.map(g=>'<option value="'+g.id+'">'+esc(g.school)+' · '+esc(g.name)+'</option>').join('')+'</select></label><button onclick="seekGu(q(\'seek-gu\').value)" '+(state.seekUsed||state.gold<6||state.gu.length>=12||!state.shelf.some(x=>x&&!x.lock&&!x.seek)?'disabled':'')+'>'+(state.seekUsed?'本轮已委托':'定向寻蛊 · 2 金币')+'</button></div><div class="actions"><button onclick="reroll()" '+(state.gold<cost?'disabled':'')+'>刷新货架 · '+(cost?'金币 '+cost:'免费')+'</button><span class="chip">跨轮最多锁定2件</span></div></section><section class="panel"><h3>蛊仓与出战</h3>'+state.gu.map(guCard).join('')+'</section></div><div><section class="panel build-guide"><h3>战前判断</h3>'+buildGuide()+'</section><section class="panel"><h3>当前蛊组</h3>'+state.equip.map(id=>'<div class="slot">'+esc(GM[state.gu.find(g=>g.id===id).gu].name)+'</div>').join('')+'<p>技能按实际条件自动触发；同名蛊独立冷却。</p><button class="primary" onclick="startBattle()">迎战 '+targetFoe().name+'</button></section><section class="panel"><h3>经营规则</h3><p>一转售价4，出售返2；每轮收入5；免费首刷，付费2/3/4/4…；最多12实例，负载5。</p><button onclick="restart()">放弃并重开</button></section></div></div>'}
+q("app").innerHTML='<h2>第'+state.round+'轮 · '+(state.round<=CHAPTER_LENGTH?'第一幕':'第二幕')+'整备与交易</h2><p>下一战：'+targetFoe().name+' · 每场生命30 · 已出战负载 '+state.equip.length+'/5 · 蛊仓 '+state.gu.length+'/12</p>'+'<nav class="prep-tabs" aria-label="整备功能"><button class="prep-tab active" data-tab="shop" role="tab" aria-selected="true" onclick="setPrepTab(\'shop\')">交易 · 商店</button><button class="prep-tab" data-tab="inventory" role="tab" aria-selected="false" onclick="setPrepTab(\'inventory\')">构筑 · 蛊仓</button></nav><div class="mobile-battle-cta"><span>第'+state.round+'场 · '+esc(targetFoe().name)+'</span><button class="primary" onclick="startBattle()">开始对战 →</button></div><div class="preflight">'+huntBoard()+lootPreview()+'</div><div class="shell"><div><section class="panel"><h3>四槽货架</h3><div class="grid">'+state.shelf.map((x,i)=>!x?'<div class="card shopitem placeholder">已售出</div>':'<div class="card shopitem"><div class="name">'+GM[x.gu].name+'</div><div class="meta">'+GM[x.gu].description+'</div>'+offerHint(x.gu)+'<div class="gold">价格 4</div><div class="actions"><button onclick="buy('+i+')" '+(state.gold<4||state.gu.length>=12?'disabled':'')+'>购买</button><button onclick="lock('+i+')">'+(x.lock?'已锁定 · 解锁':'锁定')+'</button></div></div>').join('')+'</div><div class="actions"><label>商人寻蛊 · 委托费2，寻得后仍须花4购买（每轮一次） <select id="seek-gu">'+GU.map(g=>'<option value="'+g.id+'">'+esc(g.school)+' · '+esc(g.name)+'</option>').join('')+'</select></label><button onclick="seekGu(q(\'seek-gu\').value)" '+(state.seekUsed||state.gold<6||state.gu.length>=12||!state.shelf.some(x=>x&&!x.lock&&!x.seek)?'disabled':'')+'>'+(state.seekUsed?'本轮已委托':'定向寻蛊 · 2 金币')+'</button></div><div class="actions"><button onclick="reroll()" '+(state.gold<cost?'disabled':'')+'>刷新货架 · '+(cost?'金币 '+cost:'免费')+'</button><span class="chip">跨轮最多锁定2件</span></div></section><section class="panel"><h3>蛊仓与出战</h3>'+state.gu.map(guCard).join('')+'</section></div><div><section class="panel build-guide"><h3>战前判断</h3>'+buildGuide()+'</section>'+refinementPanel()+'<section class="panel"><h3>当前蛊组</h3>'+state.equip.map(id=>'<div class="slot">'+esc(GM[state.gu.find(g=>g.id===id).gu].name)+'</div>').join('')+'<p>技能按实际条件自动触发；同名蛊独立冷却。</p><button class="primary" onclick="startBattle()">迎战 '+targetFoe().name+'</button></section><section class="panel"><h3>经营规则</h3><p>一转售价4，出售返2；每轮收入5；免费首刷，付费2/3/4/4…；最多12实例，负载5。</p><button onclick="restart()">放弃并重开</button></section></div></div>'}
 function restart(){if(!confirm('放弃现有 M1 进度并重新开局？'))return;clearInterval(timer);timer=null;battle=null;state=null;localStorage.removeItem(STORE_KEY);render()}
 function has(type,source){return battle.states.some(s=>s.type===type&&(!source||s.source===source)&&s.until>battle.tick)}
 function get(type,source){return battle.states.find(s=>s.type===type&&(!source||s.source===source)&&s.until>battle.tick)}
@@ -200,12 +215,13 @@ case"M103":if(enemy&&enemy.impact-enemy.windup===t){cast(x);if(enemy.type==="cha
 case"Z103":if(enemy&&enemy.impact===t+1&&has("bind")){cast(x);b.states=b.states.filter(s=>s.type!=="bind");enemy.reduction+=4;shield(x.gu+":"+x.instance,2,enemy.impact+1)}break;
 case"G102":if(enemy&&enemy.impact===t&&enemy.observed){cast(x);shield(x.gu+":"+x.instance,4,t+1)}break;
 }}
-for(const x of fresh().filter(x=>["B101","Y101","S101","Z102","H102","T103","M102","N201","G112"].includes(x.gu))){let bonus=0;
+for(const x of fresh().filter(x=>["B101","B201","Y101","S101","Z102","H102","T103","M102","N201","G112"].includes(x.gu))){let bonus=0;
 if(x.gu==="N201"&&(!enemy||enemy.impact<=t))continue;if(x.gu==="G112"&&(!enemy||!enemy.revealed||b.repeatMoveCount<2||enemy.impact<=t))continue;if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())continue;if(x.gu==="Y101"){const shade=get("shade");if(shade&&!shade.attackUsed){bonus=1;shade.attackUsed=true}}
 if(x.gu==="H102"){const gap=get("gap");if(gap){bonus=2;b.states=b.states.filter(s=>s!==gap)}}
 if(x.gu==="T103"){const sand=get("sand");if(sand){bonus=2;b.states=b.states.filter(s=>s!==sand)}}
 if(x.gu==="M102"){const flow=get("flow");if(flow){bonus=2;b.states=b.states.filter(s=>s!==flow)}}
-cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3,N201:5,G112:3})[x.gu],GM[x.gu].name,{bonus});
+cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3,N201:5,G112:3,B201:4})[x.gu],GM[x.gu].name,{bonus});
+if(x.gu==="B201"&&b.foe.hp>0)b.pending.push({tick:t+2,type:"returnBlade",damage:3});
 if((x.gu==="S101"||x.gu==="T103")&&b.foe.hp>0)mark("dot",x.instance,5,1,{kind:x.gu,next:[t+2,t+4]});
 if(x.gu==="Z102"&&b.foe.hp>0)mark("bind",x.instance,8);
 if(x.gu==="H102"&&b.foe.hp>0)mark("beacon",x.instance,10);
@@ -213,7 +229,8 @@ if(x.gu==="H102"&&b.foe.hp>0)mark("beacon",x.instance,10);
 if(t>=2&&(t-2)%6===0)direct(2,"基础攻击");
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="counter"))direct(e.damage,"记痕反击",{consumeWeak:false});
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="blood"))direct(e.damage,"饮锋反击",{consumeWeak:false});
-b.pending=b.pending.filter(x=>!(x.tick===t&&["counter","blood"].includes(x.type)));
+for(const e of b.pending.filter(x=>x.tick===t&&x.type==="returnBlade"))direct(e.damage,"折锋回刺",{consumeWeak:false});
+b.pending=b.pending.filter(x=>!(x.tick===t&&["counter","blood","returnBlade"].includes(x.type)));
 for(const s of [...b.states].filter(x=>x.type==="dot"&&x.next.includes(t))){direct(s.value,s.kind==="S101"?"根刺":"灼烧",{consumeWeak:false,periodic:true});s.next=s.next.filter(n=>n!==t)}
 if(b.foe.hp<=0){finish(true);return}
 if(enemy&&enemy.impact===t){hitQueued(enemy);if(b.hp<=0){finish(false);return}}
