@@ -27,6 +27,7 @@ test('eight schools can run the full six-fight loop without runtime failure',()=
   for(let round=1;round<=6;round++){
    assert.equal(g.run('state.round'),round,school+' entering '+round);
    g.run('startBattle();quick()');
+   if(g.run('state.pendingSpoils'))g.run('resolveSpoils("claim")');
    assert.equal(g.run('state.lastResult.tick<=120'),true,school+'/'+round);
    assert.equal(g.run('state.lastResult.log.length>0'),true);
    if(round<6)assert.equal(g.run('state.completed'),false);
@@ -49,4 +50,35 @@ test('M1 remains a separate unmodified entry and storage key',()=>{
  assert.doesNotMatch(m1,/TOTAL_ROUNDS=6/);
  assert.match(fs.readFileSync(new URL('../m1.html',import.meta.url),'utf8'),/js\/m1_game.js/);
  assert.match(fs.readFileSync(new URL('../m2.html',import.meta.url),'utf8'),/js\/m2_game.js/);
+});
+
+test('enemy-sourced spoil must be claimed and never gives free 3-card selection',()=>{
+ const g=session();g.run('init("百兵")');
+ assert.match(g.dom.get('app').innerHTML,/可追夺的蛊/);
+ g.run('startBattle();quick()');
+ assert.equal(g.run('state.round'),1);
+ assert.equal(g.run('state.pendingSpoils.gu'),'B101');
+ assert.equal(g.run('resolveSpoils("claim")'),true);
+ assert.equal(g.run('state.gu.length'),4);
+ assert.equal(g.run('state.round'),2);
+ assert.equal(g.run('resolveSpoils("claim")'),false);
+});
+test('spoil disposition is one-time and selling only grants gold',()=>{
+ const g=session();g.run('init("百兵");startBattle();quick()');
+ assert.equal(g.run('resolveSpoils("sell")'),true);
+ assert.equal(g.run('state.gu.length'),3);
+ assert.equal(g.run('state.gold'),20);
+ assert.equal(g.run('resolveSpoils("sell")'),false);
+});
+test('when Gu storage is full, taking a spoil requires one chosen exchange',()=>{
+ const g=session();g.run('init("百兵")');
+ g.run('while(state.gu.length<12)state.gu.push(owned("B101"));startBattle();quick()');
+ const second=session(g.store.get('wenzhen_m2_v1'));
+ assert.equal(second.run('state.pendingSpoils.gu'),'B101');
+ assert.match(second.dom.get('app').innerHTML,/蛊仓已满/);
+ assert.equal(second.run('resolveSpoils("claim")'),false);
+ const old=second.run('state.gu[0].id');
+ assert.equal(second.run('resolveSpoils("claim",state.gu[0].id)'),true);
+ assert.equal(second.run('state.gu.length'),12);
+ assert.equal(second.run('state.equip.includes('+JSON.stringify(old)+')'),false);
 });
