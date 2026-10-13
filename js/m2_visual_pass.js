@@ -122,10 +122,13 @@ function decorate(){
  }
 }
 let lastCue="";
+let lastBattleRef=null;
 function sceneCue(app,stage){
  const message=(app.querySelector(".focus-event strong")?.textContent||"").trim();
- const stamp=(app.querySelector(".battle-clock")?.textContent||"").trim();
- const cue=stamp+"|"+message;
+ const currentBattle=typeof battle!=="undefined"?battle:null;
+ if(currentBattle!==lastBattleRef){lastBattleRef=currentBattle;lastCue="";}
+ const latestEntry=typeof log!=="undefined"&&Array.isArray(log)?log.at(-1):null;
+ const cue=latestEntry||message;
  if(!message||cue===lastCue)return;
  lastCue=cue;
  const tone=/反击|饮锋|记痕/.test(message)?"counter":/护盾|规避|吸收|减伤/.test(message)?"guard":/治疗|恢复/.test(message)?"heal":/伤害|攻击|斩击|基础攻击|造成|灼烧|根刺|命中/.test(message)?"strike":"";
