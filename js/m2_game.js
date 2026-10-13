@@ -308,12 +308,17 @@ case"G301":case"G401":case"G501":
  }
  break;
 }}
-for(const x of fresh().filter(x=>["B101","B201","Y101","S101","Z102","H102","T103","M102","N201","G112"].includes(x.gu))){let bonus=0;
+for(const x of fresh().filter(x=>["B101","B201","B301","B401","B501","Y101","S101","Z102","H102","T103","M102","N201","G112"].includes(x.gu))){let bonus=0;
 if(x.gu==="N201"&&(!enemy||enemy.impact<=t))continue;if(x.gu==="G112"&&(!enemy||!enemy.revealed||b.repeatMoveCount<2||enemy.impact<=t))continue;if(x.gu==="Z102"&&!has("owner"))continue;if(x.gu==="M102"&&!environmentWind())continue;if(x.gu==="Y101"){const shade=get("shade");if(shade&&!shade.attackUsed){bonus=1;shade.attackUsed=true}}
 if(x.gu==="H102"){const gap=get("gap");if(gap){bonus=2;b.states=b.states.filter(s=>s!==gap)}}
 if(x.gu==="T103"){const sand=get("sand");if(sand){bonus=2;b.states=b.states.filter(s=>s!==sand)}}
 if(x.gu==="M102"){const flow=get("flow");if(flow){bonus=2;b.states=b.states.filter(s=>s!==flow)}}
-cast(x);direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3,N201:5,G112:3,B201:4})[x.gu],GM[x.gu].name,{bonus});
+if(["B301","B401","B501"].includes(x.gu)&&b.weaponBroken)continue;
+cast(x);const landed=direct(({B101:4,Y101:3,S101:2,Z102:3,H102:3,T103:3,M102:3,N201:5,G112:3,B201:4,B301:4,B401:4,B501:4})[x.gu],GM[x.gu].name,{bonus});
+if(["B301","B401","B501"].includes(x.gu)&&landed>0&&b.foe.hp>0&&b.jointIntegrity>0&&!b.weaponBroken){
+ b.pending.push({tick:t+2,type:"jointStrike",gu:x.gu,remaining:x.gu==="B501"?2:1,damage:3});
+ push("实击确认：实体兵胚与完好关节俱在，预备折角续击");
+}
 if(x.gu==="B201"&&b.foe.hp>0)b.pending.push({tick:t+2,type:"returnBlade",damage:3});
 if((x.gu==="S101"||x.gu==="T103")&&b.foe.hp>0)mark("dot",x.instance,5,1,{kind:x.gu,next:[t+2,t+4]});
 if(x.gu==="Z102"&&b.foe.hp>0)mark("bind",x.instance,8);
@@ -323,7 +328,16 @@ if(t>=2&&(t-2)%6===0)direct(2,"基础攻击");
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="counter"))direct(e.damage,"记痕反击",{consumeWeak:false});
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="blood"))direct(e.damage,"饮锋反击",{consumeWeak:false});
 for(const e of b.pending.filter(x=>x.tick===t&&x.type==="returnBlade"))direct(e.damage,"折锋回刺",{consumeWeak:false});
-b.pending=b.pending.filter(x=>!(x.tick===t&&["counter","blood","returnBlade"].includes(x.type)));
+for(const e of b.pending.filter(x=>x.tick===t&&x.type==="jointStrike")){
+ if(b.weaponBroken||b.jointIntegrity<=0||b.foe.hp<=0){push("变节续击被硬反制阻断：缴械、关节全损或目标已倒");continue}
+ b.jointIntegrity--;
+ const landed=direct(e.damage,"变节折角·"+GM[e.gu].name,{consumeWeak:false,angle:true});
+ if(e.remaining>1&&landed>0&&b.foe.hp>0&&b.jointIntegrity>0&&!b.weaponBroken){
+  b.pending.push({tick:t+2,type:"jointStrike",gu:e.gu,remaining:e.remaining-1,damage:e.damage});
+  push("第二段真命中且下一关节完好，允许第三段");
+ }
+}
+b.pending=b.pending.filter(x=>!(x.tick===t&&["counter","blood","returnBlade","jointStrike"].includes(x.type)));
 for(const s of [...b.states].filter(x=>x.type==="dot"&&x.next.includes(t))){direct(s.value,s.kind==="S101"?"根刺":"灼烧",{consumeWeak:false,periodic:true});s.next=s.next.filter(n=>n!==t)}
 if(b.foe.id==="rootling"&&t>0&&t%10===0&&b.foe.hp>0){const burning=b.states.some(s=>s.type==="dot"&&s.kind==="T103");if(!burning){const heal=Math.min(3,b.foe.maxHp-b.foe.hp);b.foe.hp+=heal;if(heal>0)push("枯根傀儡再生 +"+heal)}else push("火筹灼烧阻断枯根再生")}
 if(b.foe.hp<=0){finish(true);return}
