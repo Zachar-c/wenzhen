@@ -85,3 +85,17 @@
 .m2-r8-foe-portrait[data-foe="shadow"]{background-position:66.66667% 0}
 .m2-r8-foe-portrait[data-foe="warden"]{background-position:100% 0}
 @media(max-width:520px){.foe-portrait.m2-r8-foe-portrait{width:min(94%,125px)}}
+
+/* R8 painted Gu atlas: seven hand-picked semantic illustrations. Remaining Gu keep distinct SVG art. */
+.m2-gu-illustration.m2-r8-gu-painted{
+ background-size:700% 100%,100% 100%;
+ background-repeat:no-repeat,no-repeat;
+ image-rendering:auto;
+}
+.m2-r8-gu-painted[data-tile="0"]{background-position:0% center,center}
+.m2-r8-gu-painted[data-tile="1"]{background-position:16.6667% center,center}
+.m2-r8-gu-painted[data-tile="2"]{background-position:33.3333% center,center}
+.m2-r8-gu-painted[data-tile="3"]{background-position:50% center,center}
+.m2-r8-gu-painted[data-tile="4"]{background-position:66.6667% center,center}
+.m2-r8-gu-painted[data-tile="5"]{background-position:83.3333% center,center}
+.m2-r8-gu-painted[data-tile="6"]{background-position:100% center,center}
