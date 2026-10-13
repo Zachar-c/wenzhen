@@ -132,7 +132,7 @@ test('invalid slot swap never grants a free Gu or advances round',()=>{
 
 test('M2 new Gu are not starter Gu and have sourced acquisition',()=>{
  const g=session();g.run('init("百兵")');
- assert.equal(g.run('GU.length'),26);
+ assert.equal(g.run('GU.length'),27);
  assert.equal(g.run('state.gu.some(x=>x.gu==="N201"||x.gu==="N202")'),false);
  assert.equal(g.run('ENEMY_SPOILS[4].gu'),'N201');
  assert.equal(g.run('ENEMY_SPOILS[5].gu'),'N202');
