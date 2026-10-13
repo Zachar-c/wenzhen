@@ -1,0 +1,15 @@
+name: M1 verification
+on:
+  push:
+    branches: [feat/m1-playable-slice]
+  pull_request:
+    paths: ['m1.html','js/m1_game.js','tests/m1.test.mjs']
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/m1.test.mjs
