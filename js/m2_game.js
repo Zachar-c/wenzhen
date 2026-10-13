@@ -38,7 +38,7 @@ const ENEMY_SPOILS=[
  {foe:"warden",gu:"N202",clue:"铁卫以辨兆蛊洞察来敌"},
 {foe:"rootling",gu:"G112",clue:"傀儡核心刻有重复出手的旧式印痕"}
 ];
-const HUNTS=[[0,1],[1,2],[2,1],[3,4],[4,5],[5,4,6]];
+const HUNTS=[[0,1],[1,2],[2,1],[3,4],[4,5],[5,6]];
 function targetIndex(){return Number.isInteger(state.targetIndex)&&HUNTS[state.round-1]?.includes(state.targetIndex)?state.targetIndex:state.round-1}
 function targetFoe(){return FOES[targetIndex()]}
 function chooseTarget(index){
