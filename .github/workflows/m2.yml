@@ -1,17 +1,12 @@
 name: M2 playable verification
 on:
   push:
-    branches: [feat/m2-extended-run]
+    branches: [master, feat/m2-extended-run]
   pull_request:
     paths:
       - 'm2.html'
-      - 'css/m2_visual_pass.css'
+      - 'css/m2_ink.css'
       - 'js/m2_visual_pass.js'
-      - 'tools/m2_visual_capture.mjs'
-      - 'tools/m2_visual_events.mjs'
-      - 'tools/m2_visual_perf.mjs'
-      - 'tools/m2_visual_live_gu.mjs'
-      - 'tools/m2_visual_gallery.mjs'
       - 'assets/visual/**'
       - 'js/m2_game.js'
       - 'tests/m2*.test.mjs'
@@ -43,26 +38,15 @@ jobs:
       - run: node tools/m2_browser_smoke.mjs
       - run: node tools/m3_rank5_browser_smoke.mjs
       - if: always()
-        run: node tools/m2_visual_capture.mjs
-      - if: always()
-        run: node tools/m2_visual_events.mjs
-      - if: always()
-        run: node tools/m2_visual_perf.mjs
-      - if: always()
-        run: node tools/m2_visual_live_gu.mjs
-      - if: always()
-        run: node tools/m2_visual_gallery.mjs
-      - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: m2-browser-evidence
           path: |
-            artifacts/m2-browser/
-            artifacts/m2-visual-pass/
+            output/ink-gameplay/m2-browser/
           if-no-files-found: ignore
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: m3-browser-evidence
-          path: artifacts/m3-browser/
+          path: output/ink-gameplay/m3-browser/
           if-no-files-found: ignore

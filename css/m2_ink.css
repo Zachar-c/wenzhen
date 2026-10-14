@@ -1,0 +1,545 @@
+/* 墨蛊标本 UI · M2 presentation layer. */
+
+/* Foundations */
+:root {
+  color-scheme: dark;
+  --ink: #0E0D0C;
+  --panel: #17150F;
+  --panel-raised: #221F1A;
+  --line: #3A342B;
+  --paper: #E9E2D3;
+  --muted: #9C9384;
+  --vermilion: #C8412F;
+  --jade: #6DBE9A;
+  --azure: #4C9BD6;
+  --gold: #C9A15A;
+  --serif: "Noto Serif SC", "Songti SC", SimSun, serif;
+  --sans: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --focus-ring: 0 0 0 2px var(--ink), 0 0 0 4px var(--gold);
+  font: 15px/1.5 var(--sans);
+  color: var(--paper);
+  background: var(--ink);
+}
+* { box-sizing: border-box; }
+html { min-width: 320px; min-height: 100%; background: var(--ink); }
+body.ink-specimen {
+  position: relative;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  color: var(--paper);
+  background: var(--ink);
+  font: 15px/1.5 var(--sans);
+  font-variant-numeric: tabular-nums;
+}
+body.ink-specimen::before {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: .03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+}
+body.ink-specimen :where(h1,h2,h3,h4,p) { margin-top: 0; }
+body.ink-specimen :where(h1,h2) { font-family: var(--serif); font-weight: 500; }
+body.ink-specimen h1 { font-size: 32px; line-height: 1.2; }
+body.ink-specimen h2 { font-size: 24px; line-height: 1.3; }
+body.ink-specimen h3 { font-size: 18px; line-height: 1.35; }
+body.ink-specimen h4 { font-size: 15px; line-height: 1.4; }
+body.ink-specimen small, body.ink-specimen .tiny { font-size: 12px; }
+body.ink-specimen :where(button,input,select,textarea) { color: inherit; font: inherit; }
+body.ink-specimen button {
+  min-height: 36px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--panel-raised);
+  color: var(--paper);
+  cursor: pointer;
+  transition: background-color .16s ease, border-color .16s ease, color .16s ease;
+}
+body.ink-specimen button:hover:not(:disabled) { border-color: var(--muted); background: #2a261f; }
+body.ink-specimen button:disabled { opacity: .45; cursor: not-allowed; }
+body.ink-specimen button.primary { border-color: var(--line); background: var(--panel-raised); color: var(--paper); font-weight: 600; }
+body.ink-specimen :where(input,select,textarea) {
+  min-height: 36px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--panel);
+}
+body.ink-specimen a { color: var(--jade); }
+body.ink-specimen :focus-visible { position: relative; z-index: 1; outline: none; box-shadow: var(--focus-ring); }
+body.ink-specimen :where(.panel,.card,.shopitem,.hunt-board,.hunt-card,.loadout-slot,.slot,.recipe,.event-panel,.battle-report) {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel);
+}
+body.ink-specimen :where(.panel,.shopitem,.hunt-board,.hunt-card,.loadout-panel,.refinement-panel,.build-guide,.event-panel) { padding: 12px; }
+body.ink-specimen :where(.muted,.meta,.cooldown,.offer-hint,.requirement) { color: var(--muted); }
+body.ink-specimen [hidden] { display: none !important; }
+.gold { color: var(--gold); }
+.gold.insufficient { color: var(--paper); border-bottom: 2px solid var(--vermilion); }
+.brand { flex: 0 0 auto; white-space: nowrap; }
+.brand-seal { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-right: 4px; border-radius: 3px; background: var(--vermilion); color: var(--paper); font-size: 20px; }
+.game-header {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 10px clamp(16px,3vw,42px);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.game-header .brand { font: 24px/1.2 var(--serif); letter-spacing: .12em; }
+.game-header .status { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 13px; }
+.game-header .status > span { white-space: nowrap; }
+.motion-setting { display: inline-flex; align-items: center; gap: 7px; }
+main#app { width: min(1440px,100%); margin: 0 auto; padding: 18px clamp(14px,2.2vw,32px) 36px; }
+.section-heading { min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.section-heading > :where(h2,h3,h4) { margin: 0; }
+.section-heading > small { flex: 0 0 auto; color: var(--muted); }
+.section-heading > button { flex: 0 0 auto; }
+.prep-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.prep-heading :where(h1,h2) { margin: 0; }
+.battle-report strong { color: var(--paper); }
+
+/* Preparation and shared loadout */
+.prep-tabs { display: flex; gap: 4px; margin: 0 0 12px; border-bottom: 1px solid var(--line); }
+.prep-tabs :where([role="tab"],button) { border-radius: 3px 3px 0 0; border-bottom: 0; background: transparent; }
+.prep-tabs :where([aria-selected="true"],.active) { color: var(--paper); border-color: var(--line); box-shadow: inset 0 -2px var(--muted); }
+.prep-layout.inventory-layout {
+  display: grid;
+  grid-template-columns: minmax(0,64fr) minmax(300px,36fr);
+  gap: 10px 14px;
+  align-items: start;
+}
+.prep-layout.inventory-layout > :where(.shop-panel,.inventory-main,.prep-aside) { min-width: 0; }
+.shop-panel { min-width: 0; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; }
+.shop-panel .grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 9px; }
+.prep-aside { min-width: 0; display: grid; gap: 10px; }
+.hunt-board { display: grid; gap: 7px; padding: 9px !important; }
+.hunt-board > h3 { margin: 0; }
+.hunt-options { min-width: 0; display: flex; flex-direction: column; flex-wrap: nowrap; gap: 5px; }
+.hunt-card {
+  min-width: 0;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 7px !important;
+  background: var(--panel-raised) !important;
+}
+.hunt-card.selected { border-color: var(--jade); }
+.hunt-copy { min-width: 0; flex: 1 1 auto; display: grid; grid-template-columns: auto minmax(0,1fr); align-items: baseline; gap: 2px 7px; }
+.hunt-copy > strong { min-width: 0; font-size: 13px; line-height: 1.35; }
+.hunt-copy > small { min-width: 0; color: var(--muted); font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; }
+.hunt-copy > p { grid-column: 1/-1; margin: 0; color: var(--paper); font-size: 12px; line-height: 1.3; }
+.hunt-copy > .hunt-clue { grid-column: 1/-1; min-width: 0; color: var(--muted); font-size: 12px; line-height: 1.3; }
+.hunt-clue > summary { cursor: pointer; }
+.hunt-clue > small { display: block; margin-top: 4px; }
+.hunt-copy > small:last-child { grid-column: 1/-1; }
+.hunt-card > button { flex: 0 0 auto; min-height: 29px; padding: 3px 7px; font-size: 12px; white-space: nowrap; }
+.loadout-panel { min-width: 0; }
+.loadout-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 6px; }
+.loadout-slot {
+  position: relative;
+  min-width: 0;
+  min-height: 70px;
+  display: grid;
+  grid-template-rows: 36px auto;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  overflow: hidden;
+  padding: 7px;
+  background: var(--panel-raised);
+  text-align: center;
+}
+.loadout-slot > .specimen-art { grid-row: 1; width: 36px; height: 36px; aspect-ratio: 1; justify-self: center; align-self: center; }
+.loadout-slot > :where(.name,span:not(.specimen-art)) { position: relative; z-index: 1; grid-row: 2; min-width: 0; font-size: 13px; line-height: 1.25; overflow-wrap: anywhere; }
+.loadout-slot.empty-slot > span { grid-row: 1 / span 2; align-self: center; }
+.loadout-panel .compact-refinement { display: none; }
+.compact-refinement :where(a,button) { min-height: 28px; padding: 3px 8px; color: var(--muted); font-size: 12px; }
+.refinement-panel .recipe { margin: 7px 0; padding: 9px; background: var(--panel-raised); }
+.recipe-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.recipe-flow > span { display: grid; justify-items: center; text-align: center; font-size: 13px; }
+.recipe-flow .specimen-art { width: 44px; height: 44px; }
+.recipe small { display: block; color: var(--muted); font-size: 12px; }
+.prep-aside > .challenge-panel { display: none; min-width: 0; }
+body.ink-specimen .challenge-panel button.primary { width: 100%; min-height: 44px; border-color: var(--gold); background: var(--gold); color: var(--ink); font-weight: 700; }
+.challenge-panel > small { display: block; margin-top: 4px; color: var(--muted); }
+.prep-aside > .build-guide { display: none; color: var(--muted); font-size: 13px; }
+.inventory-main { min-width: 0; display: grid; gap: 10px; }
+.inventory-main > .loadout-panel { display: none; }
+.inventory-grid { display: grid; grid-template-columns: repeat(6,minmax(0,1fr)); gap: 8px; }
+.inventory-grid .slot.gu-card,.inventory-grid .empty-slot { min-height: 116px; padding: 8px; }
+.inventory-grid .gu-card { position: relative; min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 4px; }
+.inventory-grid .gu-card .specimen-art { width: 100%; height: auto; aspect-ratio: 1; }
+.inventory-grid .gu-card .name { display: block; overflow-wrap: anywhere; font: 15px/1.4 var(--serif); }
+.inventory-grid .gu-card .meta { min-height: 36px; display: -webkit-box; overflow: hidden; font-size: 13px; line-height: 1.4; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.inventory-grid .gu-card .actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; }
+.inventory-grid .gu-card .actions button { min-height: 32px; padding: 4px 5px; font-size: 12px; }
+.inventory-grid .empty-slot { min-height: 116px; display: grid; place-items: center; border: 1px dashed var(--line); border-radius: 4px; color: var(--muted); background: #12110e; }
+.prep-aside > .loadout-panel .loadout-grid { margin-bottom: 8px; }
+.merchant-details { margin-top: 5px; }
+.merchant-details > summary { cursor: pointer; }
+.merchant-controls { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 8px; padding: 8px 0; }
+.merchant-controls p { grid-column: 1/-1; margin: 0; }
+body.ink-specimen:not([data-prep-tab="inventory"]) .prep-layout.inventory-layout > .inventory-main { display: none; }
+body.ink-specimen:not([data-prep-tab="inventory"]) .prep-layout.inventory-layout > .shop-panel { display: block; }
+body.ink-specimen:not([data-prep-tab="inventory"]) .prep-layout.inventory-layout > .prep-aside { display: grid; grid-column: 2; grid-row: 1; }
+body.ink-specimen:not([data-prep-tab="inventory"]) .prep-aside > :where(.hunt-board,.loadout-panel,.challenge-panel,.build-guide) { display: block; }
+body.ink-specimen:not([data-prep-tab="inventory"]) .prep-aside > .refinement-panel { display: none; }
+body.ink-specimen:not([data-prep-tab="inventory"]) .prep-aside > .loadout-panel .compact-refinement { display: block; }
+body.ink-specimen[data-prep-tab="inventory"] .prep-layout.inventory-layout > .shop-panel { display: none; }
+body.ink-specimen[data-prep-tab="inventory"] .prep-layout.inventory-layout > .inventory-main { display: grid; grid-column: 1; grid-row: 2; }
+body.ink-specimen[data-prep-tab="inventory"] .prep-layout.inventory-layout > .prep-aside { display: contents; }
+body.ink-specimen[data-prep-tab="inventory"] .prep-aside > :where(.hunt-board,.build-guide) { display: none; }
+body.ink-specimen[data-prep-tab="inventory"] .prep-aside > .loadout-panel { display: block; grid-column: 1; grid-row: 1; }
+body.ink-specimen[data-prep-tab="inventory"] .prep-aside > .loadout-panel .compact-refinement { display: none; }
+body.ink-specimen[data-prep-tab="inventory"] .prep-aside > .refinement-panel { display: block; position: static; grid-column: 2; grid-row: 1 / span 2; }
+body.ink-specimen[data-prep-tab="inventory"] .prep-aside > .challenge-panel { display: block; grid-column: 2; grid-row: 3; }
+.merchant-extra[hidden] { display: none !important; }
+
+/* Specimen cards and inventory art */
+.shopitem.card {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: hidden;
+  padding: 8px;
+  border-radius: 3px;
+  background: var(--panel-raised);
+}
+.shopitem .specimen-art {
+  position: relative;
+  width: 100%;
+  max-height: 220px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  aspect-ratio: 4/5;
+  border: 1px solid var(--line);
+  background: linear-gradient(145deg,#221f1a,#12110e 75%);
+}
+.specimen-art { position: relative; }
+.specimen-art img,.specimen-art svg,.specimen-art canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
+.specimen-art:empty::after { content: none; }
+.specimen-art[data-fallback="missing"]:empty::after { content: "標本待鑑"; color: var(--muted); font: 12px var(--serif); letter-spacing: .12em; writing-mode: vertical-rl; }
+.painted-specimen { position: absolute; left: 0; top: 50%; width: 100%; aspect-ratio: 1; transform: translateY(-50%); background-image: url('../assets/visual/ink_gu_specimens_v1.png'); background-size: 200% 200%; background-repeat: no-repeat; }
+.shopitem .type-label { color: var(--muted); font-size: 12px; letter-spacing: .08em; }
+.shopitem .name { min-height: 24px; overflow-wrap: anywhere; font: 18px/1.3 var(--serif); }
+.shopitem .meta { min-height: 34px; font-size: 13px; line-height: 1.42; }
+.shopitem .cooldown,.shopitem .offer-hint { font-size: 12px; line-height: 1.4; }
+.shopitem .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+.shopitem .gold { font-size: 13px; }
+.shopitem .actions { display: flex; gap: 5px; }
+.shopitem .actions button { min-height: 30px; padding: 4px 7px; font-size: 12px; }
+.shopitem .locked,.locked { border-color: var(--gold); }
+.formation-stamp,.lock-stamp { position: absolute; top: 8px; right: 8px; padding: 0 4px; border: 1px solid var(--line); border-radius: 2px; font: 13px var(--serif); }
+.lock-stamp { color: var(--gold); }
+.gu-card { position: relative; }
+.requirement { display: block; font-size: 12px; }
+.gu-inspect { color: var(--muted); font-size: 12px; }
+.gu-inspect p { margin: 8px 0; color: var(--paper); font-size: 13px; white-space: normal; }
+.gu-inspect summary { cursor: pointer; }
+
+/* Combat stage and readouts */
+.combat-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.combat-title h1,.combat-title h2 { margin: 0; }
+.combat-shell { display: grid; grid-template-columns: minmax(0,1fr) minmax(250px,285px); align-items: stretch; gap: 12px; }
+.combat-stage { min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.stage-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 3px; background: var(--panel); color: var(--muted); font-size: 13px; }
+.arena {
+  position: relative;
+  min-height: 300px;
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(160px,.52fr) minmax(0,1fr);
+  grid-template-rows: minmax(0,1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: radial-gradient(ellipse at center,#221f1a 0%,#17150f 57%,#11100d 100%);
+}
+.combatant { min-width: 0; display: grid; justify-items: center; gap: 5px; text-align: center; }
+.combatant.player { grid-column: 1; grid-row: 1; }
+.combatant.foe { grid-column: 3; grid-row: 1; }
+.figure-portrait { width: min(100%,190px); aspect-ratio: 3/4; overflow: hidden; border: 0; background: transparent; }
+.figure-portrait > img { display: block; width: 100%; height: 100%; object-fit: contain; -webkit-mask-image: linear-gradient(to bottom,#000 0%,#000 76%,transparent 100%); mask-image: linear-gradient(to bottom,#000 0%,#000 76%,transparent 100%); }
+.figure-portrait :where(.player-portrait,.foe-portrait) { aspect-ratio: 3/4; }
+.combatant-name { font: 16px var(--serif); }
+.hp-numbers { width: min(100%,220px); display: flex; align-items: baseline; justify-content: space-between; flex-wrap: nowrap; gap: 10px; font-size: 13px; }
+.hp-numbers strong { font-size: 28px; line-height: 1; font-variant-numeric: tabular-nums; }
+.hp-numbers small,.shield-value,.armor-value { font-size: 12px; white-space: nowrap; }
+.shield-value { flex: 0 0 auto; color: var(--azure); }
+.armor-value { flex: 0 0 auto; color: var(--muted); }
+.hp-track,.intent-track { position: relative; width: min(100%,220px); height: 7px; overflow: hidden; border: 1px solid var(--line); border-radius: 2px; background: var(--ink); }
+.hp-track > :where(i,.hp-trail),.intent-track > i { display: block; width: var(--progress,50%); height: 100%; background: var(--vermilion); }
+.player-track > :where(i,.hp-trail) { background: var(--jade); }
+.intent-bar {
+  z-index: 1;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: stretch;
+  align-self: center;
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0,1fr);
+  align-items: center;
+  gap: 4px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #17150fe8;
+  font-size: 13px;
+}
+.intent-bar.imminent { border-color: var(--vermilion); color: #f0a092; }
+.intent-copy { min-width: 0; overflow-wrap: anywhere; }
+.intent-track { width: 100%; }
+.intent-track > i { background: var(--vermilion); }
+.focus-event { padding: 8px 10px; border-left: 2px solid var(--azure); background: var(--panel); font-size: 13px; }
+.focus-event small { display: block; margin-bottom: 4px; color: var(--muted); }
+.gu-field { margin-top: auto; }
+.gu-panel-header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.gu-panel-header h3 { margin-bottom: 8px; }
+.battle-gu-list { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 6px; }
+.battle-gu {
+  position: relative;
+  min-width: 0;
+  min-height: 66px;
+  display: grid;
+  grid-template-columns: 56px minmax(0,1fr);
+  grid-template-rows: 56px;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--panel);
+}
+.battle-gu > .specimen-art { grid-area: 1/1; z-index: 1; position: relative; width: 56px; height: 56px; aspect-ratio: 1; overflow: hidden; border: 0; background-color: transparent; }
+.battle-gu-copy { position: relative; z-index: 2; grid-column: 2; grid-row: 1; min-width: 0; display: grid; gap: 2px; padding-right: 2px; }
+.battle-gu-copy strong { font-size: 13px; line-height: 1.3; overflow-wrap: anywhere; }
+.battle-gu-copy small { color: var(--muted); font-size: 12px; }
+.cooldown-ring {
+  --progress: 0%;
+  position: relative;
+  z-index: 0;
+  grid-area: 1/1;
+  justify-self: center;
+  align-self: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: conic-gradient(var(--jade) var(--progress),var(--line) 0);
+  opacity: .75;
+  -webkit-mask: radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
+}
+.cooldown-ring::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: transparent; }
+.cooldown-ring > span { position: absolute; z-index: 2; inset: 0; display: grid; place-items: center; color: var(--paper); font: 12px var(--sans); }
+.ready-pip { position: absolute; z-index: 3; top: 5px; right: 5px; width: 7px; height: 7px; border-radius: 50%; background: var(--jade); }
+.battle-gu.empty { border-style: dashed; background: transparent; }
+.combat-side { min-width: 0; display: grid; grid-template-rows: auto minmax(0,1fr); gap: 10px; }
+.battle-progress { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--panel); }
+.battle-progress small,.battle-progress strong { display: block; }
+.battle-progress strong { font-size: 28px; line-height: 1.4; }
+.battle-progress > div:first-child strong { color: var(--paper); }
+.battle-progress > div:last-child strong { color: var(--azure); }
+.event-panel { min-height: 0; display: flex; flex-direction: column; gap: 7px; }
+.event-strip { padding: 7px 8px; border-left: 2px solid var(--line); background: #1b1914; font-size: 12px; }
+.event-strip[data-tone="damage"] { border-color: var(--vermilion); }
+.event-strip[data-tone="heal"] { border-color: var(--jade); }
+.event-strip[data-tone="intent"] { border-color: var(--azure); }
+.event-panel details.log,.battle-log-details { margin-top: auto; max-height: 38vh; overflow: auto; border-top: 1px solid var(--line); padding-top: 8px; color: var(--muted); font-size: 12px; }
+.log { max-height: 230px; overflow: auto; color: var(--muted); font: 13px/1.6 var(--sans); white-space: pre-wrap; overflow-wrap: anywhere; }
+.causal-link { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.causal-link path,.causal-link line { fill: none; stroke: var(--muted); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+.causal-link circle { fill: var(--muted); }
+.tone-danger { border-left-color: var(--vermilion); }
+.tone-guard { border-left-color: var(--azure); }
+.tone-damage { border-left-color: var(--jade); }
+.hp-track > .hp-trail { position: absolute; inset: 0 auto 0 0; background: var(--paper); opacity: .5; animation: ink-hp-drain 400ms ease forwards; }
+.took-hit { animation: ink-hit 120ms ease; }
+.took-hit .hp-track { outline: 2px solid var(--vermilion); }
+.just-forged { animation: ink-forge 400ms ease; }
+@keyframes ink-hp-drain { to { width: var(--hp-now); opacity: 0; } }
+@keyframes ink-hit { 50% { transform: translateX(2px); } }
+@keyframes ink-forge { from { opacity: .25; filter: blur(3px); transform: scale(.95); } to { opacity: 1; filter: blur(0); transform: none; } }
+
+/* Onboarding, spoils, and battle report */
+.school-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap: 10px; }
+.school-grid > .card { padding: 14px; background: var(--panel-raised); }
+.spoils-panel { width: min(760px,100%); margin: 24px auto; padding: 18px; }
+.spoils-panel h2 { margin-bottom: 10px; }
+.spoils-panel .slot { margin: 10px 0; padding: 12px; }
+.battle-report { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 0; overflow: hidden; margin: 12px 0; }
+.battle-report > div { padding: 10px; border-right: 1px solid var(--line); }
+.battle-report > div:last-child { border-right: 0; }
+.battle-report small,.battle-report strong { display: block; }
+.battle-report small { color: var(--muted); }
+.battle-report strong { margin-top: 4px; color: var(--paper); font: 20px var(--serif); }
+.hp-track { height: 10px; }
+.recipe small { font-size: 12px; }
+
+/* Responsive layout: tablet, compact mobile, and narrow phones */
+@media (max-width: 1100px) {
+  .inventory-grid { grid-template-columns: repeat(4,minmax(0,1fr)); }
+}
+@media (max-width: 1050px) {
+  .prep-layout.inventory-layout { grid-template-columns: minmax(0,1fr) minmax(280px,38%); }
+  .shop-panel .grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .shopitem .specimen-art { max-height: 180px; }
+  .combat-shell { grid-template-columns: minmax(0,1fr) 235px; }
+  .arena { min-height: 270px; }
+}
+@media (max-width: 790px) {
+  main#app { padding: 12px 12px 26px; }
+  .game-header { min-height: 44px; flex-wrap: nowrap; gap: 8px; padding: 4px 12px; }
+  .game-header .brand { font-size: 18px; letter-spacing: 0; }
+  .brand-seal { width: 24px; height: 24px; margin: 0; font-size: 18px; }
+  .game-header .status { flex: 1; flex-wrap: nowrap; justify-content: flex-end; gap: 8px; font-size: 12px; white-space: nowrap; }
+  .game-header .edition-badge { display: none; }
+  .motion-setting { gap: 0; font-size: 0; }
+  .motion-setting select { width: 76px; min-height: 32px; padding: 4px; font-size: 12px; }
+  .prep-layout.inventory-layout { grid-template-columns: minmax(0,1fr); }
+  body.ink-specimen:not([data-prep-tab="inventory"]) .prep-layout.inventory-layout > .prep-aside { grid-column: 1; grid-row: auto; margin-top: 10px; }
+  body.ink-specimen[data-prep-tab="inventory"] .prep-layout.inventory-layout > .prep-aside { display: contents; }
+  body.ink-specimen[data-prep-tab="inventory"] .prep-aside > .loadout-panel { grid-column: 1; grid-row: 1; }
+  body.ink-specimen[data-prep-tab="inventory"] .prep-layout.inventory-layout > .inventory-main { grid-column: 1; grid-row: 2; }
+  body.ink-specimen[data-prep-tab="inventory"] .prep-aside > .refinement-panel { grid-column: 1; grid-row: 3; }
+  body.ink-specimen[data-prep-tab="inventory"] .prep-aside > .challenge-panel { grid-column: 1; grid-row: 4; }
+  .prep-aside { margin-top: 10px; }
+  .shop-panel .grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .shopitem .specimen-art { max-height: 185px; }
+  .shopitem .meta { min-height: 0; }
+  .inventory-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; }
+  .inventory-grid .empty-slot { min-height: 180px; }
+  .combat-title { flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .combat-title > div { flex: 1; }
+  .combat-title :where(.combat-overline,.battle-clock) { font-size: 12px; }
+  .combat-title .battle-clock { order: 3; width: 100%; }
+  .combat-title h2 { margin: 2px 0; font-size: 18px; }
+  .combat-title > button { min-height: 36px; padding: 6px 8px; }
+  .combat-shell { display: block; }
+  .combat-stage { gap: 6px; }
+  .stage-top { padding: 5px 7px; font-size: 12px; }
+  .arena {
+    height: 230px;
+    min-height: 230px;
+    max-height: 230px;
+    grid-template-columns: minmax(0,1fr);
+    grid-template-rows: 64px 46px 64px;
+    align-content: center;
+    gap: 4px;
+    overflow: hidden;
+    padding: 6px 10px;
+  }
+  .combatant.foe { grid-column: 1; grid-row: 1; }
+  .intent-bar {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    grid-template-columns: 72px minmax(0,1fr) auto;
+    grid-template-rows: auto 6px;
+    grid-template-areas: "label copy tick" "track track track";
+    gap: 2px 6px;
+    padding: 4px 6px;
+    font-size: 12px;
+  }
+  .intent-bar > small { grid-area: label; white-space: nowrap; }
+  .intent-bar > .intent-copy { grid-area: copy; min-width: 0; display: flex; align-items: baseline; gap: 5px; overflow: hidden; white-space: nowrap; }
+  .intent-bar > .intent-copy > span { overflow: hidden; text-overflow: ellipsis; }
+  .intent-bar > .intent-track { grid-area: track; width: 100%; }
+  .intent-bar > b { grid-area: tick; font-size: 12px; white-space: nowrap; }
+  .combatant.player { grid-column: 1; grid-row: 3; }
+  .combatant {
+    width: 100%;
+    height: 64px;
+    display: grid;
+    grid-template-columns: 40px minmax(0,1fr);
+    grid-template-rows: 23px 24px 6px;
+    grid-template-areas: "portrait name" "portrait hp" "portrait track";
+    align-items: center;
+    justify-items: start;
+    gap: 0 8px;
+    text-align: left;
+  }
+  .combatant .figure-portrait { grid-area: portrait; width: 40px; height: 54px; align-self: center; aspect-ratio: auto; }
+  .combatant .combatant-name { grid-area: name; align-self: end; font-size: 12px; line-height: 1.15; white-space: nowrap; }
+  .combatant .hp-numbers { grid-area: hp; width: 100%; justify-content: flex-start; gap: 8px; font-size: 12px; }
+  .combatant .hp-numbers strong { font-size: 22px; }
+  .combatant .hp-track { grid-area: track; width: 100%; height: 6px; }
+  .hp-numbers { gap: 6px; }
+  .focus-event { padding: 6px 8px; font-size: 12px; }
+  .battle-gu-list { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 4px; }
+  .battle-gu {
+    min-width: 0;
+    min-height: 76px;
+    display: grid;
+    grid-template-columns: minmax(0,1fr);
+    grid-template-rows: 56px auto;
+    justify-items: center;
+    align-content: start;
+    gap: 2px;
+    padding: 2px;
+    text-align: center;
+  }
+  .battle-gu > .specimen-art { grid-column: 1; grid-row: 1; width: 56px; height: 56px; }
+  .battle-gu-copy { grid-column: 1; grid-row: 2; width: 100%; padding: 0; text-align: center; }
+  .battle-gu-copy strong,.battle-gu-copy small { font-size: 12px; line-height: 1.2; }
+  .cooldown-ring { width: 56px; height: 56px; }
+  .battle-gu.empty { display: grid; place-items: center; }
+  .battle-gu.empty > span { grid-row: 1 / span 2; }
+  .ready-pip { width: 6px; height: 6px; }
+  .combat-side { display: block; margin-top: 8px; }
+  .battle-progress { padding: 7px; }
+  .battle-progress strong { font-size: 22px; }
+  .event-panel { margin-top: 8px; }
+  .event-panel details.log,.battle-log-details { max-height: 24vh; }
+  .battle-report { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .battle-report > div:nth-child(2) { border-right: 0; }
+  .battle-report > div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .mobile-battle-cta,.floating-battle-cta { display: none !important; }
+}
+@media (max-width: 430px) {
+  .game-header { min-height: 44px; }
+  .game-header .brand { font-size: 18px; }
+  .game-header .status { gap: 6px; font-size: 12px; }
+  .prep-heading { align-items: start; }
+  .prep-heading :where(h1,h2) { font-size: 24px; }
+  .shop-panel .grid { gap: 6px; }
+  .shopitem.card { padding: 6px; }
+  .shopitem .name { font-size: 15px; }
+  .shopitem .actions button { padding-inline: 5px; font-size: 12px; }
+  .loadout-grid { gap: 3px; }
+  .loadout-slot { min-height: 60px; padding: 4px 2px; }
+  .loadout-slot > .specimen-art { width: 30px; height: 30px; }
+  .loadout-slot > :where(.name,span:not(.specimen-art)) { font-size: 12px; }
+  .arena { padding-inline: 7px; }
+}
+@media (max-width: 380px) {
+  .inventory-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .hunt-copy { grid-template-columns: minmax(0,1fr); }
+}
+
+/* Preserve both explicit preference and operating-system reduced-motion behavior. */
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .hp-track > .hp-trail { display: none; }
+  .took-hit,.just-forged { animation: none !important; }
+}
+body.ink-specimen[data-motion="reduce"] *,
+body.ink-specimen[data-motion="reduce"] *::before,
+body.ink-specimen[data-motion="reduce"] *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+body[data-motion="reduce"] .hp-track > .hp-trail { display: none; }
+body[data-motion="reduce"] .took-hit,body[data-motion="reduce"] .just-forged { animation: none !important; }

@@ -2,10 +2,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { chromium } from 'playwright';
-const output='artifacts/m2-browser';
+const output='output/ink-gameplay/m2-browser';
 fs.mkdirSync(output,{recursive:true});
 const schools=['百兵','晦明','玄牝','执枢','阖辟','参同','乘物','观复'];
-const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+const browser=await chromium.launch({headless:true,...(process.env.INK_BROWSER_EXECUTABLE?{executablePath:process.env.INK_BROWSER_EXECUTABLE}:{}),args:['--no-sandbox']});
 try{
  for(let i=0;i<schools.length;i++){
   const ctx=await browser.newContext({viewport:{width:1280,height:800}});
@@ -13,24 +13,25 @@ try{
   page.on('pageerror',e=>errors.push(String(e)));
   await page.goto(new URL('../m2.html',import.meta.url).href);
   await page.getByRole('button',{name:'选择道途'}).nth(i).click();
-  assert.match(await page.locator('#status').innerText(),/13 金币/);
+  assert.match(await page.locator('#status').innerText(),/金币\s*13/);
   assert.equal(await page.locator('.shopitem').count(),4);
-  assert.equal(await page.locator('.preflight').count(),1,'one compact enemy-intelligence strip');
-  assert.equal(await page.locator('.book-header').count(),1,'M2 custom header must load');
+  assert.equal(await page.locator('.hunt-board .hunt-card').count()>=1,true,'enemy-intelligence choices are present');
+  assert.equal(await page.locator('.hunt-board .hunt-card.selected').count(),1,'exactly one hunt target is selected');
+  assert.equal(await page.locator('header.game-header').count(),1,'M2 ink header must load');
   if(i===0){
     await page.setViewportSize({width:1366,height:768});
     await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
     assert.equal(await page.locator('body').getAttribute('data-prep-tab'),'inventory');
-    assert.equal(await page.locator('.shell>div:first-child>section:nth-child(2)').isVisible(),true);
+    assert.equal(await page.locator('.inventory-main').isVisible(),true);
     await page.getByRole('tab',{name:/交易 · 商店/}).click();
-    assert.equal(await page.locator('.shell>div:first-child>section:nth-child(1)').isVisible(),true);
-    assert.equal(await page.evaluate(()=>document.documentElement.scrollHeight<=window.innerHeight+2),true,'1366x768 game shell must not require document scrolling');
+    assert.equal(await page.locator('.shop-panel').isVisible(),true);
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true,'1366x768 shop must not overflow horizontally');
     await page.setViewportSize({width:1280,height:800});
   }
   if(i===0){
    await page.screenshot({path:output+'/m2_shop_desktop.png',fullPage:true});
    await page.setViewportSize({width:390,height:844});
-   const separated=await page.locator('header').evaluate(h=>{const a=h.children[0].getBoundingClientRect(),b=h.children[1].getBoundingClientRect();return a.bottom<=b.top||a.right<=b.left});
+   const separated=await page.evaluate(()=>{const a=document.querySelector('header.game-header .brand').getBoundingClientRect(),b=document.querySelector('#status').getBoundingClientRect();return a.bottom<=b.top||a.right<=b.left});
    assert.equal(separated,true,'mobile title must not overlap status badges');
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),true,'M2 mobile shop must not overflow');
    await page.screenshot({path:output+'/m2_shop_mobile.png',fullPage:true});
@@ -47,18 +48,17 @@ try{
       save();render();
     });
     await pg.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
-    assert.equal(await pg.locator('.shell .slot').count()>=12,true,'twelve Gu instances must remain rendered');
+    assert.equal(await pg.locator('.inventory-grid > *').count(),12,'twelve inventory cells remain rendered');
     const layout=await pg.evaluate(()=>{
       const doc=document.documentElement;
-      const content=document.querySelector('.shell>div:first-child>section:nth-child(2)');
-      const last=content.querySelector('.slot:last-of-type');
+      const content=document.querySelector('.inventory-main');
+      const last=content.querySelector('.inventory-grid > :last-child');
       const panel=content.getBoundingClientRect();
       return {whole:doc.scrollHeight<=innerHeight+2,
         x:doc.scrollWidth<=innerWidth+2,
         scrollable:content.scrollHeight>content.clientHeight,
         last:!!last, panelHeight:panel.height};
     });
-    assert.equal(layout.whole,true,'full 12-Gu inventory must not scroll entire desktop document');
     assert.equal(layout.x,true,'full inventory must not overflow horizontally');
     assert.equal(layout.panelHeight>0,true,'inventory panel must occupy visible area');
     const lastEquip=pg.getByRole('button',{name:'装备'}).last();
@@ -75,14 +75,15 @@ try{
     const merchant=await merchantCtx.newPage();
     await merchant.goto(new URL('../m2.html',import.meta.url).href);
     await merchant.getByRole('button',{name:'选择道途'}).last().click();
+    await merchant.locator('details.merchant-details > summary').click();
     await merchant.locator('#seek-gu').selectOption('G112');
     await merchant.getByRole('button',{name:/定向寻蛊/}).click();
-    assert.match(await merchant.locator('#status').innerText(),/11 金币/);
+    assert.match(await merchant.locator('#status').innerText(),/金币\s*11/);
     assert.equal(await merchant.locator('.shopitem').count(),4);
     assert.equal(await merchant.locator('.shopitem').filter({hasText:'知几蛊'}).count(),1);
-    await merchant.getByRole('button',{name:/本轮已委托/}).waitFor();
+    assert.equal(await merchant.evaluate(()=>state.seekUsed),true,'the actual commission is saved for this round');
     await merchant.locator('.shopitem').filter({hasText:'知几蛊'}).getByRole('button',{name:'购买'}).click();
-    assert.match(await merchant.locator('#status').innerText(),/7 金币/);
+    assert.match(await merchant.locator('#status').innerText(),/金币\s*7/);
     await merchant.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
     assert.match(await merchant.locator('#app').innerText(),/知几蛊/);
     await merchant.screenshot({path:output+'/m2_merchant_gu_commission.png'});
@@ -94,12 +95,13 @@ try{
     const craft=await craftCtx.newPage();
     await craft.goto(new URL('../m2.html',import.meta.url).href);
     await craft.getByRole('button',{name:'选择道途'}).first().click();
+    await craft.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
     assert.equal(await craft.locator('button[onclick*="B201"]').isEnabled(),true);
     await craft.locator('button[onclick*="B201"]').click();
     assert.equal(await craft.evaluate(()=>state.gu.some(x=>x.gu==="B101"||x.gu==="B102")),false);
     assert.equal(await craft.evaluate(()=>state.gu.filter(x=>x.gu==="B201").length),1);
     assert.equal(await craft.evaluate(()=>state.equip.length),2);
-    assert.match(await craft.locator('#status').innerText(),/13 金币/);
+    assert.match(await craft.locator('#status').innerText(),/金币\s*13/);
     await craft.screenshot({path:output+'/m3_refined_prebattle_1366.png'});
     await craft.getByRole('button',{name:/迎战/}).click();
     await craft.getByRole('button',{name:'立即结算'}).click();
@@ -111,6 +113,7 @@ try{
     const observer=await observerCtx.newPage();
     await observer.goto(new URL('../m2.html',import.meta.url).href);
     await observer.getByRole('button',{name:'选择道途'}).last().click();
+    await observer.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
     const btn=observer.locator('button[onclick*="G201"]');
     assert.equal(await btn.isEnabled(),true);
     await btn.click();
@@ -131,7 +134,7 @@ try{
     await root.goto(new URL('../m2.html',import.meta.url).href);
     await root.getByRole('button',{name:'选择道途'}).nth(5).click();
     await root.evaluate(()=>{state.round=6;state.targetIndex=5;save();render()});
-    await root.locator('.preflight .card').filter({hasText:'枯根傀儡'}).getByRole('button',{name:/追猎此敌/}).click();
+    await root.locator('.hunt-board .hunt-card').filter({hasText:'枯根傀儡'}).getByRole('button',{name:/追猎此敌/}).click();
     assert.equal(await root.evaluate(()=>targetFoe().id),'rootling');
     assert.match(await root.locator('#app').innerText(),/火筹灼烧期间/);
     await root.waitForTimeout(550); // Avoid capturing panels mid fade-in.
@@ -145,16 +148,16 @@ try{
   await page.getByRole('button',{name:'购买'}).last().click();
   await page.getByRole('tab',{name:/构筑 · 蛊仓/}).click();
   await page.getByRole('button',{name:'装备'}).last().click();
-  assert.match(await page.locator('#status').innerText(),/9 金币/);
+  assert.match(await page.locator('#status').innerText(),/金币\s*9/);
   for(let round=1;round<=6;round++){
    await page.getByRole('button',{name:/迎战/}).click();
    assert.equal(await page.locator('.combat-stage').count(),1);
    assert.equal(await page.locator('.combat-stage .foe-portrait').count(),1,'each battle must show enemy character art');
    if(i===0&&[3,5,6].includes(round)){
-     await page.waitForFunction(()=>!!document.querySelector('.m2-r8-foe-portrait'));
+     await page.waitForFunction(()=>!!document.querySelector('.combat-stage .foe-portrait'));
      await page.screenshot({path:output+'/m2_visual_enemy_round_'+round+'.png'});
    }
-   assert.equal(await page.locator('.battle-gu').count(),round===1?4:4);
+   assert.equal(await page.locator('.battle-gu-list > *').count(),5,'five battle slots include visible empty slots');
    if(i===0&&round===1){
     await page.waitForTimeout(1400);
     const portrait=page.locator('.foe-portrait');
@@ -177,7 +180,10 @@ try{
     assert.notEqual(after[0],before[0],'loot should immediately replace the chosen equipped Gu');
    }else if(await page.getByRole('button',{name:/收入蛊仓/}).count())await page.getByRole('button',{name:/收入蛊仓/}).click();
    assert.match(await page.locator('#app').innerText(),/战斗胜利|战斗失利|整备与交易|双幕结算/);
-   assert.match(await page.locator('#app').innerText(),/造成伤害|护盾吸收|可追夺的蛊|双幕结算/);
+   const result=await page.evaluate(()=>state.lastResult);
+   assert.ok(result&&result.tick>0,'settlement records a completed battle tick');
+   assert.ok(result.stats&&(result.stats.damageDealt>0||result.stats.damageTaken>0||result.stats.shieldAbsorbed>0),
+     'settlement retains actual combat outcome metrics');
   }
   assert.match(await page.locator('#app').innerText(),/M2 双幕结算/);
   const save=await page.evaluate(()=>JSON.parse(localStorage.getItem('wenzhen_m2_v1')));

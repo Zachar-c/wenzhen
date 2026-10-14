@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-10-14",
+  "generator": "built-in image_gen",
+  "classification": "GAME_ORIGINAL_VISUAL_ADAPTATION",
+  "sourcePrompt": "ink_gu_specimens_v1.prompt.txt",
+  "image": "ink_gu_specimens_v1.png",
+  "sha256": "9125025cf6ac2fa56fd92ad97ce5cea3063fde8f182743c72a2407571fb3d953",
+  "width": 1254,
+  "height": 1254,
+  "grid": {
+    "columns": 2,
+    "rows": 2,
+    "tileWidth": 627,
+    "tileHeight": 627
+  },
+  "tiles": [
+    {
+      "id": "B101",
+      "column": 0,
+      "row": 0
+    },
+    {
+      "id": "B102",
+      "column": 1,
+      "row": 0
+    },
+    {
+      "id": "B103",
+      "column": 0,
+      "row": 1
+    },
+    {
+      "id": "T103",
+      "column": 1,
+      "row": 1
+    }
+  ],
+  "transparency": "generated alpha preserved",
+  "review": {
+    "commercialArtApproval": false,
+    "scope": "four candidate biological specimen illustrations; other Gu and characters use SVG fallbacks",
+    "knownLimit": "some silhouette edges approach tile boundary; no crop or retouch performed"
+  }
+}
