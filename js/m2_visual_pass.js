@@ -43,6 +43,13 @@ function specimenSvg(g){
  return uri(svg);
 }
 function guArt(id){const g=byId.get(String(id));if(!g)return null;const key=String(g.id)+"|"+String(g.kind||"");if(!cache.has(key))cache.set(key,specimenSvg(g));return cache.get(key)}
+// Use the same art renderer in cards, tooltips and pinned recipes. Atlas tiles remain CSS crops.
+function guMarkup(id){
+ const tile=paintedTiles[id];
+ if(specimenAtlasReady&&tile)return `<span class="specimen-art" data-art="painted" aria-hidden="true"><span class="painted-specimen" style="background-position:${tile[0]}% ${tile[1]}%"></span></span>`;
+ const src=guArt(id);return src?`<span class="specimen-art" data-art="silhouette" aria-hidden="true" style="background-image:url(&quot;${esc(src)}&quot;)"></span>`:'';
+}
+function foeArt(id){return id==='boar'?'assets/enemies/enemy_iron_hide_boar.png':id==='rogue'?'assets/enemies/enemy_sanxiu.png':portraitSvg(id,false)}
 function portraitSvg(id,isPlayer){
  const animal=/boar|豕|兽|狼|虎|熊/i.test(String(id));
  if(animal)return uri(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><g fill="#292722" stroke="#c6b99f" stroke-width="5" stroke-linejoin="round"><path d="M35 174 20 103 79 132 Q118 88 177 119 L242 99 226 156 Q270 183 261 257 L237 293 249 370H53L66 295Q29 259 35 174Z"/><path d="M201 191Q245 175 263 205L235 228 214 219Z" fill="#d3c2a4"/><path d="M60 370 56 327 101 327 109 370 M187 370 195 327 239 327 244 370Z"/></g><circle cx="212" cy="180" r="5" fill="#d9bb7d"/></svg>`);
@@ -73,7 +80,7 @@ function decoratePortraits(root){
   if(el.classList.contains("player-figure")&&el.querySelector("img.player-portrait"))return;
   if(el.dataset.inkPortrait)return;el.dataset.inkPortrait="true";
   const src=portraitSvg("player",true);
-  if(el.tagName==="IMG"){el.src=src;el.alt=el.alt||"墨线蛊师剪影"}else el.style.backgroundImage=`url("${src}")`;
+  if(el.tagName==="IMG"){if(!el.getAttribute("src")){el.src=src;el.alt=el.alt||"墨线蛊师剪影"}}else el.style.backgroundImage=`url("${src}")`;
  });
  root.querySelectorAll("img.foe-portrait,.foe-portrait:not(img)").forEach(el=>{
   if(el.dataset.inkPortrait)return;
@@ -81,7 +88,7 @@ function decoratePortraits(root){
   if(!foeId)return;
   el.dataset.foeId=foeId;el.dataset.inkPortrait="true";
   const foeName=root.querySelector(".combatant.foe .combatant-name")?.textContent?.trim()||foeId;
-  if(el.tagName==="IMG"){el.src=portraitSvg(foeId,false);if(!el.alt)el.alt=foeName+"剪影"}else{el.style.background=`center / contain no-repeat url("${portraitSvg(foeId,false)}")`;el.setAttribute("role","img");if(!el.getAttribute("aria-label"))el.setAttribute("aria-label",foeName+"剪影")}
+  if(el.tagName==="IMG"){if(!el.getAttribute("src"))el.src=portraitSvg(foeId,false);if(!el.alt)el.alt=foeName+"剪影"}else{el.style.background=`center / contain no-repeat url("${portraitSvg(foeId,false)}")`;el.setAttribute("role","img");if(!el.getAttribute("aria-label"))el.setAttribute("aria-label",foeName+"剪影")}
  });
 }
 function decorateLinks(root){
@@ -98,7 +105,7 @@ function decorate(){
  app.querySelectorAll("[data-gu-id],.shopitem:not(.placeholder),.gu-card,.loadout-slot,.battle-gu").forEach(decorateGu);
  decoratePortraits(app);decorateLinks(app);
 }
-window.InkSpecimenArt={gu:guArt,portrait:(id,isPlayer)=>portraitSvg(id,!!isPlayer),decorate};
+window.InkSpecimenArt={gu:guArt,markup:guMarkup,foe:foeArt,portrait:(id,isPlayer)=>portraitSvg(id,!!isPlayer),decorate};
 const app=document.getElementById("app");
 if(app){decorate();new MutationObserver(()=>decorate()).observe(app,{childList:true,subtree:false})}
 })();

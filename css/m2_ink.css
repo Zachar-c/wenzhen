@@ -543,3 +543,37 @@ body.ink-specimen[data-motion="reduce"] *::before,
 body.ink-specimen[data-motion="reduce"] *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 body[data-motion="reduce"] .hp-track > .hp-trail { display: none; }
 body[data-motion="reduce"] .took-hit,body[data-motion="reduce"] .just-forged { animation: none !important; }
+
+/* Shared hover and persistent inspection. The layer lives outside #app so tick redraws do not destroy it. */
+#inspect-layer { position: fixed; z-index: 100; inset: 0; pointer-events: none; }
+.inspect-trigger { position: absolute; z-index: 4; top: 5px; right: 5px; width: 26px; min-width: 26px; min-height: 26px !important; height: 26px; padding: 0 !important; display: grid; place-items: center; border-radius: 50% !important; border-color: #8d7955 !important; background: #17150feF !important; color: var(--gold) !important; font: 700 14px/1 var(--serif) !important; opacity: .78; }
+.inspect-trigger:hover,.inspect-trigger:focus-visible { opacity: 1; }
+.inspect-tooltip { position: fixed; z-index: 101; width: min(320px,calc(100vw - 16px)); padding: 10px 12px; border: 1px solid var(--gold); border-radius: 4px; background: #17150ff5; box-shadow: 0 8px 28px #000a; color: var(--paper); white-space: pre-line; pointer-events: none; font-size: 13px; line-height: 1.55; }
+.inspect-backdrop { position: fixed; z-index: 102; inset: 0; pointer-events: auto; background: #050403b8; backdrop-filter: blur(3px); }
+.inspect-dialog { position: fixed; z-index: 103; top: 50%; left: 50%; transform: translate(-50%,-50%); width: min(680px,calc(100vw - 28px)); max-height: min(78vh,720px); overflow: auto; padding: 24px; border: 1px solid var(--gold); border-radius: 5px; background: linear-gradient(145deg,#262119,#12110e 75%); box-shadow: 0 24px 90px #000d; pointer-events: auto; }
+.inspect-dialog h2 { margin: 4px 36px 14px 0; font: 26px/1.25 var(--serif); }
+.inspect-dialog h3 { margin: 22px 0 8px; font: 17px/1.4 var(--serif); }
+.inspect-kicker,.inspect-empty,.inspect-recipe p,.inspect-recipe small { color: var(--muted); }
+.inspect-description { font-size: 16px; line-height: 1.75; }
+.inspect-facts { display: flex; flex-wrap: wrap; gap: 8px 18px; padding: 12px 0; border-block: 1px solid var(--line); }
+.inspect-facts b { color: var(--paper); }
+.inspect-close { position: absolute; top: 10px; right: 10px; width: 36px; min-width: 36px; height: 36px; padding: 0 !important; font-size: 22px !important; }
+.inspect-recipe { margin-top: 9px; padding: 12px; border: 1px solid var(--line); background: #0e0d0b; }
+.inspect-recipe-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.inspect-recipe-part,.inspect-recipe-result { min-width: 95px; display: grid; gap: 3px; padding: 9px; border: 1px solid var(--line); text-align: center; }
+.inspect-recipe-part small { color: var(--muted); }
+.inspect-recipe-part.have { border-color: var(--jade); }
+.inspect-recipe-part.missing { border-color: var(--vermilion); color: #edaa9d; }
+.inspect-recipe-result { border-color: var(--gold); color: var(--gold); }
+.combat-title > button[data-action="pause"] { border-color: var(--jade); }
+.combat-title > button[data-action="pause"][aria-pressed="true"] { border-color: var(--gold); color: var(--gold); }
+@media (max-width: 600px) {
+  .inspect-dialog { padding: 20px 16px; max-height: 82vh; }
+  .inspect-dialog h2 { font-size: 22px; }
+  .inspect-description { font-size: 15px; }
+  .inspect-trigger { top: 3px; right: 3px; }
+}
+.loadout-slot { padding-bottom: 26px; }
+.loadout-slot > .loadout-remove { position: absolute; z-index: 2; right: 3px; bottom: 3px; min-height: 20px; padding: 1px 5px; border-color: #625844; color: var(--muted); font-size: 11px; line-height: 1.2; }
+.loadout-slot > .inspect-trigger { top: 3px; right: 3px; }
+.loadout-panel .compact-refinement { display: flex; flex-wrap: wrap; gap: 5px; }

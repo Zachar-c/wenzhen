@@ -1,0 +1,228 @@
+{
+  "viewport": [
+    1920,
+    1080
+  ],
+  "url": "http://127.0.0.1:8013/m2.html",
+  "pointerChecks": [
+    {
+      "selector": ".school-card button",
+      "button": "left",
+      "hit": "init('百兵')"
+    },
+    {
+      "selector": ".shopitem",
+      "button": "right",
+      "hit": null
+    },
+    {
+      "selector": ".shopitem button[onclick^=\"lock(\"]",
+      "button": "left",
+      "hit": "lock(0)"
+    },
+    {
+      "selector": ".refresh-seal",
+      "button": "left",
+      "hit": "reroll()"
+    },
+    {
+      "selector": ".shopitem .buy-button",
+      "button": "left",
+      "hit": "buy(0)"
+    },
+    {
+      "selector": ".inventory-grid .gu-card .actions button",
+      "button": "left",
+      "hit": "equip('i1')"
+    },
+    {
+      "selector": ".inventory-grid .gu-card .actions button",
+      "button": "left",
+      "hit": "equip('i1')"
+    },
+    {
+      "selector": ".replica-nav button",
+      "button": "left",
+      "hit": "openPrepDrawer('hunt')"
+    },
+    {
+      "selector": ".replica-nav button",
+      "button": "left",
+      "hit": "openPrepDrawer('hunt')"
+    },
+    {
+      "selector": ".hunt-card:not(.selected)>button",
+      "button": "left",
+      "hit": "chooseTarget(1)"
+    },
+    {
+      "selector": ".replica-nav button:nth-child(2)",
+      "button": "left",
+      "hit": "openPrepDrawer('refine')"
+    },
+    {
+      "selector": ".recipe-input",
+      "button": "right",
+      "hit": null
+    },
+    {
+      "selector": ".start-emblem",
+      "button": "left",
+      "hit": "startBattle()"
+    },
+    {
+      "selector": "[data-action=pause]",
+      "button": "left",
+      "hit": "toggleBattlePause()"
+    },
+    {
+      "selector": "[data-action=pause]",
+      "button": "left",
+      "hit": "toggleBattlePause()"
+    },
+    {
+      "selector": ".foe-readout",
+      "button": "right",
+      "hit": null
+    },
+    {
+      "selector": ".report-tab",
+      "button": "left",
+      "hit": "toggleBattleLog()"
+    },
+    {
+      "selector": "[data-action=quick]",
+      "button": "left",
+      "hit": "quick()"
+    },
+    {
+      "selector": ".spoils-panel button.primary",
+      "button": "left",
+      "hit": "resolveSpoils('claim')"
+    },
+    {
+      "selector": ".replica-nav button",
+      "button": "left",
+      "hit": "openPrepDrawer('hunt')"
+    },
+    {
+      "selector": ".hunt-card[data-foe-id=\"swordsman\"]>button",
+      "button": "left",
+      "hit": "chooseTarget(2)"
+    },
+    {
+      "selector": ".start-emblem",
+      "button": "left",
+      "hit": "startBattle()"
+    },
+    {
+      "selector": ".foe-readout",
+      "button": "right",
+      "hit": null
+    },
+    {
+      "selector": "[data-action=quick]",
+      "button": "left",
+      "hit": "quick()"
+    }
+  ],
+  "keyboardChecks": [
+    "Enter opens focused Gu; Tab stays in inspection; Escape restores gameplay.",
+    "Escape closes prep drawer and returns focus to its opener.",
+    "Nested inspection closes before its underlying prep drawer."
+  ],
+  "screenshots": [
+    "01-onboarding.png",
+    "02-prep.png",
+    "03-hover.png",
+    "04-inspect.png",
+    "05-hunt-drawer.png",
+    "05b-refine-drawer.png",
+    "06-full-inventory.png",
+    "07-fight.png",
+    "08-paused.png",
+    "09-active-intent.png",
+    "10-enemy-inspect.png",
+    "11-battle-log.png",
+    "12-spoils.png",
+    "13-full-spoils.png",
+    "14-hidden-feint-inspect.png",
+    "15-run-result.png"
+  ],
+  "fixtures": [
+    "06: Full inventory/formation visual stress only; twelve owned instances, five equipped.",
+    "13: Full inventory spoils visual stress; exchange selector shown.",
+    "14: Real swordsman engine stepped to tick 15 for deterministic hidden-feint screenshot."
+  ],
+  "exceptions": [],
+  "failedResources": [],
+  "assetCoverage": {
+    "guTotal": 29,
+    "paintedGu": 4,
+    "foeTotal": 7,
+    "matchingEnemyArt": 2,
+    "playerUsesExistingRoguePortrait": true
+  },
+  "hover": [
+    658,
+    189,
+    430,
+    261.21875
+  ],
+  "battleLayout": {
+    "viewport": [
+      1920,
+      1080
+    ],
+    "scroll": [
+      1920,
+      1080
+    ],
+    "cards": [
+      [
+        226,
+        266,
+        123.1875,
+        166
+      ],
+      [
+        357.1875,
+        266,
+        123.203125,
+        166
+      ],
+      [
+        488.390625,
+        266,
+        123.203125,
+        166
+      ],
+      [
+        619.59375,
+        266,
+        123.203125,
+        166
+      ],
+      [
+        750.796875,
+        266,
+        123.1875,
+        166
+      ]
+    ],
+    "formation": [
+      210,
+      220,
+      680,
+      226
+    ],
+    "tooltip": null,
+    "inventory": 0
+  },
+  "result": {
+    "round": 6,
+    "losses": 1,
+    "completed": true
+  },
+  "passed": true
+}
